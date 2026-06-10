@@ -1,0 +1,83 @@
+<div class="box-classifica serie-b">
+  <h3>Classifica Serie B</h3>
+  <table class="tabella">
+    <thead>
+      <tr>
+        <th>Pos</th>
+        <th>Squadra</th>
+        <th>Punti</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Marco</td>
+        <td>30pt</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Antonio</td>
+        <td>25pt</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<button type="button" (click)="aggiungi()" class="btn btn-outline-primary bg-dark">Aggiungi</button>
+<button type="reset" (click)="reset()" class="btn btn-outline-danger">Reset</button>
+<p>{{ contatore }}</p>
+<button type="button" (click)="aggiungigiocatori()" class="btn btn-success btn-lg">
+  Aggiungi Giocatori
+</button>
+@for (g of names; track g) {
+  <p>{{ g }}</p>
+}
+
+@if (finiti !== '') {
+  <p>{{ finiti }}</p>
+}
+<div class="div1">
+  <input
+    (input)="nome = $any($event.target).value"
+    placeholder="Scrivi in tempo reale"
+    class="form-control is-valid"
+  />
+
+  <p class="ms-4 mt-4">{{ nome }}</p>
+</div>
+<div class="div2">
+  <input
+    [value]="nomegiocatore"
+    (input)="nomegiocatore = $any($event.target).value"
+    placeholder="scrivi il giocatore da agg."
+    class="form-control"
+  />
+  <button type="button" (click)="aggiuntagiocatori()" class="mt-4 mb-4 btn btn-outline-primary">
+    Aggiungi
+  </button>
+
+  @for (g of listagiocatori; track $index) {
+    <p>{{ g }}<button type="button" (click)="elimina($index)" class="ms-4">Elimina</button></p>
+  }
+</div>
+<div class="div-3">
+  <input
+    [value]="operazione"
+    (input)="operazione = $any($event.target).value"
+    placeholder="inserisci operazione"
+    class="form-control"
+  />
+  <input
+    type="number"
+    [(ngModel)]="numero1"
+    placeholder="inserisci numero 1"
+    class="form-control"
+  />
+  <input
+    type="number"
+    [(ngModel)]="numero2"
+    placeholder="inserisci numero 2"
+    class="form-control"
+  />
+  <button type="button" (click)="calcola()" class="btn btn-outline-primary mt-4">CALCOLA</button>
+  <p>Risultato:{{ risultato }}</p>
+</div>

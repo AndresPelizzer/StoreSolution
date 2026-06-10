@@ -1,0 +1,35 @@
+<nav class="navbar navbar-dark bg-dark mb-4">
+  <div class="container-fluid justify-content-center">
+    <h1 class="navbar-brand m-0">Torneo di bocce</h1>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card p-3 shadow-sm bg-light">
+        <h4 class="mb-3">Seleziona Classifica</h4>
+        <a
+          routerLink="/seriea"
+          routerLinkActive="active"
+          class="btn btn-outline-primary d-block mb-2"
+        >
+          Visualizza Serie A
+        </a>
+        <a routerLink="/serieb" routerLinkActive="active" class="btn btn-outline-primary">
+          Visualizza Serie B
+        </a>
+        <a
+          routerLink="/tabellagiocatori"
+          routerLinkActive="active"
+          class="btn btn-outline-primary mt-2"
+          >Inserisci i giocatori</a
+        >
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

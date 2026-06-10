@@ -1,0 +1,117 @@
+<div>
+  @if (listagiocatori.length > 0) {
+    <span>elementi:{{ listagiocatori.length }}</span>
+  } @else {
+    <span>nessun elemento!</span>
+  }
+</div>
+
+<p>
+  Email<input
+    [value]="nuovoGiocatore.email"
+    (input)="nuovoGiocatore.email = $any($event.target).value"
+    placeholder="Inserisci email giocatore"
+    class="destra"
+  />
+</p>
+<p>
+  Name<input
+    [value]="nuovoGiocatore.name"
+    (input)="nuovoGiocatore.name = $any($event.target).value"
+    placeholder="Inserisci name giocatore"
+    class="ms-5"
+  />
+</p>
+<p>
+  Username<input
+    [value]="nuovoGiocatore.username"
+    (input)="nuovoGiocatore.username = $any($event.target).value"
+    placeholder="Inserisci username giocat.."
+    class="ms-3"
+  />
+</p>
+<p>
+  <button type="submit" (click)="aggiungiGiocatore()" class="btn btn-outline-primary">
+    @if (indiceModifica === null) {
+      Aggiungi giocatore
+    } @else {
+      Salva modifica
+    }
+  </button>
+</p>
+
+<table>
+  <thead>
+    <th>Name</th>
+    <th>Username</th>
+    <th>Email</th>
+    <th></th>
+  </thead>
+  @for (g of listagiocatori; track $index) {
+    <tr>
+      <td>
+        @if ($index === indiceModifica) {
+          <input
+            type="text"
+            [value]="nuovoGiocatore.name"
+            (input)="nuovoGiocatore.name = $any($event.target).value"
+            class="in"
+          />
+        } @else {
+          {{ g.name }}
+        }
+      </td>
+      <td>
+        @if ($index === indiceModifica) {
+          <input
+            type="text"
+            [value]="nuovoGiocatore.username"
+            (input)="nuovoGiocatore.username = $any($event.target).value"
+            class="in"
+          />
+        } @else {
+          {{ g.username }}
+        }
+      </td>
+      <td>
+        @if ($index === indiceModifica) {
+          <input
+            type="text"
+            [value]="nuovoGiocatore.email"
+            (input)="nuovoGiocatore.email = $any($event.target).value"
+            class="in"
+          />
+        } @else {
+          {{ g.email }}
+        }
+      </td>
+      <td style="white-space: nowrap">
+        <button
+          type="button"
+          (click)="elimina(listagiocatori[$index].id)"
+          class="btn btn-outline-danger"
+        >
+          Elimina
+        </button>
+        <button
+          type="button"
+          (click)="mostra(listagiocatori[$index].id)"
+          class="btn btn-outline-info"
+        >
+          Mostra
+        </button>
+
+        @if ($index === indiceModifica) {
+          <button type="button" (click)="aggiungiGiocatore()" class="btn btn-outline-primary">
+            Salva
+          </button>
+          <button type="button" (click)="annulla()" class="btn btn-outline-danger">Annulla</button>
+        } @else {
+          <button type="button" (click)="modifica($index)" class="btn btn-outline-primary">
+            Modifica
+          </button>
+        }
+      </td>
+    </tr>
+  }
+</table>

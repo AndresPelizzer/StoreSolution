@@ -1,0 +1,15 @@
+.destra {
+  margin-left: 70px;
+}
+td,
+th {
+  width: 100%;
+  border: 2px solid darkcyan;
+}
+.flex {
+  display: flex;
+  gap: 10px;
+}
+.in {
+  width: 100%;
+}

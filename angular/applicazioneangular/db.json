@@ -1,0 +1,23 @@
+{
+  "users": [
+    {
+      "id": "_dvBKvFgWSQ",
+      "name": "rossi",
+      "username": "marrrio",
+      "email": "mario"
+    },
+    {
+      "id": "3EJgYaiqYZs",
+      "name": "fffff",
+      "username": "fffff",
+      "email": "eefff"
+    },
+    {
+      "id": "Nzui5urAefo",
+      "name": "zz",
+      "username": "xx",
+      "email": "aaaaa bbb test"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
