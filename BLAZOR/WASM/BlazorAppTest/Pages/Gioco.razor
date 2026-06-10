@@ -1,0 +1,37 @@
+﻿
+
+@page "/gioco"
+
+<h3>Gioco</h3>
+<h2>Istruzioni</h2>
+
+<p>In questo gioco devi indovinare il numeron segreto! </p>
+<input type="number" @bind="tentativo" />
+<button type="button" class="btn btn-outline-primary" @onclick="indovina">Prova</button>
+
+<h3>@messaggio</h3>
+
+
+@code {
+    string messaggio = "";
+    int numerosegreto = new Random().Next(1, 101);
+    int tentativo = 0;
+    void indovina()
+    {
+        if (tentativo == numerosegreto)
+        {
+            messaggio = "Complimenti hai indovinato! Il numero segreto era "+ numerosegreto;
+        }
+        else if (tentativo > numerosegreto)
+        {
+            messaggio = "Il numero segreto é piu basso, riprova";
+        }
+        else
+        {
+            messaggio = "Il numero segreto é piu alto, riprova";
+        }
+    }
+
+
+
+}

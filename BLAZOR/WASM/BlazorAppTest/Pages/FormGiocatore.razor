@@ -1,0 +1,14 @@
+﻿<h3>FormGiocatore</h3>
+<div class="mb-3">
+    <input type="text" @bind="GiocatoreIns.name" placeholder="Inserisci il tuo nome" class="form-control mb-2" />
+    <input type="text" @bind="GiocatoreIns.username" placeholder="Inserisci il tuo cognome" class="form-control mb-2" />
+    <input type="number" @bind="GiocatoreIns.email" placeholder="Inserisci la tua eta" class="form-control mb-2" />
+
+    <button type="button" class="btn btn-outline-primary" @onclick="OnSalva">
+        Aggiungi Giocatore
+    </button>
+</div>
+
+@code {
+
+}

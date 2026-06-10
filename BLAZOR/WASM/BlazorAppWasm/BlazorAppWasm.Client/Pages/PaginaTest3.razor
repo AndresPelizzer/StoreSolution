@@ -1,0 +1,37 @@
+﻿@page "/test3"
+@rendermode InteractiveWebAssembly
+
+
+
+<h3>Pagina Test 2...</h3>
+
+<button type="button" class="btn btn-primary" @onclick="Testo1">Click me</button>
+<button class="btn btn-primary" @onclick="Testo1">Click me</button>
+
+<hr>
+<div>valore...</div>
+
+
+<p role="status">Current count: @x</p>
+
+
+
+
+
+@code {
+
+    string var1 = "Saluti...";
+
+
+    private int x = 100;
+
+    private void Testo1()
+    {
+        x = x+2;
+
+        ///return x.ToString();
+
+    }
+
+
+}

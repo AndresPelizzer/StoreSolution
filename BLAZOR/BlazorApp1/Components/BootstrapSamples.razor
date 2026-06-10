@@ -1,0 +1,120 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+<div class="container-esempio test3">
+    <div class="row"><div class="col-4">colsinistra</div><div class="col-4">colcentrale</div> <div class="col-4">coldestra</div></div>
+</div>
+
+
+<div class="secondocontainer-esempio"><div class="col">colonnasinistra</div><div class="col-5">Colonna5</div><div class="col-2">Colonna2</div></div>
+
+<div class="autorow"><div class="row row-cols-auto"><div class="col">Colonna1</div><div class="colonna2"Colonna2></div><div class="Colonna3">Colonna3</div></div></div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Colonna1</th>
+             <th scope="col">Colonna2</th>
+            <th scope="col">Colonna3</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">1</th>
+            <td>Alberto</td>
+            <td>Mario</td>
+            <td>Giacomo</td>
+        </tr>
+
+        <tr>
+            <th scope="row">2</th>
+            <td>Verdi</td>
+            <td>Rossi</td>
+            <td>Bianchi</td>
+        </tr>
+    </tbody>
+
+
+            
+    <tr>
+        <td></td>
+    </tr>
+</table>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Colonna1</th>
+            <th scope="col">Colonna2</th>
+                    <th scope="col">Colonna3</th>
+                    </tr>
+    </thead>
+
+    <tbody class="table-group-divider table-primary">
+    <tr>
+        <th scope="row">1</th>
+        <td>Mario</td>
+        <td>Rossi</td>
+        <td>Bianchi</td>
+        </tr>
+    </tbody>
+
+    
+</table>
+
+
+
+
+
+<form>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label esempiotesto" >Email address</label>
+        <input type="email" class="form-control" id="exampleInputEmail1">
+        <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword1">
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="exampleCheck1">
+        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+
+<div class="card esempio">
+    <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
+        <p class="card-text">testo della Card</p>
+        <a href="#" class="card-link">Card link</a>
+    </div>
+</div>
+
+
+<select class="form-select esempiotesto" aira-label="Select esempio default">
+    <option selected>Open this select menu</option>
+    <option value="1">One</option>
+    <option value="2">Due</option>
+    <option value="3">Tre</option>
+
+</select>
+
+<label for="range1" class="form-label">Example range</label>
+<input type="range" class="form-range" id="range1" />
+
+
+<div class="accordion" id="mioAccordion">
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#contenuto1">Prima sezione</button>
+
+        </h2>
+        <div id="contenuto1" class="accordion-collapse collapse show" data-bs-parent="#mioAccordion"><div class="accordion-body">Questo É il contenuto della prima sezione</div></div>
+    </div>
+</div>
+<button type="button">Bottone</button>
+
+

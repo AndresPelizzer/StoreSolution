@@ -1,0 +1,65 @@
+﻿.test{
+    color:blue;
+    background-color:aquamarine;
+    border:2px solid black;
+    
+    height:120px;
+
+
+}
+.test2{
+    width:18px;
+}
+
+.test3 {
+    width: auto;
+    height: auto;
+    color: firebrick;
+    border: 2px solid saddlebrown;
+}
+
+.esempio{
+    background-color:chartreuse;
+    color:blueviolet;
+    border:2px solid red;
+    
+}
+esempiotesto{
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color:blueviolet;
+    font-weight:bold;
+    font-style:italic;
+
+
+}
+button:hover{
+    transition:1.3s;
+    transform:scale(1.2)
+    
+    
+}
+button{
+    background-color:mediumvioletred;
+}
+
+.col-4:hover{
+    background-color:bisque;
+    transition:0.6s;
+}
+
+input:hover{
+    color:chocolate;
+
+}
+
+autorow{
+    background-color:yellow;
+}
+
+col{
+    color:palevioletred;
+}
+th{
+    color:red;
+}
+

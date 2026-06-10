@@ -1,0 +1,119 @@
+﻿@page "/calcolatrice"
+@inject CalcolatriceService CalcService
+
+
+<h3>Calcolatrice</h3>
+
+<div class="card p-4 shadow" style="max-width:400px;">
+<select @bind="operazione" class="form-select mb-2">
+    <option value="">---Seleziona un operazione---</option>
+    <option value="+">Addizione</option>
+    <option value="-">Sottrazione</option>
+    <option value="*">Moltiplicazione</option>
+    <option value="/">Divisione</option>
+</select>
+<input type="number" @bind="numero1" class="form-control mt-3" placeholder="Inserisci un numero" />
+<input type="number" @bind="numero2" class="form-control mt-3" placeholder="Inserisci un numero" />
+<button type="button" @onclick="calcola" class="btn btn-outline-primary w-100 mt-3">CALCOLA</button>
+
+
+@if (errore != "")
+{
+    <div class="alert alert-danger mt-3">
+         @errore
+    </div>
+}
+
+@if (calcolato)
+{
+    <div class="alert alert-success mt-3">
+        <strong>Risultato:@risultato</strong>
+    </div>
+}
+</div>
+
+
+
+@code {
+    string errore = "";
+    string operazione = "";
+    double numero1;
+    double numero2;
+    double risultato;
+    bool calcolato = false;
+    public void calcola()
+
+
+
+    {
+        errore = "";
+        calcolato = false;
+        if (operazione == "")
+        {
+            errore = "Seleziona un Operazione!";
+            return;
+        }
+
+
+        try
+        {
+            risultato = operazione switch
+            {
+                "+" => CalcService.somma(numero1, numero2),
+                "-" => CalcService.differenza(numero1, numero2),
+                "*" => CalcService.moltiplicazione(numero1, numero2),
+                "/" => this.divisione(numero1, numero2),
+                _ => 0
+            };
+            calcolato = true;
+        }
+        catch (DivideByZeroException ex)
+        {
+            errore = ex.Message;
+        }
+
+
+
+    }
+    public void somma()
+    {
+        risultato = CalcService.somma(numero1, numero2);
+    }
+
+
+    public void differenza()
+    {
+        risultato = CalcService.differenza(numero1, numero2);
+    }
+
+
+    public void moltiplicazione()
+    {
+        risultato = CalcService.moltiplicazione(numero1, numero2);
+    }
+
+
+
+    public double divisione(double n1, double n2)
+    {
+        try
+        {
+            risultato = CalcService.divisione(n1, n2);
+            return risultato;
+
+        }
+        catch (DivideByZeroException ex)
+        {
+            errore = ex.Message;
+            return 0;
+        }
+
+    }
+
+
+
+
+}
+
+
+
