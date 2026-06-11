@@ -3,150 +3,90 @@ using BlazorAppTest.Models;
 using BlazorAppTest.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Linq;
 
-namespace BlazorAppTest.Pages;
-
+namespace BlazorAppTest.Pages
+{
     public partial class Giocatori
     {
-
         [Inject] CalcoliService CalcService { get; set; } = null;
         [Inject] IGiocatori gService { get; set; } = null;
-
-    [Inject] NavigationManager Navigation { get; set; } = null;
-
-   
-
+        [Inject] NavigationManager Navigation { get; set; } = null;
+        [Inject] IJSRuntime JS { get; set; }
 
         Giocatore giocatoreSelezionato { get; set; } = null;
         Giocatore giocatoreIns { get; set; } = new();
 
-
         bool mostraModifica = false;
-
         List<Giocatore> giocatori = new List<Giocatore>();
-
         public double risultato { get; set; } = 0;
-
-
 
         protected override async Task OnInitializedAsync()
         {
             await leggiDatiAsync();
         }
-     
+
         private async Task leggiDatiAsync()
         {
-            giocatori = await gService.GetGiocatori();
-
-
-
+            var dati = await gService.GetGiocatori();
+            if (dati != null)
+            {
+                
+                giocatori = dati.OrderBy(g => g.Codice).ToList();
+            }
         }
-        
 
-
-
-
-            async Task aggiungi()
-        {
-
-
-        //Navigation.NavigateTo("giocatori/8");
-        //return;
-
-
+        async Task aggiungi()
+        {   
 
 
             var nuovo = new Giocatore
             {
-                
-                name = giocatoreIns.name,
-                username = giocatoreIns.username,
-                email = giocatoreIns.email
-
+                Name = giocatoreIns.Name,
+                Username = giocatoreIns.Username,
+                Email = giocatoreIns.Email
             };
-
 
             await gService.AddGiocatore(nuovo);
             await leggiDatiAsync();
             giocatoreIns = new();
 
-
-
-            this.risultato = this.CalcService.Somma(1, 3);
-
+           
         }
 
-
-
         async Task elimina(Giocatore g)
-
         {
-
-            bool conferma = await JS.InvokeAsync<bool>("confirm", $"Sei sicuro di voler eliminare {g.name} {g.username}?");
+            bool conferma = await JS.InvokeAsync<bool>("confirm", $"Sei sicuro di voler eliminare {g.Name} {g.Username}?");
             if (conferma)
             {
                 await gService.DeleteGiocatore(g.Codice);
                 await leggiDatiAsync();
             }
         }
-        
 
         void modifica(Giocatore g)
         {
             giocatoreSelezionato = g;
-
-            giocatoreIns.name = g.name;
-            giocatoreIns.username = g.username;
-            giocatoreIns.email = g.email;
-
-
+            giocatoreIns.Name = g.Name;
+            giocatoreIns.Username = g.Username;
+            giocatoreIns.Email = g.Email;
             mostraModifica = true;
-
         }
+
         void annulla(Giocatore g)
         {
-            //int codice = g.Codice;
-            //Giocatore unchanged= gService.GetGiocatore(codice);
-
-
-            g.name = giocatoreIns.name;
-            g.username = giocatoreIns.username;
-            g.email = giocatoreIns.email;
-
-
-            mostraModifica = true;
+            g.Name = giocatoreIns.Name;
+            g.Username = giocatoreIns.Username;
+            g.Email = giocatoreIns.Email;
+            mostraModifica = false;
         }
-        async Task salvaModifica(Giocatore giocatoreModificato)
+
+      
+
+        void mostraDettagli(int codice)
         {
-            //
-
-            bool success=await gService.UpdateGiocatore(giocatoreModificato.Codice, giocatoreSelezionato);
-
-            if (success)
-            {
-                await leggiDatiAsync();
-                giocatoreIns = new();
-                mostraModifica = false;
-
-                await JS.InvokeVoidAsync("alert", "Hai salvato le modifiche con successo!");
-            }
-            else
-            {
-                await JS.InvokeVoidAsync("alert", "Salvataggio NON riuscito!");
-            }
+            Navigation.NavigateTo($"/giocatori/{codice}");
 
         }
-        
-    void mostraDettagli(string codice)
-    {
-        Navigation.NavigateTo($"/giocatori/{codice}");
     }
-
-        
-    
 }
-
-
-
-

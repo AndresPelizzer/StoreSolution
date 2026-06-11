@@ -40,6 +40,7 @@
             button3 = new Button();
             button4 = new Button();
             labelrisultato = new Label();
+            button5 = new Button();
             SuspendLayout();
             // 
             // buttonAumenta
@@ -158,11 +159,22 @@
             labelrisultato.Text = "0";
             labelrisultato.Click += labelrisultato_Click;
             // 
+            // button5
+            // 
+            button5.Location = new Point(27, 261);
+            button5.Name = "button5";
+            button5.Size = new Size(165, 23);
+            button5.TabIndex = 12;
+            button5.Text = "Operazioni su Database";
+            button5.UseVisualStyleBackColor = true;
+            button5.Click += button5_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(button5);
             Controls.Add(labelrisultato);
             Controls.Add(button4);
             Controls.Add(button3);
@@ -196,5 +208,6 @@
         private Button button3;
         private Button button4;
         private Label labelrisultato;
+        private Button button5;
     }
 }

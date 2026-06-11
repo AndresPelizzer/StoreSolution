@@ -6,25 +6,66 @@ namespace BlazorAppTest.Services
 {
     public class GiocatoriService : IGiocatori
     {
-
         private readonly HttpClient _http;
-        private readonly string _apiUrl = "http://localhost:3000/users";
         
-           
-      public GiocatoriService(HttpClient http)
+        private readonly string _apiUrl = "https://localhost:7266/api/Giocatori";
+
+        public GiocatoriService(HttpClient http)
         {
             _http = http;
         }
 
-
-        public async Task<bool> AddGiocatore(Giocatore item)
+        public async Task<ApiResponse> AddGiocatore(Giocatore item)
         {
             try
             {
 
+                // 
+                if(string.IsNullOrEmpty(item.Email)) {
+                    return new ApiResponse
+                    {
+                        success = false,
+                        message = "Email NON valida!!!"
+                    };
+
+                }
+
 
                 var risposta = await _http.PostAsJsonAsync(_apiUrl, item);
+                if (risposta.IsSuccessStatusCode)
+                {
+                    return new ApiResponse
+                    {
+                        success = true,
+                        message = "Operazione riuscita"
+                    };
+                }
+                else
+                {
+                    return new ApiResponse
+                    {
+                        success = false,
+                        message = "Operazione non riuscita"
+                    };
+                }
 
+            }
+            catch(Exception ex)
+            {
+                return new ApiResponse
+                {
+                    success = false,
+                    message = ex.Message
+                };
+            }
+        }
+
+        
+        public async Task<bool> DeleteGiocatore(int id)
+        {
+            try
+            {
+                var risposta = await _http.DeleteAsync($"{_apiUrl}/{id}");
                 return risposta.IsSuccessStatusCode;
             }
             catch
@@ -33,22 +74,8 @@ namespace BlazorAppTest.Services
             }
         }
 
-        public async Task<bool> DeleteGiocatore(string id)
-        {
-            try
-            {
 
-                var risposta=await _http.DeleteAsync($"{_apiUrl}/{id}");
-
-                return risposta.IsSuccessStatusCode;
-            }
-            catch  {
-                return false;
-               }
-
-        }
-
-        public async Task<Giocatore>GetGiocatore(string Codice)
+        public async Task<Giocatore> GetGiocatore(int Codice)
         {
             return await _http.GetFromJsonAsync<Giocatore>($"{_apiUrl}/{Codice}");
         }
@@ -57,44 +84,45 @@ namespace BlazorAppTest.Services
         {
             try
             {
-
-                return await _http.GetFromJsonAsync<List<Giocatore>>($"{_apiUrl}");
+                return await _http.GetFromJsonAsync<List<Giocatore>>(_apiUrl);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
         }
 
-        public async Task<bool> UpdateGiocatore(string id, Giocatore newValues)
+      
+        public async Task<ApiResponse> UpdateGiocatore(int id, Giocatore newValues)
         {
             try
             {
                 var risposta = await _http.PutAsJsonAsync($"{_apiUrl}/{id}", newValues);
-                return risposta.IsSuccessStatusCode;
+                if (risposta.IsSuccessStatusCode)
+                {
+                    return new ApiResponse
+                    {
+                        success = true,
+                        message = "Operazione riuscita"
+                    };
+                }
+                else
+                {
+                    return new ApiResponse
+                    {
+                        success = false,
+                        message = "Operazione non riuscita"
+                    };
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                return new ApiResponse
+                {
+                    success = false,
+                    message = ex.Message
+                };
             }
         }
-        
-
-
-        }
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
-
+}

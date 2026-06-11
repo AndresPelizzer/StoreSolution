@@ -1,16 +1,13 @@
-﻿@inject IJSRuntime JS;
-@page "/giocatori"
-
-
-@* 
-    @using BlazorAppTest.Interfaces
-@inject IMiaCalcolatrice calc
- *@
-
-
+﻿@page "/giocatori"
 <h3>Giocatori</h3>
 <p>Questa é una schermata per inserire i giocatori</p>
-<FormGiocatore GiocatoreIns="giocatoreIns" OnSalva="aggiungi" />
+
+@* <FormGiocatore GiocatoreIns="giocatoreIns" OnSalva="aggiungi" /> *@
+
+<button type="button" class="btn btn-outline-primary" @onclick="() => mostraDettagli(0)">
+    Aggiungi Giocatore
+</button>
+
 
 
 <table class="table table-bordered table-striped table-hover">
@@ -18,101 +15,49 @@
         <tr>
             <th>#</th>
             <th>Nome</th>
-            <th>Cognome</th>
-            <th>Eta</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Bottoni</th>
         </tr>
     </thead>
     <tbody>
-
-
-<!--    
-
-porzione temporaneamente commentata...
-
--->
-@* 
-
-        @foreach (var g in giocatori)
+        @if (giocatori?.Any() == true)
         {
-            <tr>
-                @if (giocatoreSelezionato == g && mostraModifica)
-                {
-                    <td><input type="text" @bind="g.Nome" class="form-control w-75" /></td>
-                    <td><input type="text" @bind="g.Cognome" class="form-control w-75" /></td>
-                    <td><input type="number" @bind="g.Eta" class="form-control w-75" /></td>
+            for (int i = 0; i < giocatori.Count; i++)
+            {
+                Giocatore g = giocatori[i];
+                <tr>
+                    <td>@g.Codice</td>
 
-                    <td><button class="btn btn-outline-danger" @onclick="() => elimina(g)">Elimina</button></td>
-                    <td><button class="btn btn-success" @onclick="() => salvaModifica(g)">Salva</button></td>
-                }
-                else
-                {
+                    @if (giocatoreSelezionato == g && mostraModifica)
+                    {
+                        <td><input type="text" @bind="g.Name" class="form-control w-75" /></td>
+                        <td><input type="text" @bind="g.Username" class="form-control w-75" /></td>
+                        <td><input type="text" @bind="g.Email" class="form-control w-75" /></td>
 
-                    <td>@g.Nome</td>
-                    <td>@g.Cognome</td>
-                    <td>@g.Eta</td>
-                    <td><button class="btn btn-outline-danger" @onclick="() => elimina(g)">Elimina</button></td>
-                    <td><button class="btn btn-outline-secondary" @onclick="() => modifica(g)">Modifica</button></td>
-                }
-            </tr>
+                        <td>
+                            
+                           
+                            <button class="btn btn-outline-danger" @onclick="() => elimina(g)">Elimina</button>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@g.Name</td>
+                        <td>@g.Username</td>
+                        <td>@g.Email</td>
+                        <td>
+                            @*  <button class="btn btn-outline-secondary" @onclick="() => modifica(g)">Modifica</button> *@
+                           <button class="btn btn-outline-info" @onclick="() => mostraDettagli(g.Codice)">Mostra</button>
+                            <button class="btn btn-outline-danger" @onclick="() => elimina(g)">Elimina</button>
+                        </td>
+                    }
+                </tr>
+            }
         }
- *@
-
-
-
-        @for (int i = 0; i < giocatori.Count; i++)
-        {
-            Giocatore g = giocatori[i];
-           
-
-            <tr>
-
-                <td>@g.Codice</td>
-                @if (giocatoreSelezionato == g && mostraModifica)
-                {
-                   
-                    <td><input type="text" @bind="g.name" class="form-control w-75" /></td>
-                    <td><input type="text" @bind="g.username" class="form-control w-75" /></td>
-                    <td><input type="number" @bind="g.email" class="form-control w-75" /></td>
-
-                    <td><button class="btn btn-outline-danger" @onclick="() => elimina(g)">Elimina</button></td>
-                    <td><button class="btn btn-success" @onclick="() => salvaModifica(g)">Salva</button></td>
-                    <td><button class="btn btn-outline-warning" @onclick="() => annulla(g)">Annulla</button></td>
-
-                }
-                else
-                {
-
-                    <td>@g.name</td>
-                    <td>@g.username</td>
-                    <td>@g.email</td>
-                    <td><button class="btn btn-outline-danger" @onclick="() => elimina(g)">Elimina</button></td>
-                    <td><button class="btn btn-outline-secondary" @onclick="() => modifica(g)">Modifica</button></td>
-                    <td><button class="btn btn-outline-info"" @onclick="()=> mostraDettagli(g.Codice)">Mostra</button></td>
-                }
-            </tr>
-
-        }
-
     </tbody>
-
 </table>
 
 <h3>
-
-    
     <button class="btn btn-outline-secondary" @onclick="() => leggiDatiAsync()">Leggi</button>
-
 </h3>
-
-
-
-
-
-
-
-
-
-
-
-
-

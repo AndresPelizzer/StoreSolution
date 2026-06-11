@@ -1,28 +1,49 @@
-﻿@page "/giocatori/{codice}"
+﻿@page "/giocatori/{codice:int}"
 
-
-
-<h3>Giocatore n. @codice</h3>
-
-
-
-
-@if (giocatore == null)
+@if (codice == 0)
 {
-    <em> attendere...  </em>
-}
-else
-{
+    <h3>Nuovo Giocatore</h3>
+    @if (giocatoreIns != null)
+    {
+        <p>Inserire i dati</p>
+        <input type="text" @bind="giocatoreIns.Name" placeholder="Inserisci il tuo nome" class="form-control mb-2" />
+        <input type="text" @bind="giocatoreIns.Username" placeholder="Inserisci lo username" class="form-control mb-2" />
+        <input type="text" @bind="giocatoreIns.Email" placeholder="Inserisci la tua email" class="form-control mb-2" />
+       <button type="button" class="btn btn-outline-primary" @onclick="() => salvaModifica(giocatoreIns)">Salva</button>}
+      
+
     
-    <div class="card mt-3">
-        <h5 class="card-title">Nome: @giocatore.name</h5>
-        <h6 class="card-subtitle" mt-2> Username: @giocatore.username</h6>
-        <h6 class="card-text">Email: @giocatore.email</h6>
-    </div>
-
-    <div class="mt-3">
-        <a href="/giocatori" class="btn btn-secondary">Torna alla lista</a>
-    </div>
-
-
+    else
+    {
+        <p>Caricamento in corso...</p>
+    }
 }
+ else
+{
+    @if (giocatore != null)
+    {
+        <div class="card p-3">
+            <label>Nome:</label>
+            <input type="text" @bind="giocatore.Name" class="form-control mb-2" />
+            
+            <label>Username:</label>
+            <input type="text" @bind="giocatore.Username" class="form-control mb-2" />
+            
+            <label>Email:</label>
+            <input type="text" @bind="giocatore.Email" class="form-control mb-2" />
+        </div>
+        <button type="button" class="btn btn-outline-primary mt-2" @onclick="() => salvaModifica(giocatore)">Salva Modifiche</button>
+    }
+    else
+    {
+        <p>Caricamento dei dati del giocatore...</p>
+    }
+}
+
+
+
+
+<div class="mt-3">
+    <a href="/giocatori" class="btn btn-secondary">Torna alla lista</a>
+</div>
+

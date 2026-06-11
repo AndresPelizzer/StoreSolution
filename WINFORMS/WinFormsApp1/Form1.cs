@@ -65,9 +65,11 @@ namespace WinFormsApp1
             {
                 numero2 = Convert.ToInt32(numerodue.Text);
 
-            } catch(Exception ex) {
+            }
+            catch (Exception ex)
+            {
 
-                MessageBox.Show(ex.Message + " - " + ex.StackTrace,"ERRORE!",MessageBoxButtons.OK,MessageBoxIcon.Stop);
+                MessageBox.Show(ex.Message + " - " + ex.StackTrace, "ERRORE!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
             finally
             {
@@ -80,7 +82,7 @@ namespace WinFormsApp1
 
         private void button1_Click(object sender, EventArgs e)
         {
-             risultato = numero + numero2;
+            risultato = numero + numero2;
             labelrisultato.Text = risultato.ToString();
 
         }
@@ -93,13 +95,14 @@ namespace WinFormsApp1
 
         private void button3_Click(object sender, EventArgs e)
         {
-             risultato = numero * numero2;
+            risultato = numero * numero2;
             labelrisultato.Text = risultato.ToString();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            if (numero2 == 0){
+            if (numero2 == 0)
+            {
                 MessageBox.Show("Non puoi dividere per zero");
                 return;
 
@@ -109,15 +112,25 @@ namespace WinFormsApp1
                 // double risultato = (double)numero / numero2;
 
 
-                double risultato = Convert.ToDouble( numero / numero2);
+                double risultato = Convert.ToDouble(numero / numero2);
                 labelrisultato.Text = risultato.ToString();
             }
-            
+
         }
 
         private void labelrisultato_Click(object sender, EventArgs e)
         {
-            
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            var f = new FormDatabase();
+
+            f.Show();
+
+
+
         }
     }
 }

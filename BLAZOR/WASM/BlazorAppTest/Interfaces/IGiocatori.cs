@@ -1,16 +1,20 @@
 ﻿using BlazorAppTest.Models;
 
-namespace BlazorAppTest.Interfaces;
-
-public interface IGiocatori
+namespace BlazorAppTest.Interfaces
 {
-    public Task<List<Giocatore>> GetGiocatori();
+    public interface IGiocatori
+    {
+        public Task<List<Giocatore>> GetGiocatori();
 
-    public Task<Giocatore> GetGiocatore(string codice);
+        public Task<Giocatore> GetGiocatore(int codice);
+
+        public Task<ApiResponse> AddGiocatore(Giocatore item);
 
 
 
-    public Task<bool> AddGiocatore(Giocatore item);
-    public Task<bool> UpdateGiocatore(string id, Giocatore newValues);
-    public Task<bool> DeleteGiocatore(string id);
+        public Task<ApiResponse> UpdateGiocatore(int id, Giocatore newValues);
+
+       
+        public Task<bool> DeleteGiocatore(int id);
+    }
 }
