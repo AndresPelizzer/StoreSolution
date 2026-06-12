@@ -17,8 +17,43 @@ public class SquadreController : ControllerBase
     
     public async Task<ActionResult<IEnumerable<Squadre>>> GetSquadre()
     {
-        return Ok(await _context.Squadre.ToListAsync());
+        try
+        {
+
+            var result = await _context.Squadre
+               .Include(s => s.Giocatori)
+               .ToListAsync();
+
+
+            //var result = await _context.Squadre.ToListAsync();
+
+            return Ok(result);
+        }
+        catch(Exception ex)
+        {
+            string error = ex.Message;
+            return null;
+        }
     }
+
+
+    [HttpGet("vista")]
+    public async Task<ActionResult<IEnumerable<Squadre>>> GetVistaSquadre()
+    {
+        try
+        {
+            var result = await _context.VistaSquadre.ToListAsync();
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            string error = ex.Message;
+            return null;
+        }
+    }
+
+
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Squadre>> GetSquadra(int id)

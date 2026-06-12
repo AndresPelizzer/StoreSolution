@@ -1,11 +1,11 @@
 namespace FootballBlazor.Client.Pages;
 
-using FootballBlazor.Shared.Models;
-
 using FootballBlazor.Client.Models;
+using FootballBlazor.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 
 public partial class Squadre
 {
@@ -19,35 +19,62 @@ public partial class Squadre
     public IJSRuntime JS { get; set; } = default!;
 
 
-    List<Shared.Models.Squadre> squadre = new List<Shared.Models.Squadre>();
-    List<Giocatori> giocatori = new List<Giocatori>();
+    private List<Shared.Models.Squadre> squadre = new();
+    //List<Giocatori> giocatori = new List<Giocatori>();
+
+
+    bool loading = false;
+
+
+
     protected override async Task OnInitializedAsync()
     {
-       var result= await Http.GetFromJsonAsync<List<Shared.Models.Squadre>>("api/squadre");
-        if (result != null)
-        {
-            squadre = result;
-        }
-        var resultGiocatori = await Http.GetFromJsonAsync<List<Giocatori>>("api/giocatori");
-        if (resultGiocatori != null)
-        {
-            giocatori = resultGiocatori;
-        }
+
     }
-    public int ContaGiocatori(int idSquadra)
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        return giocatori.Count(g => g.Idsquadra == idSquadra);
+        if (firstRender)
+        {
+            loading=true;
+            StateHasChanged();
+            var result = await Http.GetFromJsonAsync<List<Shared.Models.Squadre>>("api/squadre");
+            if (result != null)
+            {
+                squadre = result;
+            }
+
+
+            //var resultGiocatori = await Http.GetFromJsonAsync<List<Giocatori>>("api/giocatori");
+            //if (resultGiocatori != null)
+            //{
+            //    giocatori = resultGiocatori;
+            //}
+
+
+            loading = false;
+            StateHasChanged();
+        }
+
     }
+    
+
+
+
+    //public int ContaGiocatori(int idSquadra)
+    //{
+    //    return giocatori.Count(g => g.Idsquadra == idSquadra);
+    //}
 
     public async Task EliminaSquadra(int id)
     {
-        
+
         bool conferma = await JS.InvokeAsync<bool>(
             "confirm", "Sei sicuro di voler eliminare questa squadra?");
 
         if (!conferma)
         {
-            return; 
+            return;
         }
 
         var risposta = await Http.DeleteAsync($"api/squadre/{id}");
@@ -59,7 +86,7 @@ public partial class Squadre
     }
 
 
-    
+
     public void VaiAllaSquadra(int id)
     {
         Navigation.NavigateTo($"/squadra/{id}");
@@ -67,7 +94,7 @@ public partial class Squadre
 
     public void VaiACreaSquadra()
     {
-        
+
         Navigation.NavigateTo("/squadra/nuova");
     }
 

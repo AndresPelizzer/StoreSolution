@@ -15,6 +15,18 @@
         </div>
 
         <div class="card-body p-0">
+
+
+            @if (loading)
+            {
+                <div class="d-flex align-items-center justify-content-center py-5">
+                    <div class="spinner-border text-primary me-2" role="status"></div>
+                    <span>Caricamento squadre in corso...</span>
+                </div>
+            }
+
+
+            
             @if (squadre == null)
             {
                 <div class="d-flex align-items-center justify-content-center py-5">
@@ -52,7 +64,16 @@
                                     <td>@s.Allenatore</td>
                                     <td class="text-center">
                                         <span class="badge bg-secondary rounded-pill">
+                                            @* 
+
                                             @ContaGiocatori(s.Idsquadra)
+                                            @s.NumeroGiocatori
+                                            
+                                            *@
+
+                                            
+                                            @s.Giocatori.Count
+
                                         </span>
                                     </td>
                                     <td class="text-end pe-3">
