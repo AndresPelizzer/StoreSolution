@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="FootballAPI/FootballAPI.csproj" />
+  <Project Path="FootballBlazor.Shared/FootballBlazor.Shared.csproj" Id="b00988b0-e310-4a1f-bb63-acb70132d065" />
+  <Project Path="FootballBlazor/FootballBlazor.Client/FootballBlazor.Client.csproj" Id="412e3db7-aba0-40c2-bb61-d90675de5def" />
+  <Project Path="FootballBlazor/FootballBlazor/FootballBlazor.csproj" Id="4bce9348-71bb-4e6f-b154-89019b92d61a" />
+</Solution>

@@ -1,0 +1,1 @@
+Scaffold-DbContext "Server=MTSWEBTEST\SQLTEST;Database=Campionato;User Id=sa;Password=Mts.2010;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models  -force -NoPluralize

@@ -1,0 +1,117 @@
+﻿@page "/squadra/{id:int}"
+@rendermode InteractiveWebAssembly
+@using FootballBlazor.Client.Models
+
+<div class="container mt-4">
+
+    @if (squadra == null)
+    {
+        <div class="d-flex align-items-center justify-content-center py-5">
+            <div class="spinner-border text-primary me-2" role="status"></div>
+            <span>Caricamento squadra...</span>
+        </div>
+    }
+    else
+    {
+       
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Giocatori della Squadra</h4>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-success btn-sm" @onclick="VaiACreaGiocatore">
+                        <span class="me-1">+</span> Aggiungi Giocatore
+                    </button>
+                    <span class="badge bg-primary fs-6">Totale: @giocatori.Count</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-2">
+                        <label class="form-label">ID</label>
+                        <input type="text" class="form-control" value="@squadra.Idsquadra" disabled />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Nome Squadra</label>
+                        <input type="text" class="form-control" @bind="squadra.NomeSquadra" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Città</label>
+                        <input type="text" class="form-control" @bind="squadra.Citta" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Allenatore</label>
+                        <input type="text" class="form-control" @bind="squadra.Allenatore" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Numero Giocatori in Rosa </label>
+                        <input type="number" class="form-control" value="@giocatori.Count" disabled />
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-success" @onclick="SalvaModifica">Salva Modifiche</button>
+                    <button class="btn btn-secondary" @onclick="TornaAllaLista">Torna alla Lista</button>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Giocatori della Squadra</h4>
+                <span class="badge bg-primary fs-6">Totale: @giocatori.Count</span>
+            </div>
+
+            <div class="card-body p-0">
+                @if (giocatori.Count == 0)
+                {
+                    <div class="text-center py-4 text-muted">
+                        <h6>Nessun giocatore in questa squadra.</h6>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3">ID</th>
+                                    <th>Nome</th>
+                                    <th>Cognome</th>
+                                    <th>Ruolo</th>
+                                    <th class="text-end pe-3">Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var g in giocatori)
+                                {
+                                    <tr>
+                                        <td class="ps-3 fw-bold text-secondary">@g.Idgiocatore</td>
+                                        <td>@g.Nome</td>
+                                        <td>@g.Cognome</td>
+                                        <td>@g.Ruolo</td>
+                                        <td class="text-end pe-3">
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button class="btn btn-outline-primary"
+                                                        @onclick="() => VaiAlGiocatore(g.Idgiocatore)">
+                                                    Mostra
+                                                </button>
+                                                <button class="btn btn-outline-danger"
+                                                        @onclick="() => EliminaGiocatore(g.Idgiocatore)">
+                                                    Elimina
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
