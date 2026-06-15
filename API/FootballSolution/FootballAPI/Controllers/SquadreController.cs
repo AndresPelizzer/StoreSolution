@@ -14,7 +14,7 @@ public class SquadreController : ControllerBase
     }
 
     [HttpGet]
-    
+
     public async Task<ActionResult<IEnumerable<Squadre>>> GetSquadre()
     {
         try
@@ -24,12 +24,9 @@ public class SquadreController : ControllerBase
                .Include(s => s.Giocatori)
                .ToListAsync();
 
-
-            //var result = await _context.Squadre.ToListAsync();
-
             return Ok(result);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             string error = ex.Message;
             return null;
@@ -43,7 +40,6 @@ public class SquadreController : ControllerBase
         try
         {
             var result = await _context.VistaSquadre.ToListAsync();
-
             return Ok(result);
         }
         catch (Exception ex)
@@ -58,16 +54,28 @@ public class SquadreController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Squadre>> GetSquadra(int id)
     {
-        var squadra = await _context.Squadre.FindAsync(id);
-        if (squadra == null)
+
+        try
         {
-            return NotFound();
-    }
-        else
-        {
-            return Ok(squadra);
+            var squadra = await _context.Squadre
+                .Include(s => s.Giocatori)
+                .FirstOrDefaultAsync(s=> s.Idsquadra==id);
+
+            if (squadra == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(squadra);
+            }
         }
-}
+        catch (Exception ex)
+        {
+            string error = ex.Message;
+            return null;
+        }
+    }
 
     [HttpPost]
     public async Task<ActionResult<Squadre>> PostSquadra(Squadre squadra)
@@ -75,15 +83,15 @@ public class SquadreController : ControllerBase
         //_context.Squadre.Add(squadra);
         await _context.SaveChangesAsync();
         return Ok();
-    
+
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> PutSquadra(int id, Squadre squadra)
     {
-        if(id == squadra.Idsquadra)
+        if (id == squadra.Idsquadra)
         {
-            _context.Entry(squadra).State= EntityState.Modified;
+            _context.Entry(squadra).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -97,7 +105,7 @@ public class SquadreController : ControllerBase
     public async Task<IActionResult> DeleteSquadra(int id)
     {
         var squadra = await _context.Squadre.FindAsync(id);
-        if(squadra == null)
+        if (squadra == null)
         {
             return NotFound();
         }
@@ -106,7 +114,7 @@ public class SquadreController : ControllerBase
             _context.Squadre.Remove(squadra);
             await _context.SaveChangesAsync();
             return Ok();
-                
+
         }
     }
 }

@@ -2,6 +2,12 @@
 @rendermode InteractiveWebAssembly
 @using FootballBlazor.Client.Models
 
+
+
+
+
+
+
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
@@ -46,47 +52,56 @@
                     <table class="table table-striped table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="ps-3" style="width: 10%">ID</th>
-                                <th style="width: 25%">Nome Squadra</th>
-                                <th style="width: 20%">Città</th>
-                                <th style="width: 20%">Allenatore</th>
-                                <th class="text-center" style="width: 10%">Giocatori</th>
-                                <th class="text-end pe-3" style="width: 15%">Azioni</th>
+                                <th style="width: 40px"></th>
+                                <th>ID</th>
+                                <th>Nome Squadra</th>
+                                <th>Città</th>
+                                <th>Allenatore</th>
+                                <th class="text-center">Giocatori</th>
+                                <th class="text-end pe-3">Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var s in squadre)
                             {
+                                bool aperta = squadraAperta == s.Idsquadra;
+
                                 <tr>
+                                    <td>
+                                        <button class="btn btn-sm btn-link p-0" @onclick="() => ToggleDettaglio(s.Idsquadra)">
+                                            <i class="fa-solid @(aperta ? "fa-chevron-down" : "fa-chevron-right")"></i>
+                                        </button>
+                                    </td>
                                     <td class="ps-3 fw-bold text-secondary">@s.Idsquadra</td>
                                     <td class="fw-bold text-dark">@s.NomeSquadra</td>
                                     <td>@s.Citta</td>
                                     <td>@s.Allenatore</td>
                                     <td class="text-center">
-                                        <span class="badge bg-secondary rounded-pill">
-                                            @* 
-
-                                            @ContaGiocatori(s.Idsquadra)
-                                            @s.NumeroGiocatori
-                                            
-                                            *@
-
-                                            
-                                            @s.Giocatori.Count
-
-                                        </span>
+                                        <span class="badge bg-secondary rounded-pill">@s.Giocatori?.Count</span>
                                     </td>
                                     <td class="text-end pe-3">
-                                        <div class="btn-group btn-group-sm" role="group">
-                                            <button class="btn btn-outline-primary" @onclick="() => VaiAllaSquadra(s.Idsquadra)" title="Vedi Dettaglio">
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary"
+                                                    @onclick="() => VaiAllaSquadra(s.Idsquadra)">
                                                 Dettaglio
                                             </button>
-                                            <button class="btn btn-outline-danger" @onclick="() => EliminaSquadra(s.Idsquadra)" title="Elimina Squadra">
-                                                Elimina
+                                            <button class="btn btn-outline-danger"
+                                                    @onclick="() => EliminaSquadra(s.Idsquadra)">
+                                                <i class="fa fa-trash"></i> Elimina
                                             </button>
                                         </div>
                                     </td>
                                 </tr>
+
+                                @if (aperta)
+                                {
+                                    <tr>
+                                        <td colspan="7" class="p-0">
+                                            <GiocatoriSquadra giocatori="@(s.Giocatori?.ToList() ?? new())"
+                                                              OnGiocatoriCambiati="StateHasChanged" />
+                                        </td>
+                                    </tr>
+                                }
                             }
                         </tbody>
                     </table>

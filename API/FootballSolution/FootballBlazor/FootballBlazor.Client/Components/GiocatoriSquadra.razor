@@ -1,0 +1,141 @@
+﻿@using Microsoft.AspNetCore.Components
+@inject NavigationManager Navigation
+@inject HttpClient Http
+@using FootballBlazor.Shared.Models
+<div class="card shadow-sm">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Giocatori della Squadra</h4>
+        <span class="badge bg-primary fs-6">Totale: @giocatori.Count</span>
+    </div>
+
+    <div class="card-body p-0">
+        @if (giocatori.Count == 0)
+        {
+            <div class="text-center py-4 text-muted">
+                <h6>Nessun giocatore in questa squadra.</h6>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:40px"></th>
+                            <th class="ps-3">ID</th>
+                            <th>Nome</th>
+                            <th>Cognome</th>
+                            <th>Ruolo</th>
+                            <th class="text-end pe-3">Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var g in giocatori)
+                        {
+                            bool aperto = giocatoreAperto == g.Idgiocatore;
+
+                           
+                            <tr>
+                                <td>
+                                   
+                                    <button class="btn btn-sm btn-link p-0"
+                                            @onclick="() => ToggleDettaglio(g.Idgiocatore)">
+                                        <i class="fa-solid @(aperto ? "fa-chevron-down" : "fa-chevron-right")"></i>
+                                    </button>
+                                </td>
+                                <td class="ps-3 fw-bold text-secondary">@g.Idgiocatore</td>
+                                <td>@g.Nome</td>
+                                <td>@g.Cognome</td>
+                                <td>@g.Ruolo</td>
+                                <td class="text-end pe-3">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button class="btn btn-outline-danger"
+                                                @onclick="() => EliminaGiocatore(g.Idgiocatore)">
+                                            Elimina
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                           
+                            @if (aperto)
+                            {
+                                <tr class="table-light">
+                                    <td colspan="6" class="p-3">
+                                        <div class="row g-2">
+                                            <div class="col-md-3">
+                                                <label class="form-label fw-bold">Nome</label>
+                                                <input type="text" class="form-control"
+                                                       @bind="g.Nome" />
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label fw-bold">Cognome</label>
+                                                <input type="text" class="form-control"
+                                                       @bind="g.Cognome" />
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label fw-bold">Ruolo</label>
+                                                <input type="text" class="form-control"
+                                                       @bind="g.Ruolo" />
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label fw-bold">ID Squadra</label>
+                                                <input type="number" class="form-control"
+                                                       @bind="g.Idsquadra" disabled />
+                                            </div>
+                                            <div class="col-md-2 d-flex align-items-end">
+                                                <button class="btn btn-success w-100"
+                                                        @onclick="() => SalvaGiocatore(g)">
+                                                    Salva
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<Giocatori> giocatori { get; set; } = new List<Giocatori>();
+
+    [Parameter]
+    public EventCallback OnGiocatoriCambiati { get; set; }
+
+    
+    int? giocatoreAperto = null;
+
+    void ToggleDettaglio(int id)
+    {
+        giocatoreAperto = (giocatoreAperto == id) ? null : id;
+    }
+
+    public async Task SalvaGiocatore(Giocatori g)
+    {
+        var risposta = await Http.PutAsJsonAsync($"api/giocatori/{g.Idgiocatore}", g);
+
+        if (risposta.IsSuccessStatusCode)
+        {
+            // chiudi il dettaglio dopo il salvataggio
+            giocatoreAperto = null;
+            await OnGiocatoriCambiati.InvokeAsync();
+        }
+    }
+
+    public async Task EliminaGiocatore(int id)
+    {
+        var risposta = await Http.DeleteAsync($"api/giocatori/{id}");
+
+        if (risposta.IsSuccessStatusCode)
+        {
+            giocatori.RemoveAll(g => g.Idgiocatore == id);
+            await OnGiocatoriCambiati.InvokeAsync();
+        }
+    }
+}

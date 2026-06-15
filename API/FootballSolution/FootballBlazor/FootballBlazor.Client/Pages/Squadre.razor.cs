@@ -98,4 +98,10 @@ public partial class Squadre
         Navigation.NavigateTo("/squadra/nuova");
     }
 
+    int? squadraAperta = null;
+
+    public void ToggleDettaglio(int id)
+    {
+        squadraAperta = (squadraAperta == id) ? null : id;
+    }
 }

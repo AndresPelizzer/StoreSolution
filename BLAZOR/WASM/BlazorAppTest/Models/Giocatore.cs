@@ -17,3 +17,4 @@ namespace BlazorAppTest.Models
         public string Email { get; set; }
     }
 }
+

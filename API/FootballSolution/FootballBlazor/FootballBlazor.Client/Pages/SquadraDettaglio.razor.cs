@@ -5,31 +5,35 @@ using Microsoft.JSInterop;
 using System.Net.Http.Json;
 
 namespace FootballBlazor.Client.Pages;
-    public partial class SquadraDettaglio
-    {
-        
-        [Inject]
-        public HttpClient Http { get; set; } = default!;
 
-        [Parameter]
-        public int Id { get; set; }
+public partial class SquadraDettaglio
+{
+
+    [Inject]
+    public HttpClient Http { get; set; } = default!;
+
+    [Parameter]
+    public int Id { get; set; }
 
     [Inject]
     public IJSRuntime JS { get; set; } = default!;
 
     Shared.Models.Squadre? squadra;
 
-       List<Giocatori> giocatori = new List<Giocatori>();
+    //List<Giocatori> giocatori = new List<Giocatori>();
 
-        protected override async Task OnInitializedAsync()
-        {
+    protected override async Task OnInitializedAsync()
+    {
         squadra = await Http.GetFromJsonAsync<Shared.Models.Squadre>($"api/squadre/{Id}");
-         var tuttiGiocatori = await Http.GetFromJsonAsync<List<Giocatori>>("api/giocatori");
-        if (tuttiGiocatori != null)
-        {
-            giocatori = tuttiGiocatori.Where(g => g.Idsquadra == Id).ToList();
-        }
-
+        //var tuttiGiocatori = await Http.GetFromJsonAsync<List<Giocatori>>("api/giocatori");
+        //if (tuttiGiocatori != null)
+        //{
+        //    giocatori = tuttiGiocatori.Where(g => g.Idsquadra == Id).ToList();
+        //}
+        //if(squadra != null) { 
+        //giocatori = squadra?.Giocatori.ToList()!;
+        //}
+        
 
     }
 
@@ -50,8 +54,8 @@ namespace FootballBlazor.Client.Pages;
     {
         if (squadra == null) return;
 
-        
-        squadra.NumeroGiocatoriInRosa = giocatori.Count;
+
+        squadra.NumeroGiocatoriInRosa = squadra.Giocatori.Count;
 
         bool esito = await AggiornaSquadra(Id, squadra);
 
@@ -61,37 +65,17 @@ namespace FootballBlazor.Client.Pages;
     [Inject]
     public NavigationManager Navigation { get; set; } = default!;
 
-    
+
     public void TornaAllaLista()
     {
-        
+
         Navigation.NavigateTo("/squadre");
     }
 
-    public void VaiAlGiocatore(int idGiocatore)
-    {
-        Navigation.NavigateTo($"/giocatore/{idGiocatore}");
-    }
+
     public void VaiACreaGiocatore()
     {
         Navigation.NavigateTo($"/giocatore/nuovo/{Id}");
     }
-    public async Task<bool> EliminaGiocatore(int id)
-    {
-        try
-        {
-            var risposta = await Http.DeleteAsync($"api/giocatori/{id}");
 
-            if (risposta.IsSuccessStatusCode)
-            {
-                giocatori.RemoveAll(g => g.Idgiocatore == id);
-            }
-
-            return risposta.IsSuccessStatusCode;
-        }
-        catch
-        {
-            return false;
-        }
-    }
 }
