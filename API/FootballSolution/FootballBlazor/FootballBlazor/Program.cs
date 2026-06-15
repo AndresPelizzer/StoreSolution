@@ -1,5 +1,6 @@
 using FootballBlazor.Client.Pages;
 using FootballBlazor.Components;
+using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddHttpClient();
+
+
+builder.Services.AddRadzenComponents();
+
+
+
 
 builder.Services.AddScoped(sp => new HttpClient
 {

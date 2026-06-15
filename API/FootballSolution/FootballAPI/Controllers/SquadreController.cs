@@ -80,7 +80,7 @@ public class SquadreController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Squadre>> PostSquadra(Squadre squadra)
     {
-        //_context.Squadre.Add(squadra);
+        _context.Squadre.Add(squadra);
         await _context.SaveChangesAsync();
         return Ok();
 

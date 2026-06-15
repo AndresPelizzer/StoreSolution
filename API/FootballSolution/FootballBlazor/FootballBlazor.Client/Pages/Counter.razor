@@ -9,6 +9,17 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+
+
+
+
+<RadzenButton Icon="shopping_cart_checkout" Click="@ButtonClicked" Text="Hi"></RadzenButton>
+
+
+
+
+
+
 @code {
     private int currentCount = 0;
 
@@ -16,4 +27,15 @@
     {
         currentCount++;
     }
+
+
+    void ButtonClicked()
+    {
+        // Handle the Click event of RadzenButton
+
+        currentCount+=10;
+
+    }
+
+
 }

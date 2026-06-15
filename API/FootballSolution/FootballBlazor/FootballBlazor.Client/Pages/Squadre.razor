@@ -1,112 +1,191 @@
 ﻿@page "/squadre"
 @rendermode InteractiveWebAssembly
-@using FootballBlazor.Client.Models
 
 
 
+@if (mostratabella1)
+{
+    
+    <div class="container mt-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">Elenco Squadre</h3>
+                <div class="d-flex align-items-center gap-2">
+
+                    @* <input type="text" @bind-value="@filter" /> *@
+                   @*  <button class="btn btn-success btn-sm d-flex align-items-center" @onclick="Cerca">
+                        cerca
+                    </button> *@
 
 
 
-
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-            <h3 class="mb-0">Elenco Squadre</h3>
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-success btn-sm d-flex align-items-center" @onclick="VaiACreaSquadra">
-                    <span class="me-1">+</span> Aggiungi Squadra
-                </button>
-                <span class="badge bg-primary fs-6">Totale: @squadre?.Count</span>
-            </div>
-        </div>
-
-        <div class="card-body p-0">
-
-
-            @if (loading)
-            {
-                <div class="d-flex align-items-center justify-content-center py-5">
-                    <div class="spinner-border text-primary me-2" role="status"></div>
-                    <span>Caricamento squadre in corso...</span>
+                    <button class="btn btn-success btn-sm d-flex align-items-center" @onclick="() => VaiACreaSquadra()">
+                        <span class="me-1">+</span> Aggiungi Squadra
+                    </button>
+                    <span class="badge bg-primary fs-6">Totale: @squadre?.Count</span>
                 </div>
-            }
+            </div>
+
+            <div class="card-body p-0">
+
+
+                @if (loading)
+                {
+                    <div class="d-flex align-items-center justify-content-center py-5">
+                        <div class="spinner-border text-primary me-2" role="status"></div>
+                        <span>Caricamento squadre in corso...</span>
+                    </div>
+                }
 
 
             
-            @if (squadre == null)
-            {
-                <div class="d-flex align-items-center justify-content-center py-5">
-                    <div class="spinner-border text-primary me-2" role="status"></div>
-                    <span>Caricamento squadre in corso...</span>
-                </div>
-            }
-            else if (squadre.Count == 0)
-            {
-                <div class="text-center py-5 text-muted">
-                    <h5>Nessuna squadra presente nel database.</h5>
-                </div>
-            }
-            else
-            {
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th style="width: 40px"></th>
-                                <th>ID</th>
-                                <th>Nome Squadra</th>
-                                <th>Città</th>
-                                <th>Allenatore</th>
-                                <th class="text-center">Giocatori</th>
-                                <th class="text-end pe-3">Azioni</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var s in squadre)
-                            {
-                                bool aperta = squadraAperta == s.Idsquadra;
+                @if (squadre == null)
+                {
+                    <div class="d-flex align-items-center justify-content-center py-5">
+                        <div class="spinner-border text-primary me-2" role="status"></div>
+                        <span>Caricamento squadre in corso...</span>
+                    </div>
+                }
+                else if (squadre.Count == 0)
+                {
+                    <div class="text-center py-5 text-muted">
+                        <h5>Nessuna squadra presente nel database.</h5>
+                    </div>
+                }
+                else
+                {
 
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle mb-0">
+                            <thead class="table-light">
                                 <tr>
-                                    <td>
-                                        <button class="btn btn-sm btn-link p-0" @onclick="() => ToggleDettaglio(s.Idsquadra)">
-                                            <i class="fa-solid @(aperta ? "fa-chevron-down" : "fa-chevron-right")"></i>
-                                        </button>
-                                    </td>
-                                    <td class="ps-3 fw-bold text-secondary">@s.Idsquadra</td>
-                                    <td class="fw-bold text-dark">@s.NomeSquadra</td>
-                                    <td>@s.Citta</td>
-                                    <td>@s.Allenatore</td>
-                                    <td class="text-center">
-                                        <span class="badge bg-secondary rounded-pill">@s.Giocatori?.Count</span>
-                                    </td>
-                                    <td class="text-end pe-3">
-                                        <div class="btn-group btn-group-sm">
-                                            <button class="btn btn-outline-primary"
-                                                    @onclick="() => VaiAllaSquadra(s.Idsquadra)">
-                                                Dettaglio
-                                            </button>
-                                            <button class="btn btn-outline-danger"
-                                                    @onclick="() => EliminaSquadra(s.Idsquadra)">
-                                                <i class="fa fa-trash"></i> Elimina
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                    <th style="width: 40px"></th>
+                                    <th>ID</th>
+                                    <th>
+                                        Nome Squadra
+                                        <button class="btn btn-sm btn-link p-0" @onclick="() => Ordina()">
 
-                                @if (aperta)
+                                            @if (ordina == "ASC")
+                                            {
+                                                <i class="fa-solid fa-angle-up"></i>
+                                            }
+                                            else if (ordina == "DESC")
+                                            {
+                                                <i class="fa-solid fa-angle-down"></i>
+                                            }
+
+                                    
+                                            Ordina
+                                        </button>
+                                    </th>
+                                    <th>Città</th>
+                                    <th>Allenatore</th>
+                                    <th class="text-center">Giocatori</th>
+                                    <th class="text-end pe-3">Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var s in squadre)
                                 {
+                                    bool aperta = squadraAperta == s.Idsquadra;
+                                    int numGiocatori = s.Giocatori?.Count ?? 0;
+
                                     <tr>
-                                        <td colspan="7" class="p-0">
-                                            <GiocatoriSquadra giocatori="@(s.Giocatori?.ToList() ?? new())"
-                                                              OnGiocatoriCambiati="StateHasChanged" />
+                                        <td>
+
+                                            @if (numGiocatori > 0)
+                                            {
+                                                <button class="btn btn-sm btn-link p-0" @onclick="() => ToggleDettaglio(s.Idsquadra)">
+                                                    <i class="fa-solid @(aperta ? "fa-chevron-down" : "fa-chevron-right")"></i>
+                                                </button>
+                                            }
+
+                                        </td>
+                                        <td class="ps-3 fw-bold text-secondary">@s.Idsquadra</td>
+                                        <td class="fw-bold text-dark">@s.NomeSquadra</td>
+                                        <td>@s.Citta</td>
+                                        <td>@s.Allenatore</td>
+                                        <td class="text-center">
+                                            <span class="badge bg-secondary rounded-pill">@numGiocatori</span>
+                                        </td>
+                                        <td class="text-end pe-3">
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary"
+                                                        @onclick="() => VaiAllaSquadra(s.Idsquadra)">
+                                                    Dettaglio
+                                                </button>
+                                                <button class="btn btn-outline-danger"
+                                                        @onclick="() => EliminaSquadra(s.Idsquadra)">
+                                                    <i class="fa fa-trash"></i> Elimina
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
+
+                                    @if (aperta)
+                                    {
+                                        <tr>
+                                            <td colspan="7" class="p-0">
+                                                <GiocatoriSquadra giocatori="@(s.Giocatori?.ToList() ?? new())"
+                                                                  OnGiocatoriCambiati="StateHasChanged" />
+                                            </td>
+                                        </tr>
+                                    }
                                 }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-</div>
+
+
+
+
+
+}
+
+
+
+
+<hr />
+
+@if (mostratabella2)
+{
+    <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="true" FilterMode="FilterMode.Simple"
+                    AllowSorting="true" PageSize="5"
+                    AllowPaging="true"
+                    PagerHorizontalAlign="HorizontalAlign.Left"
+                    ShowPagingSummary="true"
+                    Data="@squadre" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single">
+
+
+        <Columns>
+
+            <RadzenDataGridColumn Property="@nameof(Shared.Models.Squadre.NomeSquadra)" Title="Nome squadra" />
+            <RadzenDataGridColumn Property="@nameof(Shared.Models.Squadre.Allenatore)" Title="Allenatore" />
+            <RadzenDataGridColumn Property="@nameof(Shared.Models.Squadre.Citta)" Title="Citta" />
+
+            <RadzenDataGridColumn TItem="FootballBlazor.Shared.Models.Squadre" Filterable="false" Sortable="false" Width="100px" TextAlign="TextAlign.Center">
+                <Template Context="squadra">
+                    <button class="btn btn-outline-danger" @onclick="() => EliminaSquadra(squadra.Idsquadra)">
+                        <i class="fa fa-trash"></i> Elimina
+                    </button>
+                </Template>
+            </RadzenDataGridColumn>
+
+
+
+        </Columns>
+
+
+
+
+    </RadzenDataGrid>
+
+}
+
+
+<RadzenDialog />
+

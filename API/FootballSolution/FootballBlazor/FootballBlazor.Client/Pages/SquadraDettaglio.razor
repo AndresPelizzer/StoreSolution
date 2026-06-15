@@ -1,6 +1,6 @@
 ﻿@page "/squadra/{id:int}"
+
 @rendermode InteractiveWebAssembly
-@using FootballBlazor.Client.Models
 
 <div class="container mt-4">
 
@@ -15,21 +15,40 @@
     {
        
         <div class="card shadow-sm mb-4">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Giocatori della Squadra</h4>
-                <div class="d-flex align-items-center gap-2">
-                    <button class="btn btn-success btn-sm" @onclick="VaiACreaGiocatore">
-                        <span class="me-1">+</span> Aggiungi Giocatore
-                    </button>
-                    <span class="badge bg-primary fs-6">Totale: @squadra.Giocatori.Count</span>
+
+            @if (!isNew)
+            {
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Giocatori della Squadra</h4>
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-success btn-sm" @onclick="VaiACreaGiocatore">
+                            <span class="me-1">+</span> Aggiungi Giocatore
+                        </button>
+                        <span class="badge bg-primary fs-6">Totale: @squadra.Giocatori.Count</span>
+                    </div>
                 </div>
-            </div>
+            }
+
+            
+
+
+
+
+
+
             <div class="card-body">
                 <div class="row mb-3">
-                    <div class="col-md-2">
-                        <label class="form-label">ID</label>
-                        <input type="text" class="form-control" value="@squadra.Idsquadra" disabled />
-                    </div>
+
+                    @if (!isNew)
+                    {
+                        <div class="col-md-2">
+                            <label class="form-label">ID</label>
+                            <input type="text" class="form-control" value="@squadra.Idsquadra" disabled />
+                        </div>
+                    }
+
+
+
                     <div class="col-md-4">
                         <label class="form-label">Nome Squadra</label>
                         <input type="text" class="form-control" @bind="squadra.NomeSquadra" />
@@ -65,3 +84,5 @@
        
     }
 </div>
+<RadzenDialog />
+

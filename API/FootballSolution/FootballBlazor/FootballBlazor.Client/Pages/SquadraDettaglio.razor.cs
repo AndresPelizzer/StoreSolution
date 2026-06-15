@@ -2,6 +2,7 @@ using FootballBlazor.Shared.Models;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Radzen;
 using System.Net.Http.Json;
 
 namespace FootballBlazor.Client.Pages;
@@ -16,24 +17,26 @@ public partial class SquadraDettaglio
     public int Id { get; set; }
 
     [Inject]
-    public IJSRuntime JS { get; set; } = default!;
+    public DialogService MyDialogService { get; set; } = default!;
+
 
     Shared.Models.Squadre? squadra;
 
     //List<Giocatori> giocatori = new List<Giocatori>();
 
+    bool isNew = false;
+
     protected override async Task OnInitializedAsync()
     {
-        squadra = await Http.GetFromJsonAsync<Shared.Models.Squadre>($"api/squadre/{Id}");
-        //var tuttiGiocatori = await Http.GetFromJsonAsync<List<Giocatori>>("api/giocatori");
-        //if (tuttiGiocatori != null)
-        //{
-        //    giocatori = tuttiGiocatori.Where(g => g.Idsquadra == Id).ToList();
-        //}
-        //if(squadra != null) { 
-        //giocatori = squadra?.Giocatori.ToList()!;
-        //}
-        
+        if (Id == 0)
+        {
+            isNew = true;
+            squadra = new Shared.Models.Squadre();
+        }
+        else
+        {
+            squadra = await Http.GetFromJsonAsync<Shared.Models.Squadre>($"api/squadre/{Id}");
+        }
 
     }
 
@@ -54,13 +57,31 @@ public partial class SquadraDettaglio
     {
         if (squadra == null) return;
 
+        if (Id == 0)
+        {
+            
+            var risposta = await Http.PostAsJsonAsync("api/squadre", squadra);
+            if (risposta.IsSuccessStatusCode)
+            {
+                await MyDialogService.Alert("Squadra creata con successo!");
+                Navigation.NavigateTo("/squadre");
+            }
+            else
+            {
+                await MyDialogService.Alert("Errore durante la creazione...");
+            }
+        }
+        else
+        {
+            
+            squadra.NumeroGiocatoriInRosa = squadra.Giocatori.Count;
+            bool esito = await AggiornaSquadra(Id, squadra);
 
-        squadra.NumeroGiocatoriInRosa = squadra.Giocatori.Count;
-
-        bool esito = await AggiornaSquadra(Id, squadra);
-
-        await JS.InvokeVoidAsync("alert",
-            esito ? "Squadre aggiornata con successo!" : "Errore durante l'aggiornamento.");
+            if (esito)
+                await MyDialogService.Alert("Squadra aggiornata con successo!");
+            else
+                await MyDialogService.Alert("Errore durante l'aggiornamento...");
+        }
     }
     [Inject]
     public NavigationManager Navigation { get; set; } = default!;

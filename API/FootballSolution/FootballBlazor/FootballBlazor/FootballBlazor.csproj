@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FootballBlazor.Client\FootballBlazor.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.9" />
+    <PackageReference Include="Radzen.Blazor" Version="10.4.9" />
   </ItemGroup>
 
 </Project>

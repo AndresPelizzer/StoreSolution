@@ -51,6 +51,7 @@
                                     <div class="btn-group btn-group-sm" role="group">
                                         <button class="btn btn-outline-danger"
                                                 @onclick="() => EliminaGiocatore(g.Idgiocatore)">
+                                                 
                                             Elimina
                                         </button>
                                     </div>
@@ -137,5 +138,6 @@
             giocatori.RemoveAll(g => g.Idgiocatore == id);
             await OnGiocatoriCambiati.InvokeAsync();
         }
+        Navigation.NavigateTo("/squadre");
     }
 }
