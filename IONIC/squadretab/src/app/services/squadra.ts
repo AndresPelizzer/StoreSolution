@@ -8,7 +8,10 @@ import { Observable } from 'rxjs';
 export class SquadraService {
   nuovasquadra: Squadra[] = [];
 
-  private apiUrl = 'http://pc-stage:82/api/squadre';
+  // private apiUrl = 'http://pc-stage:82/api/squadre';
+  private apiUrl = 'http://mtswebtest:86/api/squadre';
+
+
   constructor(private http: HttpClient) {}
 
   getDati(): Observable<any[]> {
@@ -22,7 +25,7 @@ export class SquadraService {
   }
   updateDati(idsquadra: number, nuovaSquadra: Squadra) {
     return this.http.put(
-      `http://pc-stage:82/api/squadre/${idsquadra}`,
+      `${this.apiUrl}/${idsquadra}`,
       nuovaSquadra,
     );
   }

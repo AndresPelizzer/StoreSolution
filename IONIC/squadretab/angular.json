@@ -39,7 +39,6 @@
           },
           "configurations": {
             "production": {
-              "beasties": false,
               "budgets": [
                 {
                   "type": "initial",
