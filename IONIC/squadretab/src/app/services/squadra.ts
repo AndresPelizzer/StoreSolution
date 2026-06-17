@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Squadra } from '../models/squadra.model';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
@@ -11,8 +11,14 @@ export class SquadraService {
   // private apiUrl = 'http://pc-stage:82/api/squadre';
   private apiUrl = 'http://mtswebtest:86/api/squadre';
 
-
   constructor(private http: HttpClient) {}
+
+  private squadraAggiornataSource = new Subject<void>();
+  squadraAggiornata$ = this.squadraAggiornataSource.asObservable();
+
+  notificaAggiornamento() {
+    this.squadraAggiornataSource.next();
+  }
 
   getDati(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
@@ -24,9 +30,6 @@ export class SquadraService {
     return this.http.delete(`${this.apiUrl}/${idsquadra}`);
   }
   updateDati(idsquadra: number, nuovaSquadra: Squadra) {
-    return this.http.put(
-      `${this.apiUrl}/${idsquadra}`,
-      nuovaSquadra,
-    );
+    return this.http.put(`${this.apiUrl}/${idsquadra}`, nuovaSquadra);
   }
 }

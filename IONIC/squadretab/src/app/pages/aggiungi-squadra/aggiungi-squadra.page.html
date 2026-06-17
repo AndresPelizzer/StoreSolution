@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab1"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-content>
+      <ion-input
+        [(ngModel)]="nuovaSquadra.nomeSquadra"
+        label="Nome squadra"
+        fill="outline"
+        labelPlacement="floating"
+      ></ion-input>
+      <br />
+      <ion-input
+        [(ngModel)]="nuovaSquadra.citta"
+        label="Città"
+        fill="outline"
+        labelPlacement="floating"
+      ></ion-input>
+      <br />
+      <ion-input
+        [(ngModel)]="nuovaSquadra.allenatore"
+        label="Allenatore"
+        fill="outline"
+        labelPlacement="floating"
+      ></ion-input>
+      <br />
+      <ion-input
+        [(ngModel)]="nuovaSquadra.numeroGiocatoriInRosa"
+        label="Numero giocatori"
+        fill="outline"
+        type="number"
+        labelPlacement="floating"
+      ></ion-input>
+      <br />
+      <ion-button expand="block" (click)="post()">
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        Aggiungi
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

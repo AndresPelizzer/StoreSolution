@@ -5,6 +5,8 @@ import { Squadra } from '../models/squadra.model';
 import { FormsModule } from '@angular/forms';
 import { register } from 'swiper/element/bundle';
 import { addIcons } from 'ionicons';
+import { RouterModule } from '@angular/router';
+
 import {
   pencil,
   trash,
@@ -20,10 +22,10 @@ register();
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   standalone: true,
-  imports: [IonicModule, FormsModule],
+  imports: [IonicModule, FormsModule, RouterModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class Tab1Page implements OnInit {
+export class Tab1Page {
   getDati() {
     this.squadraService.getDati().subscribe({
       next: (risposta: Squadra[]) => {
@@ -32,17 +34,10 @@ export class Tab1Page implements OnInit {
       error: (errore) => console.error(errore),
     });
   }
+  aggiungisquadra = false;
 
   dati: Squadra[] = [];
   squadraInModifica: number | null = null;
-  nuovaSquadra: Squadra = {
-    idsquadra: 0,
-    nomeSquadra: '',
-    citta: '',
-    allenatore: '',
-    numeroGiocatoriInRosa: 0,
-    giocatori: [],
-  };
 
   constructor(private squadraService: SquadraService) {
     addIcons({
@@ -55,38 +50,13 @@ export class Tab1Page implements OnInit {
       locationOutline,
       personOutline,
     });
-  }
-
-  ngOnInit(): void {
-    this.getDati();
-  }
-
-  post() {
-    if (
-      !this.nuovaSquadra.nomeSquadra.trim() ||
-      !this.nuovaSquadra.citta.trim() ||
-      !this.nuovaSquadra.allenatore.trim()
-    ) {
-      alert(
-        'Attenzione: devi compilare tutti i campi prima di aggiungere una squadra!',
-      );
-      return;
-    }
-    this.squadraService.postDati(this.nuovaSquadra).subscribe({
-      next: () => {
-        this.getDati();
-
-        this.nuovaSquadra = {
-          idsquadra: 0,
-          nomeSquadra: '',
-          citta: '',
-          allenatore: '',
-          numeroGiocatoriInRosa: 0,
-          giocatori: [],
-        };
-      },
-      error: (errore) => console.log('Errore:', errore),
+    this.squadraService.squadraAggiornata$.subscribe(() => {
+      this.getDati();
     });
+  }
+
+  ionViewWillEnter() {
+    this.getDati();
   }
 
   delete(idsquadra: number) {

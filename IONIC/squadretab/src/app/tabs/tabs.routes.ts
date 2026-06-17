@@ -11,6 +11,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('../tab1/tab1.page').then((m) => m.Tab1Page),
       },
+      // Inserisci qui la rotta come figlia di tabs
+      {
+        path: 'aggiungi-squadra',
+        loadComponent: () =>
+          import('../pages/aggiungi-squadra/aggiungi-squadra.page').then(
+            (m) => m.AggiungiSquadraPage,
+          ),
+      },
       {
         path: 'tab2',
         loadComponent: () =>

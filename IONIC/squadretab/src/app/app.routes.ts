@@ -5,4 +5,8 @@ export const routes: Routes = [
     path: '',
     loadChildren: () => import('./tabs/tabs.routes').then((m) => m.routes),
   },
+  {
+    path: 'aggiungi-squadra',
+    loadComponent: () => import('./pages/aggiungi-squadra/aggiungi-squadra.page').then( m => m.AggiungiSquadraPage)
+  },
 ];
