@@ -11,153 +11,87 @@
     <swiper-slide style="width: 100%">
       <ion-card
         button="true"
-        (click)="modifica(squadra.idsquadra)"
-        style="margin: 10px 0"
+        [routerLink]="['/tabs/modifica-squadra', squadra.idsquadra]"
+        style="margin: 4px 0"
       >
-        @if (squadraInModifica === squadra.idsquadra) {
-        <ion-card-header>
-          <ion-card-subtitle>ID: {{ squadra.idsquadra }}</ion-card-subtitle>
-          <ion-card-title style="margin-top: 8px">
-            <ion-input
-              [(ngModel)]="squadra.nomeSquadra"
-              fill="outline"
-              label="Nome Squadra"
-              label-placement="stacked"
-            >
-            </ion-input>
-          </ion-card-title>
-        </ion-card-header>
-
-        <ion-card-content
-          style="display: flex; flex-direction: column; gap: 16px"
-        >
-          <div style="display: flex; align-items: center; gap: 12px">
-            <ion-icon
-              name="location-outline"
-              style="font-size: 1.4rem; min-width: 24px"
-            ></ion-icon>
-            <ion-input
-              [(ngModel)]="squadra.citta"
-              fill="outline"
-              label="Città"
-              label-placement="stacked"
-              style="width: 100%"
-            ></ion-input>
-          </div>
-
-          <div style="display: flex; align-items: center; gap: 12px">
-            <ion-icon
-              name="person-outline"
-              style="font-size: 1.4rem; min-width: 24px"
-            ></ion-icon>
-            <ion-input
-              [(ngModel)]="squadra.allenatore"
-              fill="outline"
-              label="Allenatore"
-              label-placement="stacked"
-              style="width: 100%"
-            ></ion-input>
-          </div>
-
-          <div style="display: flex; align-items: center; gap: 12px">
-            <ion-icon
-              name="people-outline"
-              style="font-size: 1.4rem; min-width: 24px"
-            ></ion-icon>
-            <ion-input
-              [(ngModel)]="squadra.numeroGiocatoriInRosa"
-              type="number"
-              fill="outline"
-              label="Giocatori"
-              label-placement="stacked"
-              style="width: 100%"
-            ></ion-input>
-          </div>
-
-          <div style="display: flex; gap: 10px; margin-top: 8px">
-            <ion-button
-              expand="block"
-              style="flex: 1"
-              (click)=" update(squadra.idsquadra, squadra)"
-            >
-              <ion-icon name="checkmark" slot="start"></ion-icon> Salva
-            </ion-button>
-          </div>
-        </ion-card-content>
-
-        } @else {
-        <ion-card-header>
-          <ion-card-subtitle>ID: {{ squadra.idsquadra }}</ion-card-subtitle>
+        <ion-card-header style="padding-top: 8px; padding-bottom: 4px">
+          <ion-card-subtitle style="font-size: 0.7rem"
+            >ID: {{ squadra.idsquadra }}</ion-card-subtitle
+          >
           <ion-card-title
-            style="min-height: 38px; display: flex; align-items: center"
+            style="font-size: 1rem; display: flex; align-items: center"
           >
             {{ squadra.nomeSquadra }}
           </ion-card-title>
         </ion-card-header>
 
         <ion-card-content
-          style="display: flex; flex-direction: column; gap: 16px"
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-bottom: 10px;
+          "
         >
           <div
             style="
               display: flex;
               align-items: center;
-              gap: 12px;
-              min-height: 38px;
+              gap: 8px;
+              min-height: 24px;
             "
           >
             <ion-icon
               name="location-outline"
               style="
-                font-size: 1.4rem;
-                min-width: 24px;
+                font-size: 1rem;
+                min-width: 20px;
                 color: var(--ion-color-medium);
               "
             ></ion-icon>
-            <span style="font-size: 1rem">{{ squadra.citta }}</span>
+            <span style="font-size: 0.85rem">{{ squadra.citta }}</span>
           </div>
 
           <div
             style="
               display: flex;
               align-items: center;
-              gap: 12px;
-              min-height: 38px;
+              gap: 8px;
+              min-height: 24px;
             "
           >
             <ion-icon
               name="person-outline"
               style="
-                font-size: 1.4rem;
-                min-width: 24px;
+                font-size: 1rem;
+                min-width: 20px;
                 color: var(--ion-color-medium);
               "
             ></ion-icon>
-            <span style="font-size: 1rem">{{ squadra.allenatore }}</span>
+            <span style="font-size: 0.85rem">{{ squadra.allenatore }}</span>
           </div>
 
           <div
             style="
               display: flex;
               align-items: center;
-              gap: 12px;
-              min-height: 38px;
+              gap: 8px;
+              min-height: 24px;
             "
           >
             <ion-icon
               name="people-outline"
               style="
-                font-size: 1.4rem;
-                min-width: 24px;
+                font-size: 1rem;
+                min-width: 20px;
                 color: var(--ion-color-medium);
               "
             ></ion-icon>
-            <span style="font-size: 1rem"
+            <span style="font-size: 0.85rem"
               >{{ squadra.numeroGiocatoriInRosa }} Giocatori</span
             >
           </div>
         </ion-card-content>
-        }
       </ion-card>
     </swiper-slide>
 
@@ -177,7 +111,7 @@
 </ion-content>
 
 <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-  <ion-fab-button routerLink="/aggiungi-squadra">
+  <ion-fab-button routerLink="/tabs/aggiungi-squadra">
     <ion-icon name="add-outline"></ion-icon>
   </ion-fab-button>
 </ion-fab>

@@ -32,4 +32,7 @@ export class SquadraService {
   updateDati(idsquadra: number, nuovaSquadra: Squadra) {
     return this.http.put(`${this.apiUrl}/${idsquadra}`, nuovaSquadra);
   }
+  getById(idsquadra: number): Observable<Squadra> {
+    return this.http.get<Squadra>(`${this.apiUrl}/${idsquadra}`);
+  }
 }

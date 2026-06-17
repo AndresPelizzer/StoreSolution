@@ -9,4 +9,8 @@ export const routes: Routes = [
     path: 'aggiungi-squadra',
     loadComponent: () => import('./pages/aggiungi-squadra/aggiungi-squadra.page').then( m => m.AggiungiSquadraPage)
   },
+  {
+    path: 'modifica-squadra',
+    loadComponent: () => import('./pages/modifica-squadra/modifica-squadra.page').then( m => m.ModificaSquadraPage)
+  },
 ];

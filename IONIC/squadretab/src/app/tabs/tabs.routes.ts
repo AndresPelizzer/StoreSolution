@@ -20,6 +20,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'modifica-squadra/:id',
+        loadComponent: () =>
+          import('../pages/modifica-squadra/modifica-squadra.page').then(
+            (m) => m.ModificaSquadraPage,
+          ),
+      },
+      {
         path: 'tab2',
         loadComponent: () =>
           import('../tab2/tab2.page').then((m) => m.Tab2Page),
