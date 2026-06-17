@@ -62,7 +62,7 @@ public partial class Squadre
         {
             loading = true;
             StateHasChanged();
-            var result = await Http.GetFromJsonAsync<List<Shared.Models.Squadre>>("api/squadre");
+            var result = await Http.GetFromJsonAsync<List<Shared.Models.Squadre>>("/api/squadre");
             if (result != null)
             {
                 squadre = result;

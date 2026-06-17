@@ -12,12 +12,15 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddRadzenComponents();
 
+var cfg = builder.Configuration;
+var cfgSession = cfg.GetSection("Api");
+string API_BASEURL = cfgSession.GetValue<string>("BaseUrl")!;
 
 
 
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://localhost:7019/")
+    BaseAddress = new Uri(API_BASEURL)
 });
 var app = builder.Build();
 
