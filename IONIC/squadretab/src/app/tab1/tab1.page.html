@@ -77,17 +77,8 @@
           <div style="display: flex; gap: 10px; margin-top: 8px">
             <ion-button
               expand="block"
-              fill="outline"
-              color="medium"
               style="flex: 1"
-              (click)="$event.stopPropagation(); squadraInModifica = null"
-            >
-              Annulla
-            </ion-button>
-            <ion-button
-              expand="block"
-              style="flex: 1"
-              (click)="$event.stopPropagation(); update(squadra.idsquadra, squadra)"
+              (click)=" update(squadra.idsquadra, squadra)"
             >
               <ion-icon name="checkmark" slot="start"></ion-icon> Salva
             </ion-button>
