@@ -1,7 +1,14 @@
-﻿
+﻿@page "/"
+@using FootballBlazor.Client.Models
 @inject HttpClient Http
 @rendermode InteractiveWebAssembly
+
+@* @inject FootballBlazor.Client.Services.IStorageService localStorage *@
+
+@inject Storage Storage
+
 @inject NavigationManager Navigation
+
 
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -44,25 +51,50 @@
     <p>@errore</p>
 }
 @code {
+
+    // [CascadingParameter]
+    // private FootballBlazor.Client.Models.Storage? Storage { get; set; }
+
+
     private Shared.Models.Credenziali credenziali = new();
     string errore = string.Empty;
+
     private async Task Login()
-
     {
-        var chiamata = await Http.PostAsJsonAsync("/api/utenti", credenziali);
-        var token = await chiamata.Content.ReadAsStringAsync();
-        
-        if (token == string.Empty)
-        {
-            errore = "credenziali errate!";
 
+        var chiamata = await Http.PostAsJsonAsync("/api/utenti", credenziali);
+        if (chiamata.IsSuccessStatusCode)
+        {
+            var token = await chiamata.Content.ReadAsStringAsync();
+
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+
+                SessioneUtente.Token = token;
+                // localStorage.SetValue<string>("token", token);
+
+                Storage?.Token = token;
+
+                Http.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+
+                Navigation.NavigateTo("/squadre");
+            }
+            else
+            {
+                errore = "Il token non é valido.";
+            }
         }
         else
         {
-            SessioneUtente.Token = token;
-            Navigation.NavigateTo("/squadre");
+            errore = "Credenziali errate!";
         }
 
+
+
+
     }
+
 }
 

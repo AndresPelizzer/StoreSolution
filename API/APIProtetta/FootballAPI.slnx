@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../FootballSolution/FootballBlazor.Shared/FootballBlazor.Shared.csproj" />
+  <Project Path="FootballAPI.csproj" />
+</Solution>

@@ -1,7 +1,19 @@
-﻿<RadzenDialog />
-<Router AppAssembly="@typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(FootballBlazor.Client._Imports).Assembly }" NotFoundPage="@typeof(Pages.NotFound)">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-</Router>
+﻿@using FootballBlazor.Client.Models
+<RadzenDialog />
+
+<CascadingValue Value="_storage">
+
+
+    <Router AppAssembly="@typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(FootballBlazor.Client._Imports).Assembly }" NotFoundPage="@typeof(Pages.NotFound)">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+    </Router>
+
+</CascadingValue>
+
+
+@code {
+    private Storage _storage = new();
+}

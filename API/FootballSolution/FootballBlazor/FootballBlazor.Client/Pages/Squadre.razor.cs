@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Radzen;
 using System.Net.Http.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FootballBlazor.Client.Pages;
 public partial class Squadre
@@ -18,8 +19,16 @@ public partial class Squadre
     public DialogService MyDialogService { get; set; } = default!;
 
 
+    //[Inject]
+    //Services.IStorageService localStorage { get; set; } = null!;
+
+
+
     private List<Shared.Models.Squadre> squadre = new();
     //List<Giocatori> giocatori = new List<Giocatori>();
+
+    //[CascadingParameter]
+    //private FootballBlazor.Client.Models.Storage? Storage { get; set; }
 
 
     bool loading = false;
@@ -54,6 +63,12 @@ public partial class Squadre
 
             //loading = false;
             //StateHasChanged();
+
+
+
+
+
+
         }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -62,6 +77,16 @@ public partial class Squadre
         {
             loading = true;
             StateHasChanged();
+
+
+
+         //string token =   localStorage.GetValue<string>("token");
+
+           string token = Storage.Token;
+
+            Http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
             var result = await Http.GetFromJsonAsync<List<Shared.Models.Squadre>>("/api/squadre");
             if (result != null)
             {
@@ -99,6 +124,16 @@ public partial class Squadre
             new ConfirmOptions() { OkButtonText = "Sì", CancelButtonText = "No" });
 
         if (conferma != true) return;
+
+
+        //string token = localStorage.GetValue<string>("token");
+
+        string token = Storage.Token;
+
+
+        Http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
 
         var risposta = await Http.DeleteAsync($"api/squadre/{id}");
 

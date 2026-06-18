@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using FootballBlazor.Client.Models
+@inherits LayoutComponentBase
+
 
 <div class="page">
     <div class="sidebar">
@@ -11,9 +13,14 @@
         </div>
 
         <article class="content px-4">
+            <CascadingValue Value="storage">
+
             @Body
+            </CascadingValue>
+
             <RadzenDialog />
         </article>
+        a
     </main>
 </div>
 
@@ -22,3 +29,8 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+@code{
+
+
+    private Storage storage { get; set; } = new();
+}

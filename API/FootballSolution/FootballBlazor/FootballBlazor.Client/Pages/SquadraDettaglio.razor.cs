@@ -13,6 +13,14 @@ public partial class SquadraDettaglio
     [Inject]
     public HttpClient Http { get; set; } = default!;
 
+    //[Inject]
+    //Services.IStorageService localStorage { get; set; } = null!;
+
+
+    //[CascadingParameter]
+    //public FootballBlazor.Client.Models.Storage? Storage { get; set; }
+
+
     [Parameter]
     public int Id { get; set; }
 
@@ -35,6 +43,11 @@ public partial class SquadraDettaglio
         }
         else
         {
+
+            string  token = Storage?.Token;
+
+            Http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             squadra = await Http.GetFromJsonAsync<Shared.Models.Squadre>($"api/squadre/{Id}");
         }
 

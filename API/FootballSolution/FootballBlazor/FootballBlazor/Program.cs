@@ -1,4 +1,6 @@
+using FootballBlazor.Client.Models;
 using FootballBlazor.Client.Pages;
+using FootballBlazor.Client.Services;
 using FootballBlazor.Components;
 using Radzen;
 
@@ -22,6 +24,18 @@ builder.Services.AddScoped(sp => new HttpClient
 {
     BaseAddress = new Uri(API_BASEURL)
 });
+
+
+//builder.Services.AddSingleton<IStorageService, StorageService>();
+//builder.Services.AddCascadingValue(t => new Storage { Token = string.Empty });
+//builder.Services.AddSingleton<Storage>();
+
+//builder.Services.AddCascadingValue(sp =>
+//    sp.GetRequiredService<Storage>());
+
+builder.Services.AddSingleton<Storage>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
