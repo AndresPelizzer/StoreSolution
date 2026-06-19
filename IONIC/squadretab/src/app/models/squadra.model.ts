@@ -13,3 +13,16 @@ export interface Squadra {
   numeroGiocatoriInRosa: number;
   giocatori: Giocatore[];
 }
+export interface Utenti {
+  id: number;
+  nome: string;
+  username: string;
+  email: string;
+  ruolo: string;
+  password: string;
+  note?: string;
+}
+export interface Credenziali {
+  username: string;
+  password: string;
+}

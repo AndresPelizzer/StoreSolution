@@ -9,7 +9,8 @@ export class SquadraService {
   nuovasquadra: Squadra[] = [];
 
   // private apiUrl = 'http://pc-stage:82/api/squadre';
-  private apiUrl = 'http://mtswebtest:86/api/squadre';
+  // private apiUrl = 'http://mtswebtest:86/api/squadre';
+  private apiUrl = 'https://localhost:7019/api/squadre';
 
   constructor(private http: HttpClient) {}
 
@@ -21,7 +22,9 @@ export class SquadraService {
   }
 
   getDati(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+    const token = localStorage.getItem('token');
+    const headers = { Authorization: `Bearer ${token}` };
+    return this.http.get<any[]>(this.apiUrl, { headers });
   }
   postDati(nuovasquadra: Squadra) {
     return this.http.post<Squadra>(this.apiUrl, nuovasquadra);

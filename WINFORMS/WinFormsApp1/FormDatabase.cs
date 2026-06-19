@@ -2,6 +2,8 @@
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Runtime.Intrinsics.Arm;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace WinFormsApp1
 {
@@ -105,10 +107,6 @@ namespace WinFormsApp1
 
                     string result = dr["CategoryName"].ToString() + " - " + dr["Description"].ToString();
 
-
-
-
-
                     listBox1.Items.Add(result);
                 }
 
@@ -117,10 +115,11 @@ namespace WinFormsApp1
             connection.Close();
         }
 
-        private void button6_Click(object sender, EventArgs e) { 
-        
-           
-        
+        private void button6_Click(object sender, EventArgs e)
+        {
+
+
+
             CaricaCategorie();
         }
 
@@ -174,7 +173,7 @@ namespace WinFormsApp1
                 }
                 else
                 {
-                    string sql =  @"UPDATE Categories  SET CategoryName = @nome, Description = @descrizione WHERE CategoryID = @id";
+                    string sql = @"UPDATE Categories  SET CategoryName = @nome, Description = @descrizione WHERE CategoryID = @id";
 
                     command = new SqlCommand(sql, connection);
 
@@ -203,7 +202,7 @@ namespace WinFormsApp1
             }
 
             DialogResult risposta =
-                MessageBox.Show( "Confermi l'eliminazione?", "Elimina", MessageBoxButtons.YesNo,MessageBoxIcon.Question);
+                MessageBox.Show("Confermi l'eliminazione?", "Elimina", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (risposta != DialogResult.Yes)
                 return;
@@ -212,7 +211,7 @@ namespace WinFormsApp1
             {
                 connection.Open();
 
-                string sql ="DELETE FROM Categories WHERE CategoryID = @id";
+                string sql = "DELETE FROM Categories WHERE CategoryID = @id";
 
                 SqlCommand command =
                     new SqlCommand(sql, connection);
@@ -245,5 +244,44 @@ namespace WinFormsApp1
 
         }
 
+        private void buttonEncrypt_Click(object sender, EventArgs e)
+        {
+            string myValue = textBox1.Text;
+
+            string encryptedValue = EncryptSHA256(myValue);
+
+            textEncrypted.Text = encryptedValue;
+
+            MessageBox.Show($"Lunghezza della stringa criptata: {encryptedValue.Length} caratteri");
+
+        }
+
+
+
+        //string testo = "Il tuo testo qui";
+
+        //Console.WriteLine($"Testo originale: {testo}");
+        //Console.WriteLine($"Hash SHA256: {hashString}");
+
+
+        private string EncryptSHA256(string input)
+        {
+            try
+            {
+                // Converte la stringa in un array di byte usando la codifica UTF-8
+                byte[] dati = Encoding.UTF8.GetBytes(input);
+
+                // Calcola l'hash SHA256 in un'unica riga
+                byte[] hashBytes = SHA256.HashData(dati);
+
+                // Converte l'array di byte in una stringa esadecimale
+                string hashString = Convert.ToHexString(hashBytes);
+                return hashString;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
     }
 }

@@ -1,7 +1,4 @@
-using FootballBlazor.Shared.Models;
-
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using Radzen;
 using System.Net.Http.Json;
 
@@ -12,13 +9,6 @@ public partial class SquadraDettaglio
 
     [Inject]
     public HttpClient Http { get; set; } = default!;
-
-    //[Inject]
-    //Services.IStorageService localStorage { get; set; } = null!;
-
-
-    //[CascadingParameter]
-    //public FootballBlazor.Client.Models.Storage? Storage { get; set; }
 
 
     [Parameter]
@@ -36,22 +26,58 @@ public partial class SquadraDettaglio
 
     protected override async Task OnInitializedAsync()
     {
-        if (Id == 0)
-        {
-            isNew = true;
-            squadra = new Shared.Models.Squadre();
-        }
-        else
-        {
 
-            string  token = Storage?.Token;
-
-            Http.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            squadra = await Http.GetFromJsonAsync<Shared.Models.Squadre>($"api/squadre/{Id}");
-        }
 
     }
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+       
+
+
+
+        if (firstRender)
+        {
+
+            try
+            {
+                if (Id == 0)
+                {
+                    isNew = true;
+                    squadra = new Shared.Models.Squadre();
+                }
+                else
+                {
+
+                    string token = Storage?.Token;
+
+                    Http.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                    squadra = await Http.GetFromJsonAsync<Shared.Models.Squadre>($"api/squadre/{Id}");
+
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                //...
+
+            }
+            finally
+            {
+                squadra = new();
+                StateHasChanged();
+            }
+
+            
+        }
+    }
+
+
+
 
     public async Task<bool> AggiornaSquadra(int id, Shared.Models.Squadre nuovivalori)
     {
@@ -72,7 +98,7 @@ public partial class SquadraDettaglio
 
         if (Id == 0)
         {
-            
+
             var risposta = await Http.PostAsJsonAsync("api/squadre", squadra);
             if (risposta.IsSuccessStatusCode)
             {
@@ -86,7 +112,7 @@ public partial class SquadraDettaglio
         }
         else
         {
-            
+
             squadra.NumeroGiocatoriInRosa = squadra.Giocatori.Count;
             bool esito = await AggiornaSquadra(Id, squadra);
 

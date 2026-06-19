@@ -1,0 +1,67 @@
+﻿@page "/"
+@rendermode InteractiveWebAssembly
+
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-top-4 py-4">
+                <div class="card-header bg-dark text-center text-white">
+                    <h2 class="mb-0">Registrazione</h2>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label">Nome</label>
+                        <input type="text" class="form-control" @bind-value="@user.Nome" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" @bind-value="@user.Username" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" @bind-value="@user.Email" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ruolo</label>
+
+                        <select class="form-select" @bind="user.Ruolo">
+                            <option value="">Seleziona ruolo</option>
+                            <option value="normale">Normale</option>
+                            <option value="amministratore">Amministratore</option>
+                        </select>
+                    </div>
+                   
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" @bind-value="@user.Password" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Conferma Password</label>
+                        <input type="password" class="form-control" @bind-value="@ConfirmPassword" />
+                    </div>
+                    <button type="button" class="btn btn-dark w-100 mt-2 py-2" @onclick="iscrizione">Iscriviti</button>
+                </div>
+
+                @if (!string.IsNullOrEmpty(message))
+                {
+                if (successo == true)
+                {
+
+                    <div class="alert alert-success mt-3 shadow-sm"> @message </div>
+                    
+                }
+                else
+                {
+                    <div class="alert alert-danger mt-3 shadow-sm"> @message </div>
+                }
+            }
+               
+                
+            </div>
+        </div>
+    </div>
+
+
+</div>

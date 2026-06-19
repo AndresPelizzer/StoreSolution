@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -23,11 +24,28 @@ public class SquadreController : ControllerBase
         try
         {
 
+            var identity = HttpContext.User.Identity;
+            var claims = HttpContext.User.Claims;
+
+            var roles = claims.Where(c => c.Type == ClaimTypes.Role);
+            string role=string.Empty;
+            if (roles.Any()){
+                role = roles.First().Value;
+            }
+
             var result = await _context.Squadre
                .Include(s => s.Giocatori)
                .ToListAsync();
 
+
+
+            if(role != "amminstratore")
+            {
+                result = result.Where(squadra => squadra.Giocatori.Count>0).ToList();
+            }
+
             return Ok(result);
+
         }
         catch (Exception ex)
         {
@@ -62,7 +80,7 @@ public class SquadreController : ControllerBase
         {
             var squadra = await _context.Squadre
                 .Include(s => s.Giocatori)
-                .FirstOrDefaultAsync(s=> s.Idsquadra==id);
+                .FirstOrDefaultAsync(s => s.Idsquadra == id);
 
             if (squadra == null)
             {

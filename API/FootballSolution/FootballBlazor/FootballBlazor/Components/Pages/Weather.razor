@@ -1,56 +1,115 @@
 ﻿@page "/weather"
 @attribute [StreamRendering]
 
-<PageTitle>Weather</PageTitle>
+<PageTitle>Weather Ultra Control</PageTitle>
 
-<h1>Weather</h1>
+<div class="sky @SkyTheme">
 
-<p>This component demonstrates showing data.</p>
+    <div class="lightning"></div>
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th aria-label="Temperature in Celsius">Temp. (C)</th>
-                <th aria-label="Temperature in Fahrenheit">Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
+    <div class="hero">
+        <h1>🌍 Weather Ultra Control</h1>
+        <p>@AiSummary</p>
+    </div>
+
+    @if (forecasts == null)
+    {
+        <div class="loader"></div>
+    }
+    else
+    {
+        <div class="panel">
+
+            <div class="left">
+
+                <div class="big-temp">
+                    🌡️ @AverageTemp°C
+                </div>
+
+                <div class="mini-chart">
+                    @foreach (var f in forecasts)
+                    {
+                        <div class="bar" style="height:@(f.TemperatureC * 2)px"></div>
+                    }
+                </div>
+
+                <div class="wind">
+                    💨 Vento: @WindKmh km/h
+                </div>
+
+            </div>
+
+            <div class="right">
+
+                @foreach (var f in forecasts)
+                {
+                    <div class="card @GetClass(f.TemperatureC)">
+                        <div>@f.Date:ToString("dd MMM")</div>
+                        <div class="icon">@GetIcon(f.TemperatureC)</div>
+                        <div class="temp">@f.TemperatureC°</div>
+                        <div class="desc">@f.Summary</div>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    }
+
+    @if (IsRaining)
+    {
+        <div class="rain">
+            @for (int i = 0; i < 60; i++)
             {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
+                <div class="drop"></div>
             }
-        </tbody>
-    </table>
-}
+        </div>
+    }
+
+</div>
 
 @code {
+
     private WeatherForecast[]? forecasts;
+
+    private int WindKmh = Random.Shared.Next(5, 60);
+
+    private bool IsRaining = true;
+
+    private string SkyTheme => DateTime.Now.Hour < 18 ? "day" : "night";
+
+    private string AiSummary =>
+        "Condizioni dinamiche: " +
+        (IsRaining ? "pioggia in arrivo 🌧️, " : "cielo stabile ☀️, ") +
+        (WindKmh > 30 ? "vento forte 💨, " : "vento leggero, ") +
+        "temperature variabili.";
+
+    private double AverageTemp =>
+        forecasts?.Average(x => x.TemperatureC) ?? 0;
+
+    private string GetClass(int t)
+        => t < 0 ? "freeze"
+        : t < 15 ? "cold"
+        : t < 28 ? "mild"
+        : "hot";
+
+    private string GetIcon(int t)
+        => t < 0 ? "❄️"
+        : t < 15 ? "☁️"
+        : t < 28 ? "🌤️"
+        : "🔥";
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate asynchronous loading to demonstrate streaming rendering
         await Task.Delay(500);
 
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        var start = DateOnly.FromDateTime(DateTime.Now);
+
+        forecasts = Enumerable.Range(1, 7).Select(i => new WeatherForecast
         {
-            Date = startDate.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = summaries[Random.Shared.Next(summaries.Length)]
+            Date = start.AddDays(i),
+            TemperatureC = Random.Shared.Next(-5, 38),
+            Summary = "Condizioni simulate"
         }).ToArray();
     }
 
@@ -59,6 +118,5 @@ else
         public DateOnly Date { get; set; }
         public int TemperatureC { get; set; }
         public string? Summary { get; set; }
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
 }

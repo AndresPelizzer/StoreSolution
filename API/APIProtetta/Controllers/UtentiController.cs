@@ -1,13 +1,11 @@
 ﻿using FootballBlazor.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client.Platforms.Features.DesktopOs.Kerberos;
 using Microsoft.IdentityModel.Tokens;
-using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 [ApiController]
@@ -29,12 +27,15 @@ public class UtentiController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost]
-
     public async Task<ActionResult<string>> Login(Credenziali credenziali)
     {
         try
         {
-            var user = await _context.Utenti.FirstOrDefaultAsync(u => u.Username == credenziali.Username && u.Password == credenziali.Password);
+
+            string username = credenziali.Username;
+            string password = credenziali.Password;
+
+            var user = await _context.Utenti.FirstOrDefaultAsync(u => u.Username == username && u.Password == this.EncryptSHA256(password));
             if (user == null)
             {
                 return string.Empty;
@@ -51,6 +52,81 @@ public class UtentiController : ControllerBase
         }
     }
 
+
+    [AllowAnonymous]
+    [HttpPost("register")]
+    public async Task<ActionResult<Result>> Register([FromBody] Utenti user)
+    {
+        try
+        {
+
+            // controlli....
+
+            if (string.IsNullOrWhiteSpace(user.Username))
+            {
+                return new Result
+                {
+                    Success = false,
+                    Message = "Specificare il nome utente"
+                };
+            }
+
+            if (string.IsNullOrWhiteSpace(user.Password))
+            {
+                return new Result
+                {
+                    Success = false,
+                    Message = "Specificare la Password"
+                };
+            }
+
+            string password = user.Password;
+            string encryptedPwd = this.EncryptSHA256(password);
+            user.Password = encryptedPwd;
+
+
+
+            int max_id = _context.Utenti.Any()
+                ? _context.Utenti.Max(u => u.Id)
+                : 0;
+
+
+            user.Id = max_id + 1;
+
+
+
+            _context.Utenti.Add(user);
+            int saved = await _context.SaveChangesAsync();
+
+
+            if (saved > 0)
+            {
+                return new Result
+                {
+                    Success = true,
+                    Message = "Registrazione avvenuta con successo"
+                };
+            }
+            else
+            {
+                return new Result
+                {
+                    Success = false,
+                    Message = "Salvataggio non riuscito"
+                };
+            }
+
+        }
+        catch (Exception ex)
+        {
+            string error = ex.Message;
+            return new Result
+            {
+                Success = false,
+                Message = error
+            };
+        }
+    }
 
     private string GetToken(Utenti user)
     {
@@ -92,6 +168,35 @@ public class UtentiController : ControllerBase
 
 
     }
+
+
+
+
+
+
+    private string EncryptSHA256(string input)
+    {
+        try
+        {
+            // Converte la stringa in un array di byte usando la codifica UTF-8
+            byte[] dati = Encoding.UTF8.GetBytes(input);
+
+            // Calcola l'hash SHA256 in un'unica riga
+            byte[] hashBytes = SHA256.HashData(dati);
+
+            // Converte l'array di byte in una stringa esadecimale
+            string hashString = Convert.ToHexString(hashBytes);
+            return hashString;
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
+
+
+
+
 
 
 

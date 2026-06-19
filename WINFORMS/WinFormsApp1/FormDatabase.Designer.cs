@@ -47,8 +47,15 @@
             label2 = new Label();
             txtNome = new TextBox();
             Nome = new Label();
+            groupBox2 = new GroupBox();
+            label3 = new Label();
+            textBox1 = new TextBox();
+            label4 = new Label();
+            textEncrypted = new TextBox();
+            buttonEncrypt = new Button();
             ((System.ComponentModel.ISupportInitialize)grid).BeginInit();
             groupBox1.SuspendLayout();
+            groupBox2.SuspendLayout();
             SuspendLayout();
             // 
             // button1
@@ -239,11 +246,68 @@
             Nome.TabIndex = 0;
             Nome.Text = "Nome";
             // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(buttonEncrypt);
+            groupBox2.Controls.Add(textEncrypted);
+            groupBox2.Controls.Add(label4);
+            groupBox2.Controls.Add(textBox1);
+            groupBox2.Controls.Add(label3);
+            groupBox2.Location = new Point(773, 396);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(311, 174);
+            groupBox2.TabIndex = 9;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Encrypt";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(12, 19);
+            label3.Name = "label3";
+            label3.Size = new Size(83, 15);
+            label3.TabIndex = 0;
+            label3.Text = "Stringa iniziale";
+            // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(14, 43);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(283, 23);
+            textBox1.TabIndex = 1;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(17, 86);
+            label4.Name = "label4";
+            label4.Size = new Size(83, 15);
+            label4.TabIndex = 2;
+            label4.Text = "Valore criptato";
+            // 
+            // textEncrypted
+            // 
+            textEncrypted.Location = new Point(12, 108);
+            textEncrypted.Name = "textEncrypted";
+            textEncrypted.Size = new Size(285, 23);
+            textEncrypted.TabIndex = 3;
+            // 
+            // buttonEncrypt
+            // 
+            buttonEncrypt.Location = new Point(12, 137);
+            buttonEncrypt.Name = "buttonEncrypt";
+            buttonEncrypt.Size = new Size(75, 23);
+            buttonEncrypt.TabIndex = 4;
+            buttonEncrypt.Text = "Encrypt";
+            buttonEncrypt.UseVisualStyleBackColor = true;
+            buttonEncrypt.Click += buttonEncrypt_Click;
+            // 
             // FormDatabase
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1110, 682);
+            Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(grid);
             Controls.Add(button6);
@@ -258,6 +322,8 @@
             ((System.ComponentModel.ISupportInitialize)grid).EndInit();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -282,5 +348,11 @@
         private Button btnSalva;
         private Button btnElimina;
         private Button btnAnnulla;
+        private GroupBox groupBox2;
+        private Button buttonEncrypt;
+        private TextBox textEncrypted;
+        private Label label4;
+        private TextBox textBox1;
+        private Label label3;
     }
 }
