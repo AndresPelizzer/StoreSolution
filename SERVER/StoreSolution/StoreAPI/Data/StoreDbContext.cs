@@ -1,8 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
-
-
-using StoreShared;
+using StoreShared.Models;
 
 namespace StoreAPI.Data
 {

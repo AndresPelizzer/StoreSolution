@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StoreAPI.Data;
-using StoreShared;
+using StoreShared.Models;
 
 [ApiController]
 [Route("api/[controller]")]
