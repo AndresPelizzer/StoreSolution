@@ -1,4 +1,4 @@
-using Azure;
+using Microsoft.AspNetCore.Components.Forms;
 using FootballBlazor.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using System.Net.Http.Json;
@@ -11,11 +11,16 @@ namespace FootballBlazor.Client.Pages
         public HttpClient Http { get; set; } = default!;
         [Inject]
         public NavigationManager Navigation { get; set; } = default!;
-        private Utenti user { get; set; } = new Utenti();
+        private FootballBlazor.Shared.Models.Utenti user = new();
         private string ConfirmPassword = string.Empty;
         private string message = string.Empty;
         bool successo = false;
 
+        private IBrowserFile? file;
+        private void OnFileSelected(InputFileChangeEventArgs e)
+        {
+            file = e.File;
+        }
 
         public async Task iscrizione()
         {
@@ -55,23 +60,23 @@ namespace FootballBlazor.Client.Pages
                 return;
             }
 
-            else if (string.IsNullOrWhiteSpace(user.Password))
-            {
-                this.message = "La password è obbligatoria!";
-                return;
-            }
+            //else if (string.IsNullOrWhiteSpace(user.Password))
+            //{
+            //    this.message = "La password è obbligatoria!";
+            //    return;
+            //}
 
-            else if (user.Password.Length < 6)
-            {
-                this.message = "La password deve essere almeno di 6 caratteri!";
-                return;
-            }
+            //else if (user.Password.Length < 6)
+            //{
+            //    this.message = "La password deve essere almeno di 6 caratteri!";
+            //    return;
+            //}
 
-            else if(!user.Password.Any(c => "!@#$%^&*()_+-=[]{}|;:',.<>?/".Contains(c)))
-            {
-                this.message = "La password deve contenere almeno un carattere speciale!";
-                return;
-            }
+            //else if(!user.Password.Any(c => "!@#$%^&*()_+-=[]{}|;:',.<>?/".Contains(c)))
+            //{
+            //    this.message = "La password deve contenere almeno un carattere speciale!";
+            //    return;
+            //}
 
 
             try
@@ -85,11 +90,23 @@ namespace FootballBlazor.Client.Pages
                     return;
                 }
 
+                var content = new MultipartFormDataContent();
 
-                var http_response = await Http.PostAsJsonAsync("/api/Utenti/register", this.user);
+                content.Add(new StringContent(user.Nome ?? ""), "Nome");
+                content.Add(new StringContent(user.Username ?? ""), "Username");
+                content.Add(new StringContent(user.Email ?? ""), "Email");
+                content.Add(new StringContent(user.Ruolo ?? ""), "Ruolo");
+                content.Add(new StringContent(user.Password ?? ""), "Password");
+
+                if (file != null)
+                {
+                    var stream = file.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024);
+                    content.Add(new StreamContent(stream), "Curriculum", file.Name);
+                }
+
+                //user.Curriculum
+                var http_response = await Http.PostAsync("api/Utenti/register", content);
                 Result? response = await http_response.Content.ReadFromJsonAsync<Result>();
-
-
 
 
 

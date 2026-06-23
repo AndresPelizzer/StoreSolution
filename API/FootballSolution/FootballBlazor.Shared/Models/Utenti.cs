@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ClientModel;
 using System.Collections.Generic;
 
 namespace FootballBlazor.Shared.Models;
@@ -18,4 +19,9 @@ public partial class Utenti
     public string Password { get; set; } = null!;
 
     public string? Note { get; set; }
+
+    public byte[]? Curriculum { get; set;  }
+
+    public DateTime? DataIscrizione {  get; set; }= DateTime.Now;
+
 }

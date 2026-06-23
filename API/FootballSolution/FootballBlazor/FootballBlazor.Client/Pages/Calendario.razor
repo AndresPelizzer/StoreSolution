@@ -1,0 +1,82 @@
+﻿@page "/calendario"
+@rendermode InteractiveWebAssembly
+@inject HttpClient Http
+
+<div class="container-fluid mt-5 px-4">
+    <div class="card shadow-sm w-100 p-4">
+        <div class="card-header bg-dark text-white mb-4 rounded">
+            <h3 class="mb-0">Calendario Iscrizioni Utenti</h3>
+        </div>
+
+        @if (loading)
+        {
+            <div class="d-flex align-items-center justify-content-center py-5">
+                <div class="spinner-border text-primary me-2" role="status"></div>
+                <span>Caricamento calendario in corso...</span>
+            </div>
+        }
+        else
+        {
+            <RadzenScheduler @ref="scheduler"
+                             TItem="AppuntamentoUtente"
+                             Data="@eventiIscrizione"
+                             StartProperty="DataInizio"
+                             EndProperty="DataFine"
+                             TextProperty="Testo"
+                             SelectedIndex="2"
+                             Style="height: 600px;">
+                <RadzenDayView Text="Giorno" />
+                <RadzenWeekView Text="Settimana" />
+                <RadzenMonthView Text="Mese" />
+            </RadzenScheduler>
+        }
+    </div>
+</div>
+
+@code {
+    
+    public class AppuntamentoUtente
+    {
+        public DateTime DataInizio { get; set; }
+        public DateTime DataFine { get; set; }
+        public string Testo { get; set; } = "";
+    }
+
+    private RadzenScheduler<AppuntamentoUtente> scheduler = default!;
+    private List<AppuntamentoUtente> eventiIscrizione = new();
+    private bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            loading = true;
+
+           
+            var utenti = await Http.GetFromJsonAsync<List<Shared.Models.Utenti>>("api/utenti");
+
+            if (utenti != null)
+            {
+               
+                eventiIscrizione = utenti
+                    .Where(u => u.DataIscrizione.HasValue) 
+                    .Select(u => new AppuntamentoUtente
+                    {
+                        DataInizio = u.DataIscrizione!.Value,
+                        DataFine = u.DataIscrizione.Value.AddHours(1), 
+                        Testo = $"Iscrizione: {u.Nome} ({u.Ruolo})"
+                    })
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Errore caricamento calendario: {ex.Message}");
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+}
+

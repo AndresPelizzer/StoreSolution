@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -55,7 +57,7 @@ public class UtentiController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<ActionResult<Result>> Register([FromBody] Utenti user)
+    public async Task<ActionResult<Result>> Register([FromForm] Utenti user, IFormFile? Curriculum)
     {
         try
         {
@@ -71,7 +73,10 @@ public class UtentiController : ControllerBase
                 };
             }
 
-            if (string.IsNullOrWhiteSpace(user.Password))
+
+            string password = user.Password;
+
+            if (string.IsNullOrWhiteSpace(password))
             {
                 return new Result
                 {
@@ -79,12 +84,27 @@ public class UtentiController : ControllerBase
                     Message = "Specificare la Password"
                 };
             }
+            if (password.Length < 6)
+            {
+                return new Result
+                {
+                    Success = false,
+                    Message = "La password deve essere almeno di 6 caratteri!"
+                };
+            }
 
-            string password = user.Password;
+            if (!password.Any(c => "!@#$%^&*()_+-=[]{}|;:',.<>?/".Contains(c)))
+            {
+                return new Result
+                {
+                    Success = false,
+                    Message = "La password deve contenere almeno un carattere speciale!"
+                };
+            }
+
+
             string encryptedPwd = this.EncryptSHA256(password);
             user.Password = encryptedPwd;
-
-
 
             int max_id = _context.Utenti.Any()
                 ? _context.Utenti.Max(u => u.Id)
@@ -92,20 +112,30 @@ public class UtentiController : ControllerBase
 
 
             user.Id = max_id + 1;
-
-
+            user.DataIscrizione = DateTime.Now;
+            if (Curriculum != null) {
+                using var ms = new MemoryStream();
+                await Curriculum.CopyToAsync(ms);
+                user.Curriculum=ms.ToArray();
+            }
 
             _context.Utenti.Add(user);
             int saved = await _context.SaveChangesAsync();
 
-
             if (saved > 0)
             {
+
+
+                bool sent = InviaNotifica(user);
+
+              
+
                 return new Result
                 {
                     Success = true,
                     Message = "Registrazione avvenuta con successo"
-                };
+                }; 
+
             }
             else
             {
@@ -127,6 +157,68 @@ public class UtentiController : ControllerBase
             };
         }
     }
+
+
+
+    private bool InviaNotifica(Utenti user)
+    {
+        try
+        {
+
+            // verifica utenti supervisori...
+            var supervisori = _context.Utenti.Where(user => user.Ruolo == "supervisore");
+            if (!supervisori.Any()) return true;
+
+            var emails = supervisori.Select(u => u.Email).ToArray();
+
+
+            var smtpSection = _cfg.GetSection("SMTP");
+            string server = smtpSection.GetValue<string>("server") ?? "";
+            string username = smtpSection.GetValue<string>("username") ?? "";
+            string password = smtpSection.GetValue<string>("password") ?? "";
+            int port = smtpSection.GetValue<int>("port");
+
+            bool enable_ssl = smtpSection.GetValue<bool>("enable_ssl");
+            string from = smtpSection.GetValue<string>("from") ?? "";
+
+
+            SmtpClient smtp = new SmtpClient(server, port);
+            smtp.EnableSsl = enable_ssl;
+
+            var credentials = new NetworkCredential(username, password);
+            smtp.Credentials = credentials;
+
+
+            MailMessage msg = new MailMessage();
+            msg.From = new System.Net.Mail.MailAddress(from);
+
+            msg.Subject = "Nuova Iscrizione";
+            msg.IsBodyHtml = true;
+            msg.Body = $"<h3>Nuova iscrizione</h3>Si e' iscritto: <b>{user.Nome}</b><p>Curriculum allegato.</p>";
+            if (user.Curriculum != null)
+            {
+                var stream = new MemoryStream(user.Curriculum);
+                var attachment = new Attachment(stream, "curriculum.pdf", "application/pdf");
+                msg.Attachments.Add(attachment);
+            }
+            foreach (var email in emails)
+            {
+                var address = new MailAddress(email);
+                msg.To.Add(address);
+            }
+
+            smtp.Send(msg);
+            return true;
+
+        }
+        catch (Exception ex)
+        {
+            string error = ex.Message;
+            return false;
+        }
+    }
+
+
 
     private string GetToken(Utenti user)
     {
@@ -195,9 +287,16 @@ public class UtentiController : ControllerBase
     }
 
 
+    
+    [HttpGet]
+    public async Task<ActionResult<List<Utenti>>> GetUtenti()
+    {
+        var listautenti= await _context.Utenti.ToListAsync();
+        return Ok(listautenti);
+    }
+   }
 
 
 
 
 
-}

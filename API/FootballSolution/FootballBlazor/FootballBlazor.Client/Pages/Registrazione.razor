@@ -1,67 +1,119 @@
 ﻿@page "/"
 @rendermode InteractiveWebAssembly
 
-
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg border-0 rounded-top-4 py-4">
-                <div class="card-header bg-dark text-center text-white">
-                    <h2 class="mb-0">Registrazione</h2>
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+                <div class="card-header text-white text-center py-4"
+                     style="background: linear-gradient(135deg, #1f2937, #111827);">
+                    <h3 class="mb-0 fw-light">Registrazione</h3>
+                    <small class="text-white-50">Crea il tuo account</small>
                 </div>
 
                 <div class="card-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label">Nome</label>
-                        <input type="text" class="form-control" @bind-value="@user.Nome" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Username</label>
-                        <input type="text" class="form-control" @bind-value="@user.Username" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" @bind-value="@user.Email" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Ruolo</label>
 
-                        <select class="form-select" @bind="user.Ruolo">
-                            <option value="">Seleziona ruolo</option>
-                            <option value="normale">Normale</option>
-                            <option value="amminstratore">Amminstratore</option>
-                        </select>
-                    </div>
-                   
                     <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" class="form-control" @bind-value="@user.Password" />
+                        <label class="form-label fw-semibold">Nome</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-person"></i>
+                            </span>
+                            <input class="form-control form-control-lg rounded-end-3"
+                                   @bind-value="user.Nome" />
+                        </div>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Conferma Password</label>
-                        <input type="password" class="form-control" @bind-value="@ConfirmPassword" />
+                        <label class="form-label fw-semibold">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-at"></i>
+                            </span>
+                            <input class="form-control form-control-lg rounded-end-3"
+                                   @bind-value="user.Username" />
+                        </div>
                     </div>
-                    <button type="button" class="btn btn-dark w-100 mt-2 py-2" @onclick="iscrizione">Iscriviti</button>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-envelope"></i>
+                            </span>
+                            <input type="email"
+                                   class="form-control form-control-lg rounded-end-3"
+                                   @bind-value="user.Email" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Ruolo</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-shield-lock"></i>
+                            </span>
+                            <select class="form-select form-select-lg rounded-end-3"
+                                    @bind="user.Ruolo">
+                                <option value="">Seleziona ruolo</option>
+                                <option value="normale">Normale</option>
+                                <option value="amministratore">Amministratore</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Curriculum</label>
+                        <InputFile OnChange="OnFileSelected" accept=".pdf" class="form-control form-control-lg rounded-end-3"></InputFile>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-lock"></i>
+                            </span>
+                            <input type="password"
+                                   class="form-control form-control-lg rounded-end-3"
+                                   @bind-value="user.Password" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Conferma Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-lock-fill"></i>
+                            </span>
+                            <input type="password"
+                                   class="form-control form-control-lg rounded-end-3"
+                                   @bind-value="ConfirmPassword" />
+                        </div>
+                    </div>
+
+                    <button type="button"
+                            class="btn btn-dark w-100 py-2 fw-semibold rounded-3 shadow-sm"
+                            @onclick="iscrizione">
+                        <i class="bi bi-person-plus me-2"></i>
+                        Iscriviti
+                    </button>
+
                 </div>
 
                 @if (!string.IsNullOrEmpty(message))
                 {
-                if (successo == true)
-                {
+                    <div class="px-4 pb-4">
+                        <div class="alert @(successo ? "alert-success" : "alert-danger")
+                            border-0 rounded-3 shadow-sm mb-0">
+                            <i class="bi @(successo ? "bi-check-circle" : "bi-exclamation-triangle") me-2"></i>
+                            @message
+                        </div>
+                    </div>
+                }
 
-                    <div class="alert alert-success mt-3 shadow-sm"> @message </div>
-                    
-                }
-                else
-                {
-                    <div class="alert alert-danger mt-3 shadow-sm"> @message </div>
-                }
-            }
-               
-                
             </div>
         </div>
     </div>
-
-
 </div>

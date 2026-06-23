@@ -1,0 +1,91 @@
+﻿@page "/utenti"
+@inject IJSRuntime JS
+@rendermode InteractiveWebAssembly
+
+
+<script>
+    window.downloadFile = (fileName, byteArray) => {
+        // Create a Blob from the byte array
+        const blob = new Blob([new Uint8Array(byteArray)], { type: 'application/octet-stream' });
+        // Create a link to trigger the download
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        // Append the link, trigger the download, and remove the link
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+</script>
+
+
+
+
+<div class="container-fluid mt-5 px-4">
+    
+    <div class="card shadow-sm w-100">
+        <div class="card-header bg-dark text-white d-flex align-items-center justify-content-between">
+            <h3 class="mb-0">Elenco Utenti</h3>
+            <span class="badge bg-primary fs-6">Numero utenti: @utenti.Count</span>
+        </div>
+        <div class="card-body p-0">
+           
+            @if (loading)
+            {
+                <div class="d-flex align-items-center justify-content-center py-5">
+                    <div class="spinner-border text-primary me-2" role="status"></div>
+                    <span>Caricamento Utenti in corso...</span>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive w-100">
+                   
+                    <table class="table table-hover table-striped table-bordered w-100 m-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3 fw-bold text-secondary" style="width: 8%;">Id</th>
+                                <th class="ps-3 fw-bold text-secondary">Nome</th>
+                                <th class="ps-3 fw-bold text-secondary">Username</th>
+                                <th class="ps-3 fw-bold text-secondary">Ruolo</th>
+                                <th class="ps-3 fw-bold text-secondary">Data Iscrizione</th>
+                                <th class="ps-3 fw-bold text-secondary text-center" style="width: 20%;">Curriculum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var u in utenti)
+                            {
+                                <tr>
+                                    <td class="ps-3 text-secondary fw-bold">@u.Id</td>
+                                    <td class="ps-3 text-dark">@u.Nome</td>
+                                    <td class="ps-3 text-dark">@u.Username</td>
+                                    <td class="ps-3"><span class="badge bg-secondary">@u.Ruolo</span></td>
+                                    <td class="ps-3">@u.DataIscrizione?.ToString("dd/MM/yyyy")</td>
+                                    <td class="text-center">
+                                        @if (u.Curriculum != null && u.Curriculum.Length > 0)
+                                        {
+                                           
+                                            <button class="btn btn-sm btn-success px-3" @onclick="() => ScaricaCurriculum(u)">
+                                                <i class="bi bi-download me-1"></i> Scarica PDF
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            
+                                            <button class="btn btn-sm btn-outline-danger px-3" disabled>
+                                                Non scaricabile
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
