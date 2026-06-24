@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using StoreAPI.Interfaces;
+﻿
+using StoreShared.Interfaces;
 using StoreShared.Models;
+using System.Net.Http.Json;
 
-namespace StoreAPI.Services
+namespace StoreBlazor.Services
 {
     public class ClientiService : IClientiService
     {
@@ -13,7 +14,7 @@ namespace StoreAPI.Services
         {
             _http = http;
         }
-        public async Task<Cliente> AddCliente([FromBody] Cliente cliente)
+        public async Task<Cliente?> AddCliente(Cliente cliente)
         {
             var response =  await _http.PostAsJsonAsync<Cliente?>("api/Clienti", cliente);
             if(response != null)
@@ -40,7 +41,7 @@ namespace StoreAPI.Services
             return await _http.GetFromJsonAsync<Cliente>($"api/Clienti/{id}");
         }
 
-        public async Task<List<Cliente>> GetClienti()
+        public async Task<List<Cliente>?> GetClienti()
         {
             return await _http.GetFromJsonAsync<List<Cliente>>("api/Clienti");
         }
