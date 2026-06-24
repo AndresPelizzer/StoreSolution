@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using StoreBlazor.Services;
 using StoreShared.Interfaces;
 using StoreShared.Models;
 using System.Net.Http.Json;
@@ -10,6 +11,10 @@ namespace StoreBlazor.Pages
         [Inject]
         public IClientiService? ClientiService { get; set; }
 
+        [Inject]
+        public IRichiesteService? RichiesteService { get; set; }
+
+
         bool loading=false;
         bool showModal = false;
         bool showModalmod = false;
@@ -19,6 +24,8 @@ namespace StoreBlazor.Pages
         Cliente ClienteModificato= new Cliente( );
 
         public List<Cliente> clienti = new();
+
+        public List<Richiesta> richieste = new();
 
 
 
@@ -60,6 +67,7 @@ namespace StoreBlazor.Pages
                 Settore = cliente.Settore
             };
             showModalmod = true;
+            showModaldett = false;
         }
 
         public async Task modificaCliente(Cliente cliente, int id)
@@ -82,22 +90,28 @@ namespace StoreBlazor.Pages
             showModalmod = false;
         }
 
-        void apriDettaglio(Cliente cliente)
+        public async Task apriDettaglio(Cliente cliente)
         {
+
+            showModalmod = false;
             showModaldett = true;
+
+            var tutteRichieste = await RichiesteService!.GetRichieste();
+            richieste = tutteRichieste!.Where(r => r.CodiceCliente == cliente.Codice).ToList();
+
+
+        }
+           
+
         }
 
 
 
-
-
-
-
-
-
-    }
+        
         
 
-        }
-      
+       
+
+}
+
 

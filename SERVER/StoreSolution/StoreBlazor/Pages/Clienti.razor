@@ -42,7 +42,7 @@
                         @foreach (var cliente in clienti)
                     {
 
-                                <tr @onclick="() => apriModifica(cliente)" style="cursor:pointer">
+                            <tr @onclick="() => apriModifica(cliente)" style="cursor:pointer">
                             <td>@cliente.Codice</td>
                             <td>@cliente.Nome</td>
                             <td>@cliente.Cognome</td>
@@ -129,8 +129,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger me-auto" @onclick="() => elimina(ClienteModificato.Codice)">Elimina</button>
-                    <button class="btn btn-outline-secondary" @onclick="() => showModalmod = false">Annulla</button>
+                    <button class="btn btn-danger me-auto" @onclick="() => elimina(ClienteModificato.Codice)">Elimina</button>             
+                    <button class="btn btn-outline-info" @onclick="()=> apriDettaglio(ClienteModificato)">Mostra richiesta</button>
                     <button class="btn btn-success" @onclick="() => modificaCliente(ClienteModificato, ClienteModificato.Codice)">Salva</button>
                 </div>
             </div>
@@ -149,22 +149,28 @@
                         <h4 class="text-dark">Richiesta Cliente</h4>
                     </div>
                 </div>
-                <div class="modal-content">
-                   <div class="mb-3">
-                       <label class="form-label">Titolo Richiesta</label>
-                       <input type="text" class="form-control" />
-                   </div>
-                   <div class="mb-3">
-                       <label class="form-label">Stato Richiesta</label>
-                       <input type="text" class="form-control" />
-                   </div>
-                   <div class="mb-3">
-                       <label class="form-label">Descrizione Richiesta</label>
-                       <input type="text" class="form-control" />
-                   </div>
+                <div class="modal-body">
+                    @if (richieste.Count == 0)
+                    {
+                        <h4>Non sono presenti richieste per questo cliente</h4>
+                    }
+                    else {
+                        @foreach (var r in richieste) {
+                           <div class="card">
+                               <div class="card-title">
+                                    <h4>TITOLO: <strong>@r.Titolo</strong></h4>
+                               </div>
+                               <div class="card-body">
+                                   <p>Stato:<strong>@r.Stato</strong></p>
+                                    <p>Descrizione:<strong>@r.Descrizione</strong> </p>
+                               </div>
+                           </div>
+                        }
+
+                    }
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-warning">Torna indietro</button>
+                    <button type="button" class="btn btn-outline-warning" @onclick="() => { showModaldett = false; showModalmod = true; }">Torna indietro</button>
                 </div>
             </div>
         </div>
