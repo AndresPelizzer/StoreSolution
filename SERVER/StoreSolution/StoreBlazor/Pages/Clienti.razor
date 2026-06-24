@@ -164,6 +164,9 @@
                                    <p>Stato:<strong>@r.Stato</strong></p>
                                     <p>Descrizione:<strong>@r.Descrizione</strong> </p>
                                </div>
+                               <div class="card-footer">
+                                    <button type="button" class="btn btn-outline-secondary" @onclick="()=> apriDettDipend(r)"> Assegnazione Dipendenti </button>
+                               </div>
                            </div>
                         }
 
@@ -171,6 +174,52 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-warning" @onclick="() => { showModaldett = false; showModalmod = true; }">Torna indietro</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showModaldipend)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal d-block">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <h5 class="text-dark">Dipendenti a cui é stata assegnata richiesta</h5>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    @if (dipendenti.Count == 0)
+                    {
+                        <h4>Questa richiesta non é stata assegnata a nessun dipendente </h4>
+                    }
+                    else
+                    {
+                        @foreach (var d in dipendenti)
+                        {
+                            <div class="card">
+                                <div class="card-title">
+                                    <h4>Dipendenti</h4>
+                                    
+                                </div>
+                                <div class="card-body">
+                                    <h4>Nome: <strong>@d.Nome</strong></h4>
+                                    <p>Cognome:<strong>@d.Cognome</strong></p>
+                                    <p>Email:<strong>@d.Email</strong> </p>
+                                    <p>Qualifica:<strong>@d.Qualifica</strong></p>
+                                    <p> Area Applicativa <strong> @d.Area</strong></p>
+                                </div>
+                               
+                            </div>
+                        }
+
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-warning" @onclick="() => { showModaldett = true; showModaldipend = false; }">Torna indietro</button>
                 </div>
             </div>
         </div>

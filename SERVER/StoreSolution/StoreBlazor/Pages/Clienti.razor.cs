@@ -13,12 +13,16 @@ namespace StoreBlazor.Pages
 
         [Inject]
         public IRichiesteService? RichiesteService { get; set; }
+        [Inject]
+        public IDipendentiService? DipendentiService { get; set; }
+
 
 
         bool loading=false;
         bool showModal = false;
         bool showModalmod = false;
         bool showModaldett = false;
+        bool showModaldipend = false;
 
         Cliente nuovoCliente = new Cliente();
         Cliente ClienteModificato= new Cliente( );
@@ -26,6 +30,8 @@ namespace StoreBlazor.Pages
         public List<Cliente> clienti = new();
 
         public List<Richiesta> richieste = new();
+
+        public List<Dipendente> dipendenti = new();
 
 
 
@@ -103,15 +109,30 @@ namespace StoreBlazor.Pages
         }
            
 
+        
+
+
+
+        public async Task apriDettDipend(Richiesta richiesta)
+        {
+            showModalmod = false;
+            showModaldett = false;
+            showModaldipend = true;
+
+            var tuttiDipendenti = await DipendentiService!.GetDipendenti();
+
+            dipendenti = tuttiDipendenti!.Where(d=> d.Codice == richiesta.CodiceDipendente).ToList();
         }
 
+    }
 
-
-        
+    }
         
 
        
 
-}
+
+
+
 
 
