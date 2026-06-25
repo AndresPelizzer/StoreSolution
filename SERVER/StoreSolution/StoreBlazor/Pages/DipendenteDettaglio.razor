@@ -1,2 +1,123 @@
-﻿<h3>DipendenteDettaglio</h3>
+﻿@page "/dipendenti/{id:int}"
+
+@if (loading)
+{
+    <div class="d-flex justify-content-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+}
+else if (Id == 0)
+{
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Aggiungi <span><strong>Dipendente</strong></span></h5>
+                <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo("/dipendenti")'>
+                    <i class="bi bi-arrow-left"></i> Torna
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Codice</label>
+                    <input class="form-control" type="text" @bind="NuovoDipendente!.Codice" disabled />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nome</label>
+                    <input class="form-control" type="text" @bind="NuovoDipendente.Nome" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Cognome</label>
+                    <input class="form-control" type="text" @bind="NuovoDipendente.Cognome" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input class="form-control" type="email" @bind="NuovoDipendente.Email" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Qualifica</label>
+                    <input class="form-control" type="text" @bind="NuovoDipendente.Qualifica" />
+                </div>
+                <div class="mb-3 form-check">
+                    <input class="form-check-input" type="checkbox" @bind="NuovoDipendente.CapoArea" />
+                    <label class="form-check-label">Capo Area</label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Note</label>
+                    <input class="form-control" type="text" @bind="NuovoDipendente.Note" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Area di Appartenenza</label>
+                    <select class="form-select" @bind="NuovoDipendente.CodiceAreaAppl">
+                        <option value="0">-- Seleziona un'Area --</option>
+                        @foreach (var area in ListaAree)
+                        {
+                            <option value="@area.Codice">@area.Descrizione</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-success" @onclick="() => salvaDipendente(NuovoDipendente)">Salva</button>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Modifica <span><strong>Dipendente</strong></span></h5>
+                <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo("/dipendenti")'>
+                    <i class="bi bi-arrow-left"></i> Torna
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Codice</label>
+                    <input class="form-control" type="text" @bind="DipendenteModificato!.Codice" disabled />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nome</label>
+                    <input class="form-control" type="text" @bind="DipendenteModificato.Nome" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Cognome</label>
+                    <input class="form-control" type="text" @bind="DipendenteModificato.Cognome" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input class="form-control" type="email" @bind="DipendenteModificato.Email" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Qualifica</label>
+                    <input class="form-control" type="text" @bind="DipendenteModificato.Qualifica" />
+                </div>
+                <div class="mb-3 form-check">
+                    <input class="form-check-input" type="checkbox" @bind="DipendenteModificato.CapoArea" />
+                    <label class="form-check-label">Capo Area</label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Note</label>
+                    <input class="form-control" type="text" @bind="DipendenteModificato.Note" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Area di Appartenenza</label>
+                    <select class="form-select" @bind="DipendenteModificato.CodiceAreaAppl">
+                        <option value="0">-- Seleziona un'Area --</option>
+                        @foreach (var area in ListaAree)
+                        {
+                            <option value="@area.Codice">@area.Descrizione</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-success" @onclick="() => modificaDipendente(DipendenteModificato, DipendenteModificato.Codice)">Salva</button>
+            </div>
+        </div>
+    </div>
+}
 

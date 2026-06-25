@@ -38,24 +38,30 @@ public class DipendentiController : ControllerBase
         
 
 }
-    [HttpDelete("{id}")]
+    
 
+    [HttpDelete("{id}!")]
     public async Task<ActionResult<Dipendente>> DeleteDipendente(int id)
     {
         Dipendente? dipendente = await _context.Dipendenti.FindAsync(id);
-        if (dipendente != null)
-        {
-
-         _context.Dipendenti.Remove(dipendente);
-          await _context.SaveChangesAsync();
-            return Ok(dipendente);
-        }
-        else
+        if (dipendente == null)
         {
             return NotFound();
         }
 
-}
+        _context.Dipendenti.Remove(dipendente);
+
+        try
+        {
+            await _context.SaveChangesAsync();
+            return Ok(dipendente);
+        }
+        catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+        {
+           
+            return Conflict("Impossibile eliminare il dipendente perché è associato ad altre entità nel sistema.");
+        }
+    }
 
 
 
