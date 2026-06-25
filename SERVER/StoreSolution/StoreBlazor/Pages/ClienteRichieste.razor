@@ -1,0 +1,41 @@
+﻿@page "/clienti/{id:int}/richieste"
+
+
+
+ <div class="card">
+  
+            <div class="card-header">
+                
+                    <h4 class="text-dark">Richieste Cliente</h4>
+                </div>
+            
+
+
+            <div class="card-body">
+                @if (richieste.Count == 0)
+                {
+                    <h4>Non sono presenti richieste per questo cliente</h4>
+                }
+                else
+                {
+                    @foreach (var r in richieste)
+                    {
+                        <div class="card">
+                            <div class="card-title">
+                                <h4>TITOLO: <strong>@r.Titolo</strong></h4>
+                            </div>
+                            <div class="card-body">
+                                <p>Stato:<strong>@r.Stato</strong></p>
+                                <p>Descrizione:<strong>@r.Descrizione</strong> </p>
+                            </div>
+                            <div class="card-footer">
+                        <button type="button" class="btn btn-outline-secondary" @onclick="() => VaiDipendenti(r.Codice)" > Assegnazione Dipendenti </button>
+                            </div>
+                        </div>
+                    }
+
+                }
+            </div>
+            
+</div>
+

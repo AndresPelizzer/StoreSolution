@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using StoreBlazor.Services;
 using StoreShared.Interfaces;
 using StoreShared.Models;
@@ -15,6 +16,14 @@ namespace StoreBlazor.Pages
         public IRichiesteService? RichiesteService { get; set; }
         [Inject]
         public IDipendentiService? DipendentiService { get; set; }
+
+        [Inject]
+        public NavigationManager Navigation { get; set; } = default!;
+
+        [Inject]
+        public IJSRuntime? JS {  get; set; }
+
+
 
 
 
@@ -90,9 +99,14 @@ namespace StoreBlazor.Pages
 
         public async Task elimina(int id)
         {
-            await ClientiService!.DeleteCliente(id);
 
-            clienti.RemoveAll(c => c.Codice == id);
+            var conferma = await JS!.InvokeAsync<bool>("confirm", "Sei sicuro di voler eliminare questo cliente?");
+            if (conferma)
+            {
+                await ClientiService!.DeleteCliente(id);
+
+                clienti.RemoveAll(c => c.Codice == id);
+            }
             showModalmod = false;
         }
 
@@ -107,9 +121,41 @@ namespace StoreBlazor.Pages
 
 
         }
-           
 
+
+        bool ascendente = true;
+        string colonnaOrdinamento = "Nome";
         
+
+        void Ordina(string colonna)
+        {
+            if (colonnaOrdinamento == colonna)
+                ascendente = !ascendente;
+            else
+                colonnaOrdinamento = colonna;
+        }
+
+
+
+        public IEnumerable<Cliente> ClientiFiltrati => clienti
+            .Where(c => string.IsNullOrEmpty(filtro) ||
+                        c.Nome!.Contains(filtro, StringComparison.OrdinalIgnoreCase) ||
+                        c.Cognome!.Contains(filtro, StringComparison.OrdinalIgnoreCase))
+             .OrderBy(c => colonnaOrdinamento switch
+             {
+                 "Nome" => c.Nome,
+                 "Cognome" => c.Cognome,
+                 "Email" => c.Email,
+                 "Settore" => c.Settore,
+                 _ => c.Nome
+             });
+            
+
+   
+
+        string filtro = "";
+
+
 
 
 
@@ -122,6 +168,12 @@ namespace StoreBlazor.Pages
             var tuttiDipendenti = await DipendentiService!.GetDipendenti();
 
             dipendenti = tuttiDipendenti!.Where(d=> d.Codice == richiesta.CodiceDipendente).ToList();
+        }
+
+
+        public void VaiADettaglioCliente(int id)
+        {
+            Navigation.NavigateTo($"/clienti/{id}");
         }
 
     }

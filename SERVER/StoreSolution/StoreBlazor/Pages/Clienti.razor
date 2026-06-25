@@ -13,9 +13,10 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4>Numero Clienti <span class="badge badge-success text-dark">@clienti.Count</span></h4>
+                <input class="form-control" placeholder="Cerca..." @bind="filtro" @bind:event="oninput" />
 
 
-                <button type="button" class="btn btn-outline-primary" @onclick="()=> showModal=true">Aggiungi</button>
+                <button type="button" class="btn btn-outline-primary" @onclick="()=> VaiADettaglioCliente(0)">+</button>
             </div>
            
             <div class="card-body">
@@ -28,26 +29,29 @@
                 <thead class="table table-dark">
                     
                         <tr class="table table-info">
-                            <th>Codice</th>
-                            <th>Nome</th>
-                            <th>Cognome</th>
-                            <th>Email</th>
-                            <th>Settore</th>
+                                <th>Codice</th>
+                                <th @onclick='() => Ordina("Nome")' style="cursor:pointer">Nome</th>
+                                <th @onclick='() => Ordina("Cognome")' style="cursor:pointer">Cognome</th>
+                                <th @onclick='() => Ordina("Email")' style="cursor:pointer">Email</th>
+                                <th @onclick='() => Ordina("Settore")' style="cursor:pointer">Settore</th>
+                                <th>Azioni</th>
                         </tr>            
                     
                 </thead>
                 <tbody>
 
                       
-                        @foreach (var cliente in clienti)
+                        @foreach (var cliente in ClientiFiltrati)
                     {
 
-                            <tr @onclick="() => apriModifica(cliente)" style="cursor:pointer">
+                            <tr @onclick="()=>VaiADettaglioCliente(cliente.Codice)">
                             <td>@cliente.Codice</td>
                             <td>@cliente.Nome</td>
                             <td>@cliente.Cognome</td>
                             <td>@cliente.Email</td>
                             <td>@cliente.Settore</td>
+                                    <td><button type="button" class="btn btn-outline-danger" @onclick="() => elimina(cliente.Codice)" @onclick:stopPropagation="true"> <i class="bi bi-trash"></i> </button></td>
+
                            
                         </tr>
                     }
@@ -56,10 +60,10 @@
            </div>
 
         </div>
-    </div>
+       </div>
     }
 </div>
-@if (showModal)
+@* @if (showModal)
 {
     <div class="modal-backdrop fade show"></div>
     <div class="modal d-block">
@@ -226,3 +230,4 @@
     </div>
 }
 
+ *@

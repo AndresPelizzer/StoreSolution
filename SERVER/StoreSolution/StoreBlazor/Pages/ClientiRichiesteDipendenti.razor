@@ -1,0 +1,33 @@
+﻿@page "/richieste/{codice:int}/dipendenti"
+
+<div class="container mt-5">
+
+    
+        <div class="card">
+            <div class="card-header">
+                
+                    <h5 class="text-dark">Dipendenti a cui é stata assegnata richiesta</h5>
+              
+         
+            <div class="modal-body">
+               @if (richiesta?.Dipendente == null)
+                {
+              <h4>Nessun dipendente assegnato</h4>
+                  }
+                 else
+            {
+              <p>Nome: <strong>@richiesta.Dipendente.Nome</strong></p>
+              <p>Cognome: <strong>@richiesta.Dipendente.Cognome</strong></p>
+              <p>Email: <strong>@richiesta.Dipendente.Email</strong></p>
+              <p>Qualifica: <strong>@richiesta.Dipendente.Qualifica</strong></p>
+              }
+
+                
+
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
