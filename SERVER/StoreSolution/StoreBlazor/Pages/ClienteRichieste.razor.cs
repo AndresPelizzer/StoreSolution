@@ -33,6 +33,15 @@ namespace StoreBlazor.Pages
         {
             Navigation.NavigateTo($"/richieste/{codice}/dipendenti");
         }
+        private string GetStatoClass(string stato) => stato switch
+        {
+            "Aperta" => "bg-success",
+            "In lavorazione" => "bg-warning text-dark",
+            "Conclusa" => "bg-secondary",
+            
+            _ => "bg-light text-dark"
+        };
+
 
 
     }

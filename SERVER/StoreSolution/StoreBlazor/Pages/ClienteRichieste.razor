@@ -2,40 +2,50 @@
 
 
 
- <div class="card">
-  
-            <div class="card-header">
-                
-                    <h4 class="text-dark">Richieste Cliente</h4>
-                </div>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Richieste Cliente</h5>
+                <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation.NavigateTo("/clienti")'>
+                    <i class="bi bi-arrow-left"></i> Torna
+                </button>
+            </div>
             
 
 
             <div class="card-body">
                 @if (richieste.Count == 0)
                 {
-                    <h4>Non sono presenti richieste per questo cliente</h4>
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-3"></i>
+                    <p class="mt-2">Nessuna richiesta per questo cliente</p>
+                </div>
                 }
                 else
                 {
                     @foreach (var r in richieste)
                     {
-                        <div class="card">
-                            <div class="card-title">
-                                <h4>TITOLO: <strong>@r.Titolo</strong></h4>
-                            </div>
-                            <div class="card-body">
-                                <p>Stato:<strong>@r.Stato</strong></p>
-                                <p>Descrizione:<strong>@r.Descrizione</strong> </p>
-                            </div>
-                            <div class="card-footer">
-                        <button type="button" class="btn btn-outline-secondary" @onclick="() => VaiDipendenti(r.Codice)" > Assegnazione Dipendenti </button>
-                            </div>
-                        </div>
-                    }
+                      <div class="card mb-3">
+                             <div class="card-header d-flex justify-content-between align-items-center">
+                             <strong>@r.Titolo</strong>
+                            <span class="badge @GetStatoClass(r.Stato!)">@r.Stato</span>
+                      </div>
+                       <div class="card-body">
+                           <p class="mb-1"><span class="text-muted">Descrizione:</span> @r.Descrizione</p>
+                           <p class="mb-0"><span class="text-muted">Data:</span> @r.DataRichiesta.ToShortDateString()</p>
+                      </div>
+                      <div class="card-footer">
+                        <button class="btn btn-outline-secondary btn-sm" @onclick="() => VaiDipendenti(r.Codice)">
+                        <i class="bi bi-person-badge"></i> Dipendente assegnato
+                     </button>
+                  </div>
+                   </div>
+                      }
 
-                }
-            </div>
+            }
+               </div>
             
-</div>
+            </div>
+
+    </div>
 

@@ -19,6 +19,9 @@ namespace StoreBlazor.Pages
         public List <Richiesta> richieste = new List <Richiesta> ();
 
         public List<Dipendente> dipendenti = new();
+
+        [Inject]
+        public NavigationManager Navigation { get; set; } = default!;
         protected override async Task OnInitializedAsync()
         {
 
@@ -27,5 +30,6 @@ namespace StoreBlazor.Pages
 
 
         }
+        private void TornaIndietro() => Navigation.NavigateTo($"/clienti/{richiesta?.CodiceCliente}/richieste");
     }
 }

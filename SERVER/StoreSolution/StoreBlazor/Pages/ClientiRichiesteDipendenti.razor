@@ -1,33 +1,38 @@
 ﻿@page "/richieste/{codice:int}/dipendenti"
 
 <div class="container mt-5">
-
-    
-        <div class="card">
-            <div class="card-header">
-                
-                    <h5 class="text-dark">Dipendenti a cui é stata assegnata richiesta</h5>
-              
-         
-            <div class="modal-body">
-               @if (richiesta?.Dipendente == null)
-                {
-              <h4>Nessun dipendente assegnato</h4>
-                  }
-                 else
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Dipendente assegnato</h5>
+            <button class="btn btn-outline-secondary btn-sm" @onclick="TornaIndietro">
+                <i class="bi bi-arrow-left"></i> Torna
+            </button>
+        </div>
+        <div class="card-body">
+            @if (richiesta?.Dipendente == null)
             {
-              <p>Nome: <strong>@richiesta.Dipendente.Nome</strong></p>
-              <p>Cognome: <strong>@richiesta.Dipendente.Cognome</strong></p>
-              <p>Email: <strong>@richiesta.Dipendente.Email</strong></p>
-              <p>Qualifica: <strong>@richiesta.Dipendente.Qualifica</strong></p>
-              }
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-person-x fs-3"></i>
+                    <p class="mt-2">Nessun dipendente assegnato a questa richiesta</p>
+                </div>
+            }
+            else
+            {
+                <dl class="row mb-0">
+                    <dt class="col-sm-3 text-muted">Nome</dt>
+                    <dd class="col-sm-9">@richiesta.Dipendente.Nome</dd>
 
-                
+                    <dt class="col-sm-3 text-muted">Cognome</dt>
+                    <dd class="col-sm-9">@richiesta.Dipendente.Cognome</dd>
 
-            </div>
-            
+                    <dt class="col-sm-3 text-muted">Email</dt>
+                    <dd class="col-sm-9">@richiesta.Dipendente.Email</dd>
+
+                    <dt class="col-sm-3 text-muted">Qualifica</dt>
+                    <dd class="col-sm-9">@richiesta.Dipendente.Qualifica</dd>
+                </dl>
+            }
         </div>
     </div>
 </div>
-
 

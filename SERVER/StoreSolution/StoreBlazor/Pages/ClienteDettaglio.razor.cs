@@ -48,7 +48,8 @@ namespace StoreBlazor.Pages
 
 
             clienti = await ClientiService!.GetClienti() ?? new();
-            
+            Navigation.NavigateTo("/clienti");
+
 
         }
         public async Task salvaCliente(Cliente cliente)
@@ -61,6 +62,7 @@ namespace StoreBlazor.Pages
             {
                 clienti.Add(clientesalvato);
             }
+            Navigation.NavigateTo("/clienti");
         }
 
 
