@@ -1,6 +1,12 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using StoreBlazor.Services
+@inject AuthState AuthState
+@inject NavigationManager NavigationManager
+
+<div class="top-row ps-3 navbar navbar-dark bg-dark border-bottom border-secondary">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">StoreBlazor</a>
+        <a class="navbar-brand fw-bold text-uppercase tracking-wider" href="home">
+            <i class="bi bi-shop text-primary me-2"></i>StoreBlazor
+        </a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -8,36 +14,73 @@
 </div>
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+    <nav class="nav flex-column py-2">
+
+        <div class="nav-item px-3 my-1">
+            <NavLink class="nav-link rounded-3 d-flex align-items-center" href="home" Match="NavLinkMatch.All">
+                <i class="bi bi-house-door-fill me-3 fs-5"></i> <span>Home</span>
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="Aree">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Aree
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="clienti">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Clienti
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="dipendenti">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Dipendenti
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="richieste">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Richieste
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="login">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
-            </NavLink>
+
+        @if (AuthState.Ruolo == "Admin")
+        {
+            <div class="text-muted small px-4 pt-3 pb-1 text-uppercase fw-bold" style="font-size: 0.75rem;">
+                Amministrazione
+            </div>
+
+            <div class="nav-item px-3 my-1">
+                <NavLink class="nav-link rounded-3 d-flex align-items-center" href="Aree">
+                    <i class="bi bi-grid-3x3-gap-fill me-3 fs-5 text-info"></i> <span>Aree</span>
+                </NavLink>
+            </div>
+
+            <div class="nav-item px-3 my-1">
+                <NavLink class="nav-link rounded-3 d-flex align-items-center" href="clienti">
+                    <i class="bi bi-people-fill me-3 fs-5 text-warning"></i> <span>Clienti</span>
+                </NavLink>
+            </div>
+
+            <div class="nav-item px-3 my-1">
+                <NavLink class="nav-link rounded-3 d-flex align-items-center" href="dipendenti">
+                    <i class="bi bi-person-badge-fill me-3 fs-5 text-success"></i> <span>Dipendenti</span>
+                </NavLink>
+            </div>
+
+            <div class="nav-item px-3 my-1">
+                <NavLink class="nav-link rounded-3 d-flex align-items-center" href="richieste">
+                    <i class="bi bi-clipboard-check-fill me-3 fs-5 text-danger"></i> <span>Richieste</span>
+                </NavLink>
+            </div>
+        }
+
+        @if (AuthState.Ruolo == "Dipendente")
+        {
+            <div class="text-muted small px-4 pt-3 pb-1 text-uppercase fw-bold" style="font-size: 0.75rem;">
+                Area Personale
+            </div>
+
+            <div class="nav-item px-3 my-1">
+                <NavLink class="nav-link rounded-3 d-flex align-items-center" href="calendario">
+                    <i class="bi bi-calendar3 me-3 fs-5 text-primary"></i> <span>Mio Calendario</span>
+                </NavLink>
+            </div>
+        }
+
+        <div class="border-top border-secondary my-3 mx-3"></div>
+
+        <div class="nav-item px-3 my-1">
+            @if (!string.IsNullOrEmpty(AuthState.Token))
+            {
+                <NavLink class="nav-link rounded-3 d-flex align-items-center text-danger" href="" @onclick="Logout">
+                    <i class="bi bi-box-arrow-left me-3 fs-5"></i> <span>Logout</span>
+                </NavLink>
+            }
+            else
+            {
+                <NavLink class="nav-link rounded-3 d-flex align-items-center" href="">
+                    <i class="bi bi-box-arrow-in-right me-3 fs-5"></i> <span>Login</span>
+                </NavLink>
+            }
         </div>
     </nav>
 </div>
@@ -50,5 +93,14 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void Logout()
+    {
+        // Pulisci lo stato dell'autenticazione quando si clicca su Logout
+        AuthState.Token = null;
+        AuthState.Ruolo = null;
+        AuthState.CodiceUtente = null;
+        NavigationManager.NavigateTo("/");
     }
 }

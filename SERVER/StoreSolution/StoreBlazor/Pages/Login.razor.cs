@@ -23,12 +23,14 @@ namespace StoreBlazor.Pages
         
 
         string? errore = null;
+        string? successo = null;
         public async Task login()
         {
             var risposta=await AuthService!.Login(credenziali);
             if (risposta == null)
             {
                 errore = "Credenziali errate";
+                successo = null;
                 
                 
 
@@ -39,15 +41,22 @@ namespace StoreBlazor.Pages
                 AuthState!.Token = risposta.Token;
                 AuthState.Ruolo = risposta.Ruolo;
                 AuthState.CodiceUtente = risposta.CodiceUtente;
-                
-                
+                successo = "Login avvenuto con successo!";
+
+
+
+                if (AuthState.Ruolo == "Admin")
+                {
+                    Navigation!.NavigateTo("admin/home");
+                }
+               
                 
 
             }
 
 
 
-
+            
 
           }
     }
