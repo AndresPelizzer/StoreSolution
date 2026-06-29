@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StoreAPI.Data;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,28 @@ builder.Services.AddDbContext<StoreDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
+var jwtKey = builder.Configuration["JwtSettings:SecretKey"];
+var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
+var jwtAudience = builder.Configuration["JwtSettings:Audience"];
+
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtKey!))
+        };
+    });
+
+
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -36,6 +60,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+
 
 app.UseAuthorization();
 app.UseCors();

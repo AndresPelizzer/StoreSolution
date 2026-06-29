@@ -19,7 +19,15 @@ builder.Services.AddScoped<IAreeService, AreeService>();
 builder.Services.AddScoped<IDipendentiService, DipendentiService>();
 builder.Services.AddScoped<IClientiService,ClientiService>();
 builder.Services.AddScoped<IRichiesteService, RichiesteService>();
+builder.Services.AddSingleton<AuthState>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 
 
 await builder.Build().RunAsync();
+
+
+
+
+
+

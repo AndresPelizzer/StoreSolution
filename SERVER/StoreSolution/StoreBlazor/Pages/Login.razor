@@ -1,0 +1,31 @@
+﻿@page "/login"
+
+
+<div class="container mt-5">
+    <div class="card ">
+        <div class="card-header">
+            <h4>Login</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-control" @bind="credenziali.Username" placeholder="Inserisci Username" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" @bind="credenziali.Password" placeholder="Inserisci Password"/>
+            </div>
+            <button type="button" class="btn btn-outline-secondary" @onclick="login">LOGIN</button>
+
+            @if (errore != null)
+            {
+                <p class="text-danger mt-2">@errore</p>
+            }
+            
+
+        </div>
+
+
+    </div>
+
+</div>

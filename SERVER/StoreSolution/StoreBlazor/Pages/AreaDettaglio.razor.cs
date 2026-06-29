@@ -42,6 +42,11 @@ namespace StoreBlazor.Pages
             await AreeService!.UpdateArea(area, area.Codice ?? 0);
             Navigation!.NavigateTo("/aree");
         }
+
+        void VisualizzaDipendentiArea(int id) {
+
+            Navigation!.NavigateTo($"/area/{id}/dipendenti");
+        }
     }
-    }
+}
 

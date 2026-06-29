@@ -63,7 +63,8 @@ else
                     <input class="form-control" @bind="AreaModificata!.Note" />
                 </div>
             </div>
-            <div class="card-footer">
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <buttom class="btn btn-outline-secondary" @onclick="()=> VisualizzaDipendentiArea(AreaModificata.Codice ?? 0)">Visualizza Dipendenti</buttom>
                 <button class="btn btn-success" @onclick="() => modificaArea(AreaModificata!)">Salva</button>
             </div>
         </div>

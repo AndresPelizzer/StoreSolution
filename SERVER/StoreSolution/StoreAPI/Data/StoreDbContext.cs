@@ -29,5 +29,7 @@ namespace StoreAPI.Data
 
         
         public DbSet<Dipendente> Dipendenti { get; set; }
+
+        public DbSet<Utente> Utenti { get; set; }
     }
 }

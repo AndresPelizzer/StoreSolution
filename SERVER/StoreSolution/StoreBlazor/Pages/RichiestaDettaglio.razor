@@ -1,0 +1,209 @@
+﻿@page "/richiesta/{id:int}"
+
+<h3>RichiestaDettaglio</h3>
+
+@if (loading)
+{
+    <div class="d-flex justify-content-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+}
+else
+{
+    if (Id == 0)
+    {
+        <div class="container mt-5">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Aggiungi Richiesta</h5>
+                    <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo("/richieste")'>
+                        <i class="bi bi-arrow-left"></i> Torna
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Codice</label>
+                        <input class="form-control" type="text" @bind="NuovaRichiesta!.Codice" disabled />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Titolo</label>
+                        <input class="form-control" type="text" @bind="NuovaRichiesta.Titolo" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Stato</label>
+                        <select class="form-select" @bind="NuovaRichiesta.Stato">
+                            <option value="">Seleziona Stato</option>
+                            <option value="Aperta">Aperta</option>
+                            <option value="In lavorazione">In lavorazione</option>
+                            <option value="Conclusa">Conclusa</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descrizione</label>
+                        <input class="form-control" type="email" @bind="NuovaRichiesta.Descrizione" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Data Richiesta</label>
+                        <input class="form-control" type="datetime" @bind="NuovaRichiesta.DataRichiesta" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Cliente</label>
+                       <select class="form-select" @bind="NuovaRichiesta.CodiceCliente">
+                           <option value="">Seleziona Cliente</option>
+                            @foreach(var cliente in clienti!)
+                            {
+                                <option value="@cliente.Codice">@cliente.Nome</option>
+                            }
+                        </select>
+                    </div>
+
+
+
+                    <div class="mb-3">
+                        <label class="form-label">Area</label>
+                       
+                        <select class="form-select" @bind="NuovaRichiesta.CodiceArea">
+                            <option value="">Seleziona Area</option>
+                            @foreach (var area in aree!)
+                            {
+                                <option value="@area.Codice">@area.Descrizione</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dipendenti</label>
+                        <select class="form-select" @bind="NuovaRichiesta.CodiceDipendente">
+                            <option value="">Seleziona Dipendente</option>
+                            @foreach (var dipendente in dipendenti!)
+                            {
+                                <option value="@dipendente.Codice">@dipendente.Nome</option>
+                            }
+                        </select>
+                    </div>
+
+
+                </div>
+                <div class="card-footer">
+
+
+                    <button class="btn btn-success" @onclick="() => salvaRichiesta(NuovaRichiesta)">Salva</button>
+                </div>
+            </div>
+        </div>
+
+    }
+
+
+
+    else
+    {
+
+        <div class="container mt-5">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Aggiungi Richiesta</h5>
+                    <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo("/richieste")'>
+                        <i class="bi bi-arrow-left"></i> Torna
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Codice</label>
+                        <input class="form-control" type="text" @bind="RichiestaModificata!.Codice" disabled />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Titolo</label>
+                        <input class="form-control" type="text" @bind="RichiestaModificata.Titolo" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Stato</label>
+                        <select class="form-select" @bind="RichiestaModificata.Stato">
+                            <option value="">Seleziona Stato</option>
+                            <option value="Aperta">Aperta</option>
+                            <option value="In lavorazione">In lavorazione</option>
+                            <option value="Conclusa">Conclusa</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descrizione</label>
+                        <input class="form-control" type="email" @bind="RichiestaModificata.Descrizione" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Data Richiesta</label>
+                        <input class="form-control" type="datetime" @bind="RichiestaModificata.DataRichiesta" />
+                    </div>
+
+
+
+
+
+
+
+
+
+
+                    <div class="mb-3">
+                        <label class="form-label">Cliente</label>
+                        <select class="form-select" @bind="RichiestaModificata!.CodiceCliente">
+                            <option value="">--Seleziona Cliente--</option>
+                            @foreach (var cliente in clienti!)
+                            {
+                                <option value="@cliente.Codice">@cliente.Nome @cliente.Cognome</option>
+                            }
+                        </select>
+                    </div>
+
+
+
+
+
+
+
+                    <div class="mb-3">
+                        <label class="form-label">Area</label>
+
+                        <select class="form-select" @bind="RichiestaModificata.CodiceArea">
+                            <option value="">--Seleziona Area--</option>
+                            @foreach (var area in aree!)
+                            {
+                                <option value="@area.Codice">@area.Descrizione</option>
+                            }
+                        </select>
+                    </div>
+
+
+
+
+
+                    <div class="mb-3">
+                        <label class="form-label">Dipendenti</label>
+                        <select class="form-select" @bind="RichiestaModificata.CodiceDipendente">
+                            <option value="">--Seleziona Dipendente--</option>
+                            @foreach (var dipendente in dipendenti!)
+                            {
+                                <option value="@dipendente.Codice">@dipendente.Nome</option>
+                            }
+                        </select>
+                    </div>
+
+
+
+
+
+
+
+                </div>
+                <div class="card-footer">
+
+
+                    <button class="btn btn-success" @onclick="() =>modificaRichiesta(RichiestaModificata, RichiestaModificata.Codice)">Salva modifiche</button>
+                </div>
+            </div>
+        </div>
+
+
+    }
+
+}
+

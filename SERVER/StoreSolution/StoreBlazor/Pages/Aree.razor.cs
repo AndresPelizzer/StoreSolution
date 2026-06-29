@@ -34,6 +34,12 @@ namespace StoreBlazor.Pages
             Navigation!.NavigateTo($"aree/{id}");
         }
 
+        public async Task elimina(int id)
+        {
+            await AreeService!.DeleteArea(id);
+
+            aree!.RemoveAll(a => a.Codice == id);
+        }
 
     }
 }

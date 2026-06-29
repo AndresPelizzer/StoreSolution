@@ -1,0 +1,47 @@
+﻿@page "/area/{id:int}/dipendenti"
+
+@if (loading)
+{
+    <div class="d-flex justify-content-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+}
+else
+{
+
+
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Dipendenti : @dipendenti!.Count()</h5>
+                <button type="button" class="btn btn-outline-warning"  @onclick="()=> TornaIndietro(area!.Codice ?? 0)">Torna</button>
+            </div>
+            <div class="card-body">
+                @foreach(var dipendente in dipendenti!)
+                {
+                    <dl class="row mt-5">
+                        <dt class="col-sm-3 text-muted">Nome</dt>
+                        <dd class="col-sm-9">@dipendente.Nome</dd>
+
+                        <dt class="col-sm-3 text-muted">Cognome</dt>
+                        <dd class="col-sm-9">@dipendente.Cognome</dd>
+
+                        <dt class="col-sm-3 text-muted">Email</dt>
+                        <dd class="col-sm-9">@dipendente.Email</dd>
+
+                        <dt class="col-sm-3 text-muted" >Qualifica</dt>
+                        <dd class="col-sm-9">@dipendente.Qualifica</dd>
+
+                        <dt class="col-sm-3 text-muted">Capo Area</dt>
+                        <dd class="col-sm-9">@dipendente.CapoArea</dd>
+
+
+
+                        <dt class="col-sm-3 text-muted">Note</dt>
+                        <dd class="col-sm-9">@dipendente.Note</dd>
+                    </dl>
+                }
+            </div>
+        </div>
+    </div>
+}

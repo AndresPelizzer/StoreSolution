@@ -1,0 +1,64 @@
+﻿@page "/richieste"
+
+
+@if (loading)
+{
+    <div class="d-flex justify-content-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+}
+else
+{
+    
+
+
+ <div class="container mt-5">
+     <div class="card">
+         <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0">Richieste <span class="badge bg-primary ms-1">@richieste!.Count</span></h5>
+                    <button class="btn btn-primary btn-sm" @onclick="() => VaiADettaglioRichieste(0)">
+                        <i class="bi bi-plus-lg"></i> Nuovo
+                    </button>
+         </div>
+         <div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Codice</th>
+                    <th>Titolo</th>
+                    <th>Stato</th>
+                    <th>Descrizione</th>
+                    <th>DataRichiesta</th>
+                    <th>Cliente</th>
+                    <th>Area</th>
+                    <th>Dipendenti</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                    @foreach(var richiesta in richieste!)
+                    {
+                                    <tr @onclick="() => VaiADettaglioRichieste(richiesta.Codice)" style="cursor:pointer">
+                            <td >@richiesta.Codice</td>
+                            <td>@richiesta.Titolo</td>
+                            <td>@richiesta.Stato</td>
+                            <td>@richiesta.Descrizione</td>
+                            <td>@richiesta.DataRichiesta</td>
+                            <td>@richiesta.Cliente!.Nome</td>
+                            <td>@richiesta.Area!.Descrizione</td>
+                            <td>@(richiesta.Dipendente?.Nome ?? "Non assegnato")</td>
+                                        <td class="text-center"><button type="button" class="btn btn-outline-danger btn-sm" @onclick="() => elimina(richiesta.Codice)" @onclick:stopPropagation="true"> <i class="bi bi-trash"></i> </button></td>
+                        </tr>
+                    }
+                
+            </tbody>
+        </table>
+    </div>
+        </div>
+            </div>
+ </div>
+    </div>
+
+}
