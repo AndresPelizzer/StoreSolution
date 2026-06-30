@@ -21,6 +21,7 @@ builder.Services.AddScoped<IClientiService,ClientiService>();
 builder.Services.AddScoped<IRichiesteService, RichiesteService>();
 builder.Services.AddSingleton<AuthState>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUtentiService, UtentiService>();
 
 
 

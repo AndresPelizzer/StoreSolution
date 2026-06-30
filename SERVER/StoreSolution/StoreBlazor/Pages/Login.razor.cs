@@ -17,13 +17,27 @@ namespace StoreBlazor.Pages
         [Inject]
         public AuthState? AuthState { get; set; }
 
+        Utente? utente = new Utente();
+
         [Inject]
         public NavigationManager? Navigation {  get; set; }
 
         
+        public List<Utente>? utenti = new List<Utente>();
+
+        [Inject]
+        public IUtentiService? UtentiService { get; set; }
+        
 
         string? errore = null;
         string? successo = null;
+
+        protected override async Task OnInitializedAsync()
+        {
+            utenti = await UtentiService!.GetUtenti();
+
+            
+        }
         public async Task login()
         {
             var risposta=await AuthService!.Login(credenziali);
@@ -48,6 +62,14 @@ namespace StoreBlazor.Pages
                 if (AuthState.Ruolo == "Admin")
                 {
                     Navigation!.NavigateTo("admin/home");
+                }
+                else if (AuthState.Ruolo == "Dipendente")
+                {
+                    utente = utenti!.FirstOrDefault(u => u.Codice == risposta.CodiceUtente);
+
+
+
+                    Navigation!.NavigateTo($"dipendente/{utente!.CodiceDipendente}/home");
                 }
                
                 
