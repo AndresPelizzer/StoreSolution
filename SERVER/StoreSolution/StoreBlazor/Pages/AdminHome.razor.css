@@ -1,0 +1,136 @@
+/* CSS for AdminHome component */
+.dashboard {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboard-header {
+    margin-bottom: 2rem;
+}
+
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 0.25rem;
+    }
+
+    .dashboard-header p {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-decoration: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+    .stat-card:hover {
+        border-color: #c7d2fe;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.stat-icon-blue {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.stat-icon-purple {
+    background: #f5f3ff;
+    color: #7c3aed;
+}
+
+.stat-icon-amber {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+.stat-icon-green {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.section-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 1rem;
+}
+
+.nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.nav-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem 1rem;
+    text-decoration: none;
+    color: #334155;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+    .nav-card:hover {
+        border-color: #c7d2fe;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        color: #4f46e5;
+    }
+
+    .nav-card i {
+        font-size: 1.5rem;
+        color: #4f46e5;
+    }

@@ -28,7 +28,7 @@ namespace StoreBlazor.Pages
         [Inject]
         public IUtentiService? UtentiService { get; set; }
         
-
+        
         string? errore = null;
         string? successo = null;
 
@@ -63,7 +63,7 @@ namespace StoreBlazor.Pages
                 {
                     Navigation!.NavigateTo("admin/home");
                 }
-                else if (AuthState.Ruolo == "Dipendente")
+                else if (AuthState.Ruolo == "dipendente")
                 {
                     utente = utenti!.FirstOrDefault(u => u.Codice == risposta.CodiceUtente);
 

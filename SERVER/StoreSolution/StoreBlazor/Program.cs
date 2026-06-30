@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Radzen;
 using StoreBlazor;
 using StoreBlazor.Services;
 using StoreShared.Interfaces;
@@ -14,6 +15,8 @@ builder.Services.AddScoped(sp => new HttpClient
 });
 
 
+builder.Services.AddScoped<IUtentiService, UtentiService>();
+
 
 builder.Services.AddScoped<IAreeService, AreeService>();
 builder.Services.AddScoped<IDipendentiService, DipendentiService>();
@@ -21,7 +24,11 @@ builder.Services.AddScoped<IClientiService,ClientiService>();
 builder.Services.AddScoped<IRichiesteService, RichiesteService>();
 builder.Services.AddSingleton<AuthState>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUtentiService, UtentiService>();
+
+builder.Services.AddScoped<DialogService>();
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<TooltipService>();
+builder.Services.AddScoped<ContextMenuService>();
 
 
 

@@ -1,5 +1,4 @@
-﻿
-using StoreShared.Interfaces;
+﻿using StoreShared.Interfaces;
 using StoreShared.Models;
 using System.Net.Http.Json;
 
@@ -7,7 +6,6 @@ namespace StoreBlazor.Services
 {
     public class UtentiService : IUtentiService
     {
-
         private readonly HttpClient _http;
 
         public UtentiService(HttpClient http)
@@ -58,5 +56,7 @@ namespace StoreBlazor.Services
                 return null;
             }
         }
+
+
     }
 }

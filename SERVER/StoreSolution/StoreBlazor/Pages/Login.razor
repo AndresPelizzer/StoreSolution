@@ -1,42 +1,38 @@
 ﻿@page "/"
 @layout LoginLayout
 
-
-
-<div style="max-width:420px; width:100%">
-    <h1 class="text-center text-secondary mb-4"><i class="bi bi-shield-lock"></i> STORE BLAZOR</h1>
-    <div class="card bg-dark   shadow-lg rounded-3 " >
-        <div class="card-header">
-            <h4 class="text-white">Login</h4>
+<div class="login-center">
+    <div class="login-card">
+        <div class="brand-logo">
+            <i class="bi bi-shield-lock-fill"></i>
         </div>
-        <div class="card-body">
-            <div class="mb-3">
-            <label class="form-label text-white">Username</label>
-            <input type="text" class="form-control rounded-3" @bind="credenziali.Username" placeholder="Inserisci Username" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label text-white">Password</label>
-                <input type="password" class="form-control rounded-3" @bind="credenziali.Password" placeholder="Inserisci Password"/>
-            </div>
-            <button type="button" class="btn btn-primary w-100" @onclick="login">LOGIN</button>
+        <h2 class="form-title">Store Blazor</h2>
+        <p class="form-subtitle">Inserisci le tue credenziali per continuare</p>
 
-            @if (errore != null)
-            {
-                <div class="mt-2">
-                    <p class="text-danger">@errore</p>
-                </div>
-            }
-            @if (successo != null)
-            {
-                <div class="card mt-2">
-                    <p class="text-success">@successo</p>
-                </div>
-            }
-            
-
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-control" @bind="credenziali.Username" placeholder="es. mrossi" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" @bind="credenziali.Password" placeholder="••••••••" />
         </div>
 
+        <button type="button" class="btn btn-primary w-100 mt-2" @onclick="login">
+            Accedi
+        </button>
 
+        @if (errore != null)
+        {
+            <div class="alert-msg alert-error mt-3">
+                <i class="bi bi-exclamation-circle"></i> @errore
+            </div>
+        }
+        @if (successo != null)
+        {
+            <div class="alert-msg alert-success mt-3">
+                <i class="bi bi-check-circle"></i> @successo
+            </div>
+        }
     </div>
-
 </div>

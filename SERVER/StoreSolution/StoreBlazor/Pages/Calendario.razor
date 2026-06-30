@@ -1,39 +1,31 @@
-﻿@page "/calendario{id:int}"
+﻿@page "/calendario/{id:int}"
 @using StoreShared.Interfaces
 @using StoreShared.Models
+@using Radzen
+@using Radzen.Blazor
 
 <h3>Calendario</h3>
 
-
-
-@foreach(var richiesta in richieste!)
-{
-    <div class="card">
-
-    <dl>
-        <dt>TITOLO</dt>
-        <dd>@richiesta.Titolo</dd>
-    </dl>
-    <dl>
-        <dt>DESCRIZIONE</dt>
-        <dd>@richiesta.Descrizione</dd>
-    </dl>
-    <dl>
-        <dt>STATO</dt>
-        <dd>@richiesta.Stato</dd>
-    </dl>
-
-    </div>
-
-    
-
-
-    
-}
+<RadzenScheduler @ref=scheduler
+                 style="height: 768px;"
+                 TItem="Richiesta"
+                 Data="@richieste"
+                 StartProperty="DataRichiesta"
+                 EndProperty="DataRichiesta"
+                 TextProperty="Titolo"
+                 SelectedView="SchedulerView.Month"
+                 AppointmentRender="OnAppointmentRender"
+                 AppointmentSelect="OnAppointmentSelect">
+    <ChildContent>
+        <RadzenMonthView />
+    </ChildContent>
+    <Template Context="data">
+        @data.Titolo
+    </Template>
+</RadzenScheduler>
 
 @code {
-
-
+    RadzenScheduler<Richiesta>? scheduler;
 
     [Inject]
     public IRichiesteService? RichiesteService { get; set; }
@@ -41,32 +33,43 @@
     [Inject]
     public IDipendentiService? DipendentiService { get; set; }
 
-    public List<Dipendente>? dipendenti = new();
     public List<Richiesta>? richieste = new();
 
     [Parameter]
-
     public int Id { get; set; }
 
+    [Inject]
+    public NavigationManager? Navigation { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        
         var dipendente = await DipendentiService!.GetDipendente(Id);
         richieste = await RichiesteService!.GetRichieste();
 
-
         richieste = richieste!.Where(r => r.CodiceDipendente == dipendente!.Codice).ToList();
-
-        
-
-       
-        
-        
-
-        
-
     }
+    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Richiesta> args)
+    {
+        var stato = args.Data!.Stato?.Trim().ToLower();
 
-
+        if (stato == "aperta")
+        {
+            args.Attributes["style"] = "background: #dc3545;";
+        }
+        else if (stato == "in lavorazione")
+        {
+            args.Attributes["style"] = "background: #ffc107; color: black;";
+        }
+        else if (stato == "conclusa")
+        {
+            args.Attributes["style"] = "background: #198754;";
+        }
+    }
+    void OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Richiesta> args)
+    {
+        Navigation!.NavigateTo($"/richiesta/{args.Data!.Codice}");
+    }
 }
+
+
+

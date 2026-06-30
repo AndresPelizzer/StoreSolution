@@ -1,67 +1,63 @@
 ﻿@page "/admin/home"
 @layout AdminLayout
+@using StoreShared.Interfaces
 
-<div class="container-fluid">
-    <div class="row g-4">
-        <div class="col-md-6">
-            <a href="clienti" class="text-decoration-none">
-                <div class="card shadow-sm h-100 border-0">
-                    <div class="card-header bg-primary text-white py-3">
-                        <h3 class="text-center mb-0">
-                            <i class="bi bi-people-fill me-2"></i>CLIENTI
-                        </h3>
-                    </div>
-                    <div class="card-body text-center py-5 bg-light">
-                        <i class="bi bi-people-fill text-primary" style="font-size: 5rem;"></i>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-md-6">
-            <a href="dipendenti" class="text-decoration-none">
-                <div class="card shadow-sm h-100 border-0">
-                    <div class="card-header bg-primary text-white py-3">
-                        <h3 class="text-center mb-0">
-                            <i class="bi bi-person-badge-fill me-2"></i>DIPENDENTI
-                        </h3>
-                    </div>
-                    <div class="card-body text-center py-5 bg-light">
-                        <i class="bi bi-person-badge-fill text-primary" style="font-size: 5rem;"></i>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-md-6">
-            <a href="richieste" class="text-decoration-none">
-                <div class="card shadow-sm h-100 border-0">
-                    <div class="card-header bg-primary text-white py-3">
-                        <h3 class="text-center mb-0">
-                            <i class="bi bi-clipboard-check-fill me-2"></i>RICHIESTE
-                        </h3>
-                    </div>
-                    <div class="card-body text-center py-5 bg-light">
-                        <i class="bi bi-clipboard-check-fill text-primary" style="font-size: 5rem;"></i>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-md-6">
-            <a href="aree" class="text-decoration-none">
-                <div class="card shadow-sm h-100 border-0">
-                    <div class="card-header bg-primary text-white py-3">
-                        <h3 class="text-center mb-0">
-                            <i class="bi bi-geo-alt-fill me-2"></i>AREE
-                        </h3>
-                    </div>
-                    <div class="card-body text-center py-5 bg-light">
-                        <i class="bi bi-geo-alt-fill text-primary" style="font-size: 5rem;"></i>
-                    </div>
-                </div>
-            </a>
-        </div>
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1>Panoramica</h1>
+        <p>Riepilogo generale dell'attività</p>
     </div>
-</div>
 
+    @if (loading)
+    {
+        <div class="d-flex justify-content-center mt-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    }
+    else
+    {
+        <div class="stats-grid">
+            <a href="clienti" class="stat-card">
+                <div class="stat-icon stat-icon-blue">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">@totaleClienti</span>
+                    <span class="stat-label">Clienti</span>
+                </div>
+            </a>
+
+            <a href="dipendenti" class="stat-card">
+                <div class="stat-icon stat-icon-purple">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">@totaleDipendenti</span>
+                    <span class="stat-label">Dipendenti</span>
+                </div>
+            </a>
+
+            <a href="richieste" class="stat-card">
+                <div class="stat-icon stat-icon-amber">
+                    <i class="bi bi-clipboard-check-fill"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">@richiesteAperte</span>
+                    <span class="stat-label">Richieste aperte</span>
+                </div>
+            </a>
+
+            <a href="aree" class="stat-card">
+                <div class="stat-icon stat-icon-green">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">@totaleAree</span>
+                    <span class="stat-label">Aree</span>
+                </div>
+            </a>
+        </div>
+
+      
+    }
+</div>

@@ -1,14 +1,35 @@
 ﻿@inherits LayoutComponentBase
+@inject AuthState AuthState
+@inject NavigationManager Navigation
+@using StoreBlazor.Services
 
-@* <NavMenu /> *@
 
-<div class="d-flex justify-content-center align-items-center bg-success">
-    <h1 class="text-dark">ADMIN</h1>
+<div class="admin-shell">
+    <header class="admin-topbar">
+        <div class="topbar-brand">
+            <i class="bi bi-shield-lock-fill"></i>
+            <span>Store Blazor</span>
+        </div>
+        <div class="topbar-actions">
+            <span class="topbar-role">Amministratore</span>
+            <button class="btn-logout" @onclick="Logout">
+                <i class="bi bi-box-arrow-right"></i> Esci
+            </button>
+        </div>
+    </header>
+
+    <main class="admin-content">
+        @Body
+    </main>
 </div>
 
- <div class="container-fluid mt-4 px-4">
-    @Body
- </div>
-
-
+@code {
+    void Logout()
+    {
+        AuthState.Token = null;
+        AuthState.Ruolo = null;
+        AuthState.CodiceUtente = null;
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+}
 
