@@ -58,5 +58,39 @@ namespace StoreBlazor.Services
                 return null;
             }
         }
+
+        public async Task<ImportResult?> ImportClienti(Stream fileStream, string fileName)
+        {
+            using var content = new MultipartFormDataContent();
+            using var fileContent = new StreamContent(fileStream);
+            content.Add(fileContent, "file", fileName);
+
+            var response = await _http.PostAsync("api/Clienti/import", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ImportResult>();
+            }
+            return null;
+        }
+
+
+        public async Task<ImportResult?> ImportClientiCsv(Stream fileStream, string fileName)
+        {
+            using var content = new MultipartFormDataContent();
+            using var fileContent = new StreamContent(fileStream);
+            content.Add(fileContent, "file", fileName);
+
+            var response = await _http.PostAsync("api/Clienti/import-csv", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ImportResult>();
+            }
+            return null;
+        }
+
+
+
     }
 }

@@ -1,19 +1,18 @@
 ﻿@page "/dipendente/{id:int}/home"
 @layout DipendenteLayout
 
-
-<div class="container-fluid">
-    <div class="row g-4">
-        <div class="col-md-6">
-            <a href="calendario/@Id" class="text-decoration-none">
-                <div class="card shadow-sm h-100 border-0">
+<div class="container-fluid py-4">
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <a href="calendario/@Id" class="text-decoration-none dashboard-card-link">
+                <div class="card shadow-sm h-100 border-0 dashboard-card">
                     <div class="card-header bg-primary text-white py-3">
-                        <h3 class="text-center mb-0">
-                            <i class="bi bi-people-fill me-2"></i>CALENDARIO
+                        <h3 class="text-center mb-0 fs-5">
+                            <i class="bi bi-calendar3 me-2"></i>CALENDARIO
                         </h3>
                     </div>
                     <div class="card-body text-center py-5 bg-light">
-                        <i class="bi bi-people-fill text-primary" style="font-size: 5rem;"></i>
+                        <i class="bi bi-calendar3 text-primary" style="font-size: 4.5rem;"></i>
                     </div>
                 </div>
             </a>
@@ -21,8 +20,28 @@
     </div>
 </div>
 
+<style>
+    .dashboard-card-link {
+        display: block;
+    }
 
-@code{
+    .dashboard-card {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .dashboard-card .card-header {
+            border-bottom: none;
+        }
+</style>
+
+@code {
     [Parameter]
     public int Id { get; set; }
 }

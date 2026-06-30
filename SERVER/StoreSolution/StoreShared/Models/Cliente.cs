@@ -13,5 +13,7 @@ namespace StoreShared.Models
         public string? Email { get; set; }
         public string? Settore { get; set; }
 
+        public string? PartitaIva {  get; set; }
+
     }
 }

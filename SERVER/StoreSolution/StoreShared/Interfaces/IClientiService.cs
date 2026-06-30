@@ -13,7 +13,8 @@ namespace StoreShared.Interfaces
         Task<Cliente?> UpdateCliente(Cliente Cliente, int id);
 
         Task DeleteCliente(int id);
+        Task<ImportResult?> ImportClienti(Stream fileStream, string fileName);
 
-
+        Task<ImportResult?> ImportClientiCsv(Stream fileStream, string fileName);
     }
 }

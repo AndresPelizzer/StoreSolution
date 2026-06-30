@@ -14,11 +14,22 @@
     {
         <div class="card border-0 shadow-sm rounded-3">
             <div class="card-header bg-white border-bottom-0 pt-4 px-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex  align-items-center mb-3 justify-content-around">
                     <h4 class="mb-0 fw-bold text-secondary">
                         Clienti
                         <span class="badge bg-primary-subtle text-primary rounded-pill ms-2 fs-6">@clienti.Count</span>
                     </h4>
+                    <InputFile OnChange="ImportaExcel" @ref="inputFileRef" style="display:none" accept=".xlsx" />
+                    <InputFile OnChange="ImportaCsv" @ref="inputFileCsvRef" style="display:none" accept=".csv" />
+
+                    <button class="btn btn-secondary btn-sm px-3 rounded-pill shadow-sm me-2" @onclick="ApriSelezioneFile">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Import Excel
+                    </button>
+
+                    <button class="btn btn-outline-secondary btn-sm px-3 rounded-pill shadow-sm me-2" @onclick="ApriSelezioneFileCsv">
+                        <i class="bi bi-filetype-csv me-2"></i> Import CSV
+                    </button>
+
                     <button class="btn btn-primary btn-sm px-3 rounded-pill shadow-sm" @onclick="ApriNuovoCliente">
                         <i class="bi bi-plus-lg me-1"></i> Nuovo Cliente
                     </button>
@@ -45,6 +56,7 @@
                                 <th @onclick='() => Ordina("Cognome")' style="cursor:pointer" class="user-select-none">Cognome <i class="bi bi-arrow-down-up ms-1 small text-muted"></i></th>
                                 <th @onclick='() => Ordina("Email")' style="cursor:pointer" class="user-select-none">Email <i class="bi bi-arrow-down-up ms-1 small text-muted"></i></th>
                                 <th @onclick='() => Ordina("Settore")' style="cursor:pointer" class="user-select-none">Settore <i class="bi bi-arrow-down-up ms-1 small text-muted"></i></th>
+                                <th >PartitaIVA </th>
                                 <th class="text-center pe-3">Azioni</th>
                             </tr>
                         </thead>
@@ -61,6 +73,7 @@
                                         <td>
                                             <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill">@cliente.Settore</span>
                                         </td>
+                                        <td>@cliente.PartitaIva</td>
                                         <td class="text-center pe-3">
                                             <button type="button" class="btn btn-sm btn-link text-danger p-0"
                                                     @onclick="() => elimina(cliente.Codice)"

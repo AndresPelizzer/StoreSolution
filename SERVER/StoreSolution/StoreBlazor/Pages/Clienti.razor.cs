@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using StoreShared.Interfaces;
 using StoreShared.Models;
@@ -156,5 +157,81 @@ namespace StoreBlazor.Pages
         {
             Navigation.NavigateTo($"/clienti/{id}");
         }
+
+        public async Task ImportaExcel(InputFileChangeEventArgs e)
+        {
+            var file = e.File;
+            if (file == null) return;
+
+            loading = true;
+            try
+            {
+                await using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); 
+                var risultato = await ClientiService!.ImportClienti(stream, file.Name);
+
+                if (risultato != null)
+                {
+                    await JS!.InvokeVoidAsync("alert",
+                        $"Importati {risultato.Inserted} su {risultato.Processed} righe processate.");
+                    clienti = await ClientiService!.GetClienti() ?? new();
+                }
+                else
+                {
+                    await JS!.InvokeVoidAsync("alert", "Import fallito.");
+                }
+            }
+            finally
+            {
+                loading = false;
+            }
+        }
+        private InputFile? inputFileRef;
+
+        private async Task ApriSelezioneFile()
+        {
+            await JS!.InvokeVoidAsync("clickElement", inputFileRef!.Element);
+        }
+
+        private InputFile? inputFileCsvRef;
+        private async Task ApriSelezioneFileCsv()
+        {
+            await JS!.InvokeVoidAsync("clickElement", inputFileCsvRef!.Element);
+        }
+
+        public async Task ImportaCsv(InputFileChangeEventArgs e)
+        {
+            var file = e.File;
+            if (file == null) return;
+
+            loading = true;
+            try
+            {
+                await using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+                var risultato = await ClientiService!.ImportClientiCsv(stream, file.Name);
+
+                if (risultato != null)
+                {
+                    await JS!.InvokeVoidAsync("alert",
+                        $"Importati da CSV {risultato.Inserted} su {risultato.Processed} righe processate.");
+                    clienti = await ClientiService!.GetClienti() ?? new();
+                }
+                else
+                {
+                    await JS!.InvokeVoidAsync("alert", "Import CSV fallito.");
+                }
+            }
+            finally
+            {
+                loading = false;
+            }
+        }
+
+
+
+
     }
 }
+
+
+
+
