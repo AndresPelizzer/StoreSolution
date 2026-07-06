@@ -43,6 +43,7 @@
                                 <th @onclick='() => Ordina("Qualifica")' style="cursor:pointer" class="user-select-none">Qualifica <i class="bi bi-arrow-down-up ms-1 small text-muted"></i></th>
                                 <th @onclick='() => Ordina("Note")' style="cursor:pointer" class="user-select-none">Note <i class="bi bi-arrow-down-up ms-1 small text-muted"></i></th>
                                 <th class="text-center pe-3">Azioni</th>
+                                <th class="text-center pe-3">TOGGLE</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,12 +62,34 @@
                                         <td class="text-truncate text-muted style-note" style="max-width: 150px;">@dipendente.Note</td>
                                         <td class="text-center pe-3">
                                             <button type="button" class="btn btn-sm btn-link text-danger p-0"
-                                                    @onclick="() => elimina(dipendente.Codice)"
-                                                    @onclick:stopPropagation="true">
+                                            @onclick="() => elimina(dipendente.Codice)"
+                                            @onclick:stopPropagation="true">
                                                 <i class="bi bi-trash fs-5"></i>
                                             </button>
                                         </td>
+                                        <td>
+                                            <button type="button" class="btn btn-info" @onclick="()=>ToggleAccordion(dipendente.Codice)" @onclick:stopPropagation="true">@(DipendenteApertoId==dipendente.Codice? "Chiudi" : "Mostra")</button>
+                                        </td>
+
                                     </tr>
+                                    @if (DipendenteApertoId == dipendente.Codice)
+                                    {
+
+
+                                        <tr>
+                                            <td colspan="5">
+                                                <dl>
+                                                    <dt>Nome</dt>
+                                                    <dd>@dipendente.Nome</dd>
+
+                                                    <dt>Cognome</dt>
+                                                    <dd>@dipendente.Cognome</dd>
+                                                </dl>
+
+                                            </td>
+                                        </tr>
+                                    }
+
                                 }
                             }
                             else
@@ -85,3 +108,13 @@
         </div>
     }
 </div>
+
+
+
+
+
+
+
+
+
+

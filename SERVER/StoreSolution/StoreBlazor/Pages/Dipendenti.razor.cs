@@ -88,5 +88,14 @@ namespace StoreBlazor.Pages
         {
             Navigation!.NavigateTo($"/dipendenti/{id}");
         }
+        private int? DipendenteApertoId = null;
+
+        public void ToggleAccordion(int codice)
+        {
+            DipendenteApertoId = DipendenteApertoId == codice ? null : codice;
+
+        }
+
+
     }
 }

@@ -42,6 +42,8 @@ namespace StoreBlazor.Pages
             }
             
             loading = false;
+
+
         }
 
         void TornaIndietro(int id)
@@ -49,6 +51,11 @@ namespace StoreBlazor.Pages
             Navigation!.NavigateTo($"/aree/{id}");
         }
 
+
+        public async Task AssegnaRichiesta()
+        {
+            Navigation!.NavigateTo("richieste");
+        }
 
 
 

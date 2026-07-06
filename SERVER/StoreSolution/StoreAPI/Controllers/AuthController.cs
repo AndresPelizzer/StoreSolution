@@ -63,13 +63,18 @@ using System.Text;
                     signingCredentials: creds
                 );
 
+                var dipendente = await _context.Dipendenti
+    .FirstOrDefaultAsync(d => d.Codice == utente.CodiceDipendente);
+
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
                 return Ok(new LoginResponse
                 {
                     Token = tokenString,
                     Ruolo = utente.Ruolo,
-                    CodiceUtente = utente.Codice
+                    CodiceUtente = utente.Codice,
+                    IsCapoArea = dipendente?.CapoArea
+
                 });
             }
             else

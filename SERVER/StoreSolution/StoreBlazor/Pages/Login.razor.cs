@@ -27,6 +27,9 @@ namespace StoreBlazor.Pages
 
         [Inject]
         public IUtentiService? UtentiService { get; set; }
+
+        [Inject]
+        public IDipendentiService? DipendentiService { get; set; }
         
         
         string? errore = null;
@@ -55,8 +58,8 @@ namespace StoreBlazor.Pages
                 AuthState!.Token = risposta.Token;
                 AuthState.Ruolo = risposta.Ruolo;
                 AuthState.CodiceUtente = risposta.CodiceUtente;
+                AuthState.IsCapoArea = (bool)risposta.IsCapoArea!;
                 successo = "Login avvenuto con successo!";
-
 
 
                 if (AuthState.Ruolo == "Admin")
@@ -65,12 +68,24 @@ namespace StoreBlazor.Pages
                 }
                 else if (AuthState.Ruolo == "dipendente")
                 {
+
+
                     utente = utenti!.FirstOrDefault(u => u.Codice == risposta.CodiceUtente);
 
+                    var dipendente = await DipendentiService!.GetDipendente(utente!.CodiceDipendente!.Value);
 
+                    if (AuthState.IsCapoArea == true)
+                    {
+                        Navigation!.NavigateTo($"capoarea/{dipendente!.CodiceAreaAppl}/home");
+                    }
+                    else
+                    {
 
-                    Navigation!.NavigateTo($"dipendente/{utente!.CodiceDipendente}/home");
+                        Navigation!.NavigateTo($"dipendente/{utente!.CodiceDipendente}/home");
+
+                    }
                 }
+                
                
                 
 

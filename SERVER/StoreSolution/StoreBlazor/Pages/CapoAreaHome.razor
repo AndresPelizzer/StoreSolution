@@ -1,0 +1,48 @@
+﻿@page "/capoarea/{id:int}/home"
+@using StoreBlazor.Services
+@using StoreShared.Interfaces
+@using StoreShared.Models
+
+<div class="container mt-5">
+  <div class="card">
+        <div class="card-header">
+            <h4 class="text-center text-primary">AREA</h4>
+        </div>
+        <div class="card-body">
+            <h4>@area!.Descrizione</h4>
+        </div>
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <button type="button" class="btn btn-outline-primary" @onclick="()=>VisualizzaRichieste(area.Codice ?? 0)">Visualizza Richieste</button>
+            <button type="button" class="btn btn-outline-primary"@onclick="()=>VisualizzaDipendenti(area.Codice ?? 0)">Visualizza Dipendenti</button>
+        </div>
+        </div>
+   
+</div>
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    [Inject]
+    public IAreeService? AreeService { get; set; }
+
+    [Inject]
+    public NavigationManager? Navigation { get; set; }
+
+    Area? area = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        area = await AreeService!.GetArea(Id);
+
+    }
+    public void VisualizzaRichieste(int Id)
+    {
+        Navigation!.NavigateTo($"area/{Id}/richieste");
+    }
+    public void VisualizzaDipendenti(int Id)
+    {
+        Navigation!.NavigateTo($"area/{Id}/dipendenti");
+    }
+}
