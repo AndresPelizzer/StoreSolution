@@ -1,0 +1,50 @@
+﻿@using StoreShared.Interfaces
+@using StoreShared.Models
+<h3>DettaglioDipendente</h3>
+
+
+
+    <div class="p-3">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Titolo</dt>
+            <dd class="col-sm-9">@Richiesta!.Titolo</dd>
+            <dt class="col-sm-3">Stato</dt>
+            <dd class="col-sm-9">@Richiesta.Stato</dd>
+            <dt class="col-sm-3">Descrizione</dt>
+            <dd class="col-sm-9">@Richiesta.Descrizione</dd>
+            <dt class="col-sm-3">Data</dt>
+            <dd class="col-sm-9">@Richiesta.DataRichiesta</dd>
+        </dl>
+    </div>
+
+
+@code {
+
+    
+
+    [Parameter]
+    public Richiesta? Richiesta { get; set; }
+
+    public List<Richiesta>? richieste = new();
+
+
+    [Inject]
+
+    public IRichiesteService? RichiesteService { get; set; }
+
+
+
+    // [Inject]
+    // public IDipendentiService? DipendentiService { get; set; }
+
+    // protected override async Task OnInitializedAsync()
+    // {
+
+    //     var dipendente = await DipendentiService!.GetDipendente(DipendenteId);
+    //     richieste = await RichiesteService!.GetRichieste();
+
+    //     richieste = richieste!.Where(r => r.CodiceDipendente == dipendente!.Codice).ToList();
+
+    // }
+
+}

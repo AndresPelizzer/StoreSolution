@@ -1,7 +1,88 @@
 ﻿@page "/dipendente/{id:int}/home"
+@using Radzen.Blazor.Rendering
+@using StoreShared.Interfaces
+@using StoreShared.Models
 @layout DipendenteLayout
 
-<div class="container-fluid py-4">
+<div class="container mt-5"> 
+
+    <div class="card">
+        <div class="card-header">
+            <a href="calendario/@Id" class="text-decoration-none dashboard-card-link">
+                <h3 class="text-center mb-0 fs-5">
+                    <i class="bi bi-calendar3 me-2"></i>CALENDARIO
+                </h3>
+            </a>
+        </div>
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th @onclick='() => Ordina("Titolo")' style="cursor:pointer">
+                                Titolo
+                                <i class="bi @(colonnaAttiva == "Titolo" ? (ascending ? "bi-sort-up" : "bi-sort-down") : "bi-sort")"></i>
+                            </th>
+                            <th @onclick='() => Ordina("Stato")' style="cursor:pointer">
+                                Stato
+                                <i class="bi @(colonnaAttiva == "Stato" ? (ascending ? "bi-sort-up" : "bi-sort-down") : "bi-sort")"></i>
+                            </th>
+                            <th @onclick='() => Ordina("Data")' style="cursor:pointer">
+                                Data
+                                <i class="bi @(colonnaAttiva == "Data" ? (ascending ? "bi-sort-up" : "bi-sort-down") : "bi-sort")"></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var richiesta in richieste!)
+                        {
+                            <tr>
+                                <td>@richiesta.Titolo</td>
+                                <td>@richiesta.Stato</td>
+                                <td>@richiesta.Descrizione</td>
+                                <td>@richiesta.DataRichiesta</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-link text-dark p-0"
+                                            @onclick="() => ToggleAccordion(richiesta.Codice)">
+                                        <i class="bi @(richiestaApertaId == richiesta.Codice ? "bi-chevron-up" : "bi-chevron-down") fs-5"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            @if (richiestaApertaId == richiesta.Codice)
+                            {
+                                <tr class="table-light">
+                                    <td colspan="5">
+
+
+                                        <DettaglioDipendente Richiesta="richiesta"></DettaglioDipendente>
+                                        @* <div class="p-3">
+                                            <dl class="row mb-0">
+                                                <dt class="col-sm-3">Titolo</dt>
+                                                <dd class="col-sm-9">@richiesta.Titolo</dd>
+                                                <dt class="col-sm-3">Stato</dt>
+                                                <dd class="col-sm-9">@richiesta.Stato</dd>
+                                                <dt class="col-sm-3">Descrizione</dt>
+                                                <dd class="col-sm-9">@richiesta.Descrizione</dd>
+                                                <dt class="col-sm-3">Data</dt>
+                                                <dd class="col-sm-9">@richiesta.DataRichiesta</dd>
+                                            </dl>
+                                        </div> *@
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+@* <div class="container-fluid py-4">
     <div class="row g-4 justify-content-center">
         <div class="col-md-6 col-lg-4">
             <a href="calendario/@Id" class="text-decoration-none dashboard-card-link">
@@ -18,7 +99,7 @@
             </a>
         </div>
     </div>
-</div>
+</div> *@
 
 <style>
     .dashboard-card-link {
@@ -44,4 +125,72 @@
 @code {
     [Parameter]
     public int Id { get; set; }
+
+    [Inject]
+    public NavigationManager? Navigation { get; set; }
+
+
+    [Inject]
+    public IRichiesteService? RichiesteService { get; set; }
+
+
+    [Inject]
+    public IDipendentiService? DipendentiService { get; set; }
+
+    public List<Richiesta>? richieste = new();
+
+    private int? richiestaApertaId = null;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        richieste = await RichiesteService!.GetRichieste();
+
+        var dipendente = await DipendentiService!.GetDipendente(Id);
+
+        richieste = richieste!.Where(r => r.CodiceDipendente == dipendente!.Codice).ToList();
+    }
+    public void ToggleAccordion (int codice)
+    {
+        richiestaApertaId = richiestaApertaId == codice ? null : codice;
+    }
+
+    private string colonnaAttiva = "";
+    private bool ascending = true;
+
+    public void Ordina(string colonna)
+    {
+        if (colonnaAttiva == colonna)
+        {
+            ascending = !ascending;
+        }
+        else
+        {
+            colonna = colonnaAttiva;
+            ascending = true;
+        }
+
+
+        richieste = ascending ? richieste!.OrderBy(r => GetValore(r, colonna)).ToList() : richieste!.OrderByDescending(r => GetValore(r, colonna)).ToList();
+    }
+
+
+    private object GetValore( Richiesta r,string colonna) => colonna switch
+    {
+    "Titolo" => r.Titolo ?? "",
+    "Stato" => r.Stato ?? "",
+    "Descrizione" => r.Descrizione ?? "",
+    "Data" => r.DataRichiesta,
+    _ => ""
+
+    };
+    
+
+
 }
+
+
+
+
+
+     
