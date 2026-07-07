@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.JSInterop;
 using StoreBlazor.Services;
 using StoreShared.Interfaces;
 using StoreShared.Models;
-using System.Formats.Tar;
 
 namespace StoreBlazor.Pages
 {
