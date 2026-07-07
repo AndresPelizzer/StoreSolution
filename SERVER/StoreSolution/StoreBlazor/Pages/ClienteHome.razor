@@ -1,0 +1,118 @@
+﻿@page "/cliente/{id:int}/home"
+@using Radzen.Blazor.Rendering
+@using StoreShared.Interfaces
+@using StoreShared.Models
+
+
+
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h3 class="text-primary">ClienteHome</h3>
+            <button type="button" class="btn btn-outline-info"> + Nuova Richiesta</button>
+
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="text-center text-dark" @onclick='()=>Ordina("Titolo")' style="cursor:pointer">TITOLO<i class="bi @(ColonnaAttiva=="Titolo" ? "bi-sort-up" : "bi-sort-down") "></i></th>
+                            <th class="text-center text-dark" @onclick='() => Ordina("Stato")' style="cursor:pointer">STATO</th>
+                            <th class="text-center text-dark" @onclick='() => Ordina("Descrizione")' style="cursor:pointer">DESCRIZIONE</th>
+                            <th class="text-center text-dark" @onclick='() => Ordina("DataRichiesta")' style="cursor:pointer">DATA RICHIESTA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var richiesta in richieste!)
+                        {
+                            <tr>
+                                <td>@richiesta.Titolo</td>
+                                @if (richiesta.Stato == "Aperta")
+                                {
+                                    <td class="text-center" style="color:forestgreen">Aperta</td>
+                                }else if (richiesta.Stato == "Lavorazione")
+                                {
+                                    <td class="text-center" style="color:gold">In Lavorazione</td>
+                                }
+                                else
+                                {
+                                    <td class="text-center" style="color:red">Conclusa</td>
+                                }
+                                <td>@richiesta.Descrizione</td>
+                                <td>@richiesta.DataRichiesta</td>
+                            </tr>
+                        }
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    [Inject]
+    public IRichiesteService? RichiesteService { get; set; }
+
+    [Inject]
+    public IClientiService? ClientiService { get; set; }
+
+
+    Cliente? cliente = new();
+
+    [Inject]
+    public NavigationManager? Navigation { get; set; }
+
+    public List<Richiesta>? richieste = new();
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        richieste= await RichiesteService!.GetRichieste();
+        cliente = await ClientiService!.GetCliente(Id);
+
+        richieste = richieste!.Where(r => r.CodiceCliente == cliente!.Codice).ToList();
+
+    }
+    private bool ascending = true;
+    private string ColonnaAttiva = "";
+    public void Ordina(string colonna)
+    {
+        if (ColonnaAttiva == colonna)
+        {
+            ascending = !ascending;
+        }else
+        {
+            colonna = ColonnaAttiva;
+
+            ascending = true;
+        }
+
+        richieste = ascending ? richieste!.OrderBy(r => GetValore(r, colonna)).ToList() : richieste!.OrderByDescending(r => GetValore(r, colonna)).ToList();
+    }
+
+    private object GetValore(Richiesta r, string colonna) => colonna switch
+    {
+        "Titolo" => r.Titolo ?? "",
+        "Descrizione" => r.Descrizione ?? "",
+        "DataRichiesta" => r.DataRichiesta,
+        "Stato" => r.Stato ?? "",
+        _ => ""
+
+    };
+
+
+
+}
+
+

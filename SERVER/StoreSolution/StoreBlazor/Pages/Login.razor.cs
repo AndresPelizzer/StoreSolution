@@ -4,6 +4,7 @@ using Microsoft.JSInterop;
 using StoreBlazor.Services;
 using StoreShared.Interfaces;
 using StoreShared.Models;
+using System.Formats.Tar;
 
 namespace StoreBlazor.Pages
 {
@@ -30,6 +31,9 @@ namespace StoreBlazor.Pages
 
         [Inject]
         public IDipendentiService? DipendentiService { get; set; }
+
+        [Inject]
+        public IClientiService? ClientiService { get; set; }
         
         
         string? errore = null;
@@ -84,6 +88,14 @@ namespace StoreBlazor.Pages
                         Navigation!.NavigateTo($"dipendente/{utente!.CodiceDipendente}/home");
 
                     }
+                }
+                else if (AuthState.Ruolo == "cliente")
+                {
+
+                    utente = utenti!.FirstOrDefault(u => u.Codice == risposta.CodiceUtente);
+                    var cliente = await ClientiService!.GetCliente(utente!.CodiceCliente!.Value);
+                    Navigation!.NavigateTo($"cliente/{utente!.CodiceCliente}/home");
+
                 }
                 
                
