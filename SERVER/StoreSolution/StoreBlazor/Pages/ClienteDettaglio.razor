@@ -18,18 +18,29 @@
             <div class="mb-3">
                 <label class="form-label">Codice</label>
                 <input class="form-control" type="text" @bind="NuovoCliente.Codice" disabled />
+
             </div>
             <div class="mb-3">
                 <label class="form-label">Nome</label>
-                <input class="form-control" type="text" @bind="NuovoCliente.Nome" />
+                <input class="form-control"
+                       type="text"
+                       @bind-value="NuovoCliente.Nome"
+                       @bind-value:event="oninput"
+                       @onkeyup="ValidaInput"/>
+                   
             </div>
             <div class="mb-3">
                 <label class="form-label">Cognome</label>
-                <input class="form-control" type="text" @bind="NuovoCliente.Cognome" />
+                <input class="form-control" type="text" @bind-value="NuovoCliente.Cognome" @bind-value:event="oninput" 
+               @onkeyup="ValidaInput"/>
+                   
             </div>
             <div class="mb-3">
                 <label class="form-label">Email</label>
-                <input class="form-control" type="email" @bind="NuovoCliente.Email" />
+                <input class="form-control" type="email" @bind-value="NuovoCliente.Email" placeholder="es mario@gmail.com" @bind-value:event="oninput" 
+               @onkeyup="ValidaInput"/>
+                    
+
             </div>
             <div class="mb-3">
                 <label class="form-label">Settore</label>
@@ -48,6 +59,11 @@
             <div class="mb-3">
                 <label class="form-label">Password</label>
                 <input class="form-control" type="password" @bind="nuovoUtente.PasswordHash" />
+            </div>
+
+
+            <div class="mb-2">
+                <h4 class="text-danger text-muted small text-uppercase">@errore</h4>
             </div>
 
 

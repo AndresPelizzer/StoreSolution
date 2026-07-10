@@ -24,9 +24,11 @@ namespace StoreBlazor.Pages
 
         [Inject] public IConfiguration? Configuration { get; set; } = default!;
 
-
-
         [Inject] public IJSRuntime? JS { get; set; }
+
+
+        public int numeropagina { get; set; } = 1;
+        public int elementiperpagina { get; set; } = 5;
 
         private bool loading = false;
         private bool showModal = false;
@@ -53,18 +55,18 @@ namespace StoreBlazor.Pages
                 //string BASE_URL = "https://localhost:7293/";
 
 
-                var section = Configuration?.GetSection("Api") ;
+                var section = Configuration?.GetSection("Api");
                 string BASE_URL = section?.GetValue<string>("BaseUrl") ?? "";
 
 
 
 
-                clienti = await ClientiService!.GetClienti() ?? new();
-                hubConnection = new HubConnectionBuilder().WithUrl($"{BASE_URL}api/storehub").Build();
+                clienti = await ClientiService!.GetClienti(numeropagina, elementiperpagina) ?? new();
+                hubConnection = new HubConnectionBuilder().WithUrl($"{BASE_URL}storehub").Build();
 
                 hubConnection.On("AggiornaClienti", async () =>
                 {
-                    clienti = await ClientiService!.GetClienti();
+                    clienti = await ClientiService!.GetClienti(numeropagina, elementiperpagina);
                     await InvokeAsync(StateHasChanged);
                 });
 
@@ -104,7 +106,7 @@ namespace StoreBlazor.Pages
         public async Task modificaCliente(Cliente cliente, int id)
         {
             await ClientiService!.UpdateCliente(cliente, id);
-            clienti = await ClientiService!.GetClienti() ?? new();
+            clienti = await ClientiService!.GetClienti(numeropagina, elementiperpagina) ?? new();
             showModalmod = false;
         }
 
@@ -139,7 +141,7 @@ namespace StoreBlazor.Pages
             }
         }
 
-       
+
         public IEnumerable<Cliente> ClientiFiltrati
         {
             get
@@ -173,7 +175,7 @@ namespace StoreBlazor.Pages
             dipendenti = tuttiDipendenti!.Where(d => d.Codice == richiesta.CodiceDipendente).ToList();
         }
 
-        
+
         public void ApriNuovoCliente()
         {
             nuovoCliente = new Cliente();
@@ -194,14 +196,14 @@ namespace StoreBlazor.Pages
             loading = true;
             try
             {
-                await using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); 
+                await using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
                 var risultato = await ClientiService!.ImportClienti(stream, file.Name);
 
                 if (risultato != null)
                 {
                     await JS!.InvokeVoidAsync("alert",
                         $"Importati {risultato.Inserted} su {risultato.Processed} righe processate.");
-                    clienti = await ClientiService!.GetClienti() ?? new();
+                    clienti = await ClientiService!.GetClienti(numeropagina, elementiperpagina) ?? new();
                 }
                 else
                 {
@@ -241,7 +243,7 @@ namespace StoreBlazor.Pages
                 {
                     await JS!.InvokeVoidAsync("alert",
                         $"Importati da CSV {risultato.Inserted} su {risultato.Processed} righe processate.");
-                    clienti = await ClientiService!.GetClienti() ?? new();
+                    clienti = await ClientiService!.GetClienti(numeropagina, elementiperpagina) ?? new();
                 }
                 else
                 {
@@ -255,10 +257,44 @@ namespace StoreBlazor.Pages
         }
 
 
+        public async Task PaginaPrecedente()
+        {
+            if (numeropagina > 1)
+            {
+                numeropagina--;
+                loading = true;
+                try
+                {
+                    clienti = await ClientiService!.GetClienti(numeropagina, elementiperpagina) ?? new();
+                }
+                finally
+                {
+                    loading = false;
+                }
+            }
+        }
 
 
+        public async Task PaginaSuccessiva()
+        {
+          
+            if (clienti.Count == elementiperpagina)
+            {
+                numeropagina++;
+                loading = true;
+                try
+                {
+                    clienti = await ClientiService!.GetClienti(numeropagina, elementiperpagina) ?? new();
+                }
+                finally
+                {
+                    loading = false;
+                }
+            }
+        }
     }
 }
+    
 
 
 

@@ -6,7 +6,8 @@ namespace StoreShared.Interfaces
     public interface IClientiService
     {
 
-        Task<List<Cliente>?> GetClienti();
+        // Nel file IClientiService.cs
+        Task<List<Cliente>?> GetClienti(int pageNumber = 1, int pageSize = 10);
         Task<Cliente?> GetCliente(int id);
 
         Task<Cliente?> AddCliente(Cliente Cliente);

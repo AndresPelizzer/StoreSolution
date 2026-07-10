@@ -20,9 +20,14 @@ public class ClientiController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Cliente>>> GetClienti()
+    public async Task<ActionResult<List<Cliente>>> GetClienti(int pageNumber = 1, int pageSize = 10)
     {
-        return await _context.Cliente.ToListAsync();
+        int elementidasaltare = (pageNumber - 1) * pageSize;
+
+        return await _context.Cliente
+                              .Skip(elementidasaltare)
+                              .Take(pageSize)
+                              .ToListAsync();
     }
 
     [HttpGet("{id}")]
@@ -79,6 +84,11 @@ public class ClientiController : ControllerBase
         if (esistegia)
         {
             return BadRequest($"Esiste già un cliente con questa partita IVA({Cliente.PartitaIva})");
+        }
+
+        if(string.IsNullOrWhiteSpace(Cliente.Nome)|| Cliente.Nome.Length < 6)
+        {
+            return BadRequest("Il nome deve contenere almeno 6 caratteri");
         }
         await _context.Cliente.AddAsync(Cliente);
         await _context.SaveChangesAsync();

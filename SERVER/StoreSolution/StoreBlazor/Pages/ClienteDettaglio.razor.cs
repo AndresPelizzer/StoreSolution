@@ -33,6 +33,9 @@ namespace StoreBlazor.Pages
         Utente nuovoUtente = new Utente();
 
 
+        public string errore = "";
+
+
         [Inject]
         public IUtentiService UtentiService { get; set; }= default!;
 
@@ -63,21 +66,25 @@ namespace StoreBlazor.Pages
         public async Task salvaCliente(Cliente cliente)
         {
 
-            clienti = await ClientiService!.GetClienti() ?? new();
-            var clientesalvato = await ClientiService!.AddCliente(cliente);
+            ValidaInput();
+            if (!successo) return;
 
-            if (clientesalvato != null)
-            {
-                clienti.Add(clientesalvato);
 
-                nuovoUtente.CodiceCliente = clientesalvato.Codice;
-                nuovoUtente.PasswordHash = BCrypt.Net.BCrypt.HashPassword(nuovoUtente.PasswordHash); 
-                await UtentiService.AddUtente(nuovoUtente);
+                clienti = await ClientiService!.GetClienti() ?? new();
+                var clientesalvato = await ClientiService!.AddCliente(cliente);
 
-                Navigation.NavigateTo("/clienti");
+                if (clientesalvato != null)
+                {
+                    clienti.Add(clientesalvato);
 
-            }
-            
+                    nuovoUtente.CodiceCliente = clientesalvato.Codice;
+                    nuovoUtente.PasswordHash = BCrypt.Net.BCrypt.HashPassword(nuovoUtente.PasswordHash);
+                    await UtentiService.AddUtente(nuovoUtente);
+
+                    Navigation.NavigateTo("/clienti");
+
+                }
+         
         }
 
 
@@ -106,6 +113,28 @@ namespace StoreBlazor.Pages
             nuovoUtente.Ruolo = "cliente";
         }
 
+        private bool successo = false;
+        private void ValidaInput()
+        {
+            if (NuovoCliente.Nome?.Length < 6)
+            {
+                errore = "Inserisci un nome di almeno 6 caratteri";
+            }
+            else if (NuovoCliente.Cognome?.Length < 6)
+            {
+                errore = "Inserisci un cognome di almeno 6 caratteri";
+            }
+            else if (string.IsNullOrEmpty(NuovoCliente.Email) || !NuovoCliente.Email.Contains("@") || !NuovoCliente.Email.Contains("."))
+            {
+                errore = "Inserisci il formato corretto per l'email!!";
+            }
+
+            else
+            {
+                errore = "";
+                successo = true;
+            }
+        }
 
     }
 

@@ -41,9 +41,10 @@ namespace StoreBlazor.Services
             return await _http.GetFromJsonAsync<Cliente>($"api/Clienti/{id}");
         }
 
-        public async Task<List<Cliente>?> GetClienti()
+        
+        public async Task<List<Cliente>?> GetClienti(int pageNumber = 1, int pageSize = 10)
         {
-            return await _http.GetFromJsonAsync<List<Cliente>>("api/Clienti");
+            return await _http.GetFromJsonAsync<List<Cliente>>($"api/Clienti?pageNumber={pageNumber}&pageSize={pageSize}");
         }
 
         public async Task<Cliente?> UpdateCliente(Cliente Cliente, int id)
@@ -94,3 +95,6 @@ namespace StoreBlazor.Services
 
     }
 }
+
+
+
