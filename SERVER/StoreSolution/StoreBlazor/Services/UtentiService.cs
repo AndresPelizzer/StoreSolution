@@ -1,5 +1,5 @@
 ﻿using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 using System.Net.Http.Json;
 
 namespace StoreBlazor.Services

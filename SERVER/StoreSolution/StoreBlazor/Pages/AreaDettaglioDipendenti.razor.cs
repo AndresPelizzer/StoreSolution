@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 
 namespace StoreBlazor.Pages
 {
@@ -52,10 +52,7 @@ namespace StoreBlazor.Pages
         }
 
 
-        public async Task AssegnaRichiesta()
-        {
-            Navigation!.NavigateTo("richieste");
-        }
+       
 
 
 

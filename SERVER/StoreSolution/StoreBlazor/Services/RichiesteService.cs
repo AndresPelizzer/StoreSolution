@@ -1,6 +1,6 @@
 ﻿
 using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 using System.Net.Http.Json;
 
 namespace StoreBlazor.Services
@@ -17,7 +17,7 @@ namespace StoreBlazor.Services
         public async Task<Richiesta?> AddRichiesta(Richiesta Richiesta)
         {
             var response = await _http.PostAsJsonAsync<Richiesta?>("api/Richieste", Richiesta);
-            if (response != null)
+            if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<Richiesta>();
             }

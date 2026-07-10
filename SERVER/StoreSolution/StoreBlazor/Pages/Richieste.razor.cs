@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,6 +21,7 @@ namespace StoreBlazor.Pages
             try
             {
                 richieste = await RichiesteService!.GetRichieste() ?? new List<Richiesta>();
+
             }
             finally
             {

@@ -1,6 +1,6 @@
 ﻿
 using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 using System.Net.Http.Json;
 
 namespace StoreBlazor.Services
@@ -30,9 +30,15 @@ namespace StoreBlazor.Services
 
         }
 
-        public async Task DeleteArea(int id)
+        public async Task<string?> DeleteArea(int id)
         {
-            await _http.DeleteAsync($"api/Aree/{id}");
+            var response = await _http.DeleteAsync($"api/Aree/{id}");
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                var messaggioErrore = await response.Content.ReadAsStringAsync();
+                return messaggioErrore;
+            }
+            return null;
 
         }
 

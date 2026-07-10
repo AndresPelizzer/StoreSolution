@@ -1,15 +1,29 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using StoreAPI.Data;
+using StoreAPI.Hubs;
+using StoreShared.Models.StoreDb;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
+
+builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+
 builder.Services.AddCors(options =>
 {
+    options.AddPolicy("SignalRPolicy", policy =>
+    {
+        policy.WithOrigins("https://localhost:7035")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+
     options.AddDefaultPolicy(policy =>
     {
         policy.WithOrigins("https://localhost:7035")
@@ -50,6 +64,13 @@ builder.Services.AddAuthentication("Bearer")
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+
+builder.Services.AddSignalR();
+
+
+
+
+
 var app = builder.Build();
 
 
@@ -60,11 +81,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseAuthentication();
 
 
 app.UseAuthorization();
-app.UseCors();
+
 app.MapControllers();
+
+//app.MapBlazorHub();
+app.MapHub<StoreHub>("/storehub").RequireCors("SignalRPolicy");
 
 app.Run();

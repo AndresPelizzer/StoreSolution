@@ -1,6 +1,7 @@
 ﻿
 using StoreShared.Interfaces;
 using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 using System.Net.Http.Json;
 
 namespace StoreBlazor.Services
@@ -16,18 +17,17 @@ namespace StoreBlazor.Services
         }
         public async Task<Cliente?> AddCliente(Cliente cliente)
         {
-            var response =  await _http.PostAsJsonAsync<Cliente?>("api/Clienti", cliente);
-            if(response != null)
+            var response = await _http.PostAsJsonAsync("api/Clienti", cliente);
+            if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<Cliente>();
             }
             else
             {
+                var errore = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Errore AddCliente: {errore}");
                 return null;
             }
-            
-            
-        
         }
 
         public async Task DeleteCliente(int id)

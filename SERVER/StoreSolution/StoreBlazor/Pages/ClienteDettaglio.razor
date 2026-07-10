@@ -35,10 +35,25 @@
                 <label class="form-label">Settore</label>
                 <input class="form-control" type="text" @bind="NuovoCliente.Settore" />
             </div>
+                <div class="mb-3">
+                    <label class="form-label">Partita IVA</label>
+                    <input class="form-control" type="text" @bind="NuovoCliente.PartitaIva" />
+                </div>
+
+
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input class="form-control" type="text" @bind="nuovoUtente.Username" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input class="form-control" type="password" @bind="nuovoUtente.PasswordHash" />
+            </div>
+
+
         </div>
         <div class="card-footer">
 
-            
             <button class="btn btn-success" @onclick="() => salvaCliente(NuovoCliente)">Salva</button>
         </div>
     </div>
@@ -77,6 +92,9 @@ else
                 <label class="form-label">Settore</label>
                 <input class="form-control" type="text" @bind="ClienteModificato.Settore" />
             </div>
+
+
+
         </div>
         <div class="card-footer">
 

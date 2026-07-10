@@ -1,0 +1,77 @@
+﻿@page "/cliente/{id:int}/nuovarichiesta"
+@using StoreShared.Interfaces
+
+
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="text-primary">Nuova Richiesta</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+            <label class="form-label">Titolo</label>
+            <input class="form-control" type="text" @bind="nuovaRichiesta.Titolo"/>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Descrizione</label>
+                <input class="form-control" type="text" @bind="nuovaRichiesta.Descrizione"/>
+            </div>
+
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-outline-success" @onclick="()=>SalvaRichiesta(nuovaRichiesta)">Salva</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [Inject]
+    public NavigationManager? Navigation { get; set; }
+
+
+    [Inject]
+    public IRichiesteService? RichiesteService { get; set; }
+
+    Richiesta nuovaRichiesta = new();
+    public List<Richiesta>? richieste = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        nuovaRichiesta.Stato = "Aperta";
+        nuovaRichiesta.CodiceCliente = Id;
+        nuovaRichiesta.CodiceArea = null;
+        nuovaRichiesta.CodiceDipendente = null;
+
+        richieste = await RichiesteService!.GetRichieste();
+
+    }
+
+    public async Task SalvaRichiesta(Richiesta richiesta)
+    {
+        
+        var oraAttuale = DateTime.Now;
+        richiesta.DataRichiesta = new DateTime(
+            oraAttuale.Year,
+            oraAttuale.Month,
+            oraAttuale.Day,
+            oraAttuale.Hour,
+            oraAttuale.Minute,
+            0, 0
+        );
+
+        await RichiesteService!.AddRichiesta(richiesta);
+
+        richieste = await RichiesteService!.GetRichieste();
+
+        Navigation!.NavigateTo($"cliente/{Id}/home");
+    }
+
+}

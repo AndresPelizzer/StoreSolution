@@ -1,0 +1,47 @@
+﻿@page "/chat"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager Nav
+<h3>SignalR Chat</h3>
+<input @bind="user" placeholder="Name" />
+<input @bind="message" placeholder="Message" @onkeydown="OnKeyDown" />
+<button @onclick="Send" disabled="@(!IsConnected)">Send</button>
+<ul>
+    @foreach (var m in messages)
+    {
+        <li>@m</li>
+    }
+</ul>
+@code {
+    private HubConnection? hub;
+    private string user = "Guest";
+    private string message = "";
+    private List<string> messages = new();
+    protected override async Task OnInitializedAsync()
+    {
+        hub = new HubConnectionBuilder()
+            .WithUrl(Nav.ToAbsoluteUri("https://localhost:7293/storehub"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        hub.On<string, string>("ReceiveMessage", (u, msg) =>
+        {
+            messages.Add($"{u}: {msg}");
+            InvokeAsync(StateHasChanged);
+        });
+
+
+
+        await hub.StartAsync();
+    }
+    private async Task Send()
+    {
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            await hub!.SendAsync("SendMessage", user, message);
+            message = "";
+        }
+    }
+    private Task OnKeyDown(KeyboardEventArgs e) =>
+        e.Key == "Enter" ? Send() : Task.CompletedTask;
+    public bool IsConnected => hub?.State == HubConnectionState.Connected;
+}

@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using StoreBlazor.Services;
 using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 
 namespace StoreBlazor.Pages
 {
@@ -39,9 +40,13 @@ namespace StoreBlazor.Pages
 
         Richiesta? NuovaRichiesta { get; set; }
 
+
         Richiesta? RichiestaModificata { get; set; }
 
-        
+
+        [Inject]
+        IJSRuntime? JS { get; set; }
+
 
         protected override async Task OnInitializedAsync()
         {
@@ -49,6 +54,8 @@ namespace StoreBlazor.Pages
             if (Id != 0)
             {
                 RichiestaModificata = await RichiesteService!.GetRichiesta(Id);
+                
+
                 clienti = await ClientiService!.GetClienti();
                 aree = await AreeService!.GetAree();
                 dipendenti = await DipendentiService!.GetDipendenti();
@@ -56,20 +63,46 @@ namespace StoreBlazor.Pages
             else
             {
                 NuovaRichiesta = new Richiesta();
+
+               
+                var oraAttuale = DateTime.Now;
+                NuovaRichiesta!.DataRichiesta = new DateTime(
+                    oraAttuale.Year,
+                    oraAttuale.Month,
+                    oraAttuale.Day,
+                    oraAttuale.Hour,
+                    oraAttuale.Minute,
+                    0, 0
+                );
+
                 clienti = await ClientiService!.GetClienti();
                 aree = await AreeService!.GetAree();
                 dipendenti = await DipendentiService!.GetDipendenti();
-                
             }
             loading = false;
-            
         }
-        public async Task salvaRichiesta(Richiesta richiesta)
+        public async Task<object?> salvaRichiesta(Richiesta richiesta)
         {
-            richiesta = await RichiesteService!.AddRichiesta(richiesta) ?? new();
+            if (richiesta.CodiceCliente == null)
+            {
+                await JS!.InvokeVoidAsync("alert", "Attenzione:devi selezionare obbligatoriamente un cliente!!");
+                return null;
+            }
+            var risultato = await RichiesteService!.AddRichiesta(richiesta) ?? new();
+            if (risultato != null)
+            {
 
-            richieste = await RichiesteService.GetRichieste();
-            Navigation!.NavigateTo("/richieste");
+
+                richieste = await RichiesteService.GetRichieste();
+                Navigation!.NavigateTo("/richieste");
+
+                return null;
+            }
+            else
+            {
+                await JS!.InvokeVoidAsync("alert", "Errore durante salvataggio lato server");
+                return null;
+            }
         }
 
         public async Task modificaRichiesta(Richiesta richiesta, int id)

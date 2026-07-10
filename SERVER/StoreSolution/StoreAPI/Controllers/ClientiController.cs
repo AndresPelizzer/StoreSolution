@@ -1,24 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
-using StoreAPI.Data;
+using StoreAPI.Hubs;
 using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 
 [ApiController]
 [Route("api/[controller]")]
 public class ClientiController : ControllerBase
 {
     private readonly StoreDbContext _context;
+    private readonly IHubContext<StoreHub> _hub;
 
-    public ClientiController(StoreDbContext context)
+    public ClientiController(StoreDbContext context, IHubContext<StoreHub>hub)
     {
         _context = context;
+        _hub = hub;
     }
 
     [HttpGet]
     public async Task<ActionResult<List<Cliente>>> GetClienti()
     {
-        return await _context.Clienti.ToListAsync();
+        return await _context.Cliente.ToListAsync();
     }
 
     [HttpGet("{id}")]
@@ -27,7 +31,7 @@ public class ClientiController : ControllerBase
     {
 
 
-        Cliente? Cliente = await _context.Clienti.FindAsync(id);
+        Cliente? Cliente = await _context.Cliente.FindAsync(id);
         if (Cliente != null)
         {
 
@@ -44,12 +48,13 @@ public class ClientiController : ControllerBase
 
     public async Task<ActionResult<Cliente>> DeleteCliente(int id)
     {
-        Cliente? Cliente = await _context.Clienti.FindAsync(id);
+        Cliente? Cliente = await _context.Cliente.FindAsync(id);
         if (Cliente != null)
         {
 
-            _context.Clienti.Remove(Cliente);
+            _context.Cliente.Remove(Cliente);
             await _context.SaveChangesAsync();
+            await _hub.Clients.All.SendAsync("AggiornaClienti");
             return Ok(Cliente);
         }
         else
@@ -70,13 +75,15 @@ public class ClientiController : ControllerBase
         {
             return BadRequest("La partita IVA esiste già");
         }
-        bool esistegia = await _context.Clienti.AnyAsync(c => c.PartitaIva == Cliente.PartitaIva);
+        bool esistegia = await _context.Cliente.AnyAsync(c => c.PartitaIva == Cliente.PartitaIva);
         if (esistegia)
         {
             return BadRequest($"Esiste già un cliente con questa partita IVA({Cliente.PartitaIva})");
         }
-        await _context.Clienti.AddAsync(Cliente);
+        await _context.Cliente.AddAsync(Cliente);
         await _context.SaveChangesAsync();
+
+        await _hub.Clients.All.SendAsync("AggiornaClienti");
         return Cliente;
 
     }
@@ -85,7 +92,7 @@ public class ClientiController : ControllerBase
 
     public async Task<ActionResult<Cliente>> UpdateCliente(Cliente Cliente, int id)
     {
-        Cliente? Cliente_da_aggiornare = await _context.Clienti.FindAsync(id);
+        Cliente? Cliente_da_aggiornare = await _context.Cliente.FindAsync(id);
         if (Cliente_da_aggiornare != null)
         {
             Cliente_da_aggiornare.Nome = Cliente.Nome;
@@ -97,6 +104,7 @@ public class ClientiController : ControllerBase
 
 
             await _context.SaveChangesAsync();
+            await _hub.Clients.All.SendAsync("AggiornaClienti");
             return Cliente_da_aggiornare;
         }
         else
@@ -143,7 +151,7 @@ public class ClientiController : ControllerBase
                         continue;
                     }
 
-                    bool esisteGia = await _context.Clienti.AnyAsync(c => c.PartitaIva == partitaIva);
+                    bool esisteGia = await _context.Cliente.AnyAsync(c => c.PartitaIva == partitaIva);
                     if (esisteGia)
                     {
                        
@@ -162,7 +170,7 @@ public class ClientiController : ControllerBase
                         PartitaIva=partitaIva
                     };
 
-                    _context.Clienti.Add(cliente);
+                    _context.Cliente.Add(cliente);
                     inserted++;
                 }
 
@@ -225,7 +233,7 @@ public class ClientiController : ControllerBase
                     continue;
                 }
 
-                bool esistegia= await _context.Clienti.AnyAsync(c=>c.PartitaIva== partitaIva );
+                bool esistegia= await _context.Cliente.AnyAsync(c=>c.PartitaIva== partitaIva );
 
                 if (string.IsNullOrWhiteSpace(nome) && string.IsNullOrWhiteSpace(cognome))
                     continue;
@@ -239,7 +247,7 @@ public class ClientiController : ControllerBase
                     PartitaIva = partitaIva
                 };
 
-                await _context.Clienti.AddAsync(cliente);
+                await _context.Cliente.AddAsync(cliente);
                 inserted++;
 
 

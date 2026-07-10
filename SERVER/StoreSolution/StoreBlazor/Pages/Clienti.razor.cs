@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
+using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,20 @@ using System.Threading.Tasks;
 namespace StoreBlazor.Pages
 {
     public partial class Clienti
+
+
     {
+
+        HubConnection? hubConnection;
         [Inject] public IClientiService? ClientiService { get; set; }
         [Inject] public IRichiesteService? RichiesteService { get; set; }
         [Inject] public IDipendentiService? DipendentiService { get; set; }
         [Inject] public NavigationManager Navigation { get; set; } = default!;
+
+        [Inject] public IConfiguration? Configuration { get; set; } = default!;
+
+
+
         [Inject] public IJSRuntime? JS { get; set; }
 
         private bool loading = false;
@@ -40,7 +50,25 @@ namespace StoreBlazor.Pages
             loading = true;
             try
             {
+                //string BASE_URL = "https://localhost:7293/";
+
+
+                var section = Configuration?.GetSection("Api") ;
+                string BASE_URL = section?.GetValue<string>("BaseUrl") ?? "";
+
+
+
+
                 clienti = await ClientiService!.GetClienti() ?? new();
+                hubConnection = new HubConnectionBuilder().WithUrl($"{BASE_URL}api/storehub").Build();
+
+                hubConnection.On("AggiornaClienti", async () =>
+                {
+                    clienti = await ClientiService!.GetClienti();
+                    await InvokeAsync(StateHasChanged);
+                });
+
+                await hubConnection.StartAsync();
             }
             finally
             {

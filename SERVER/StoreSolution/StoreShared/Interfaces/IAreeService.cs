@@ -1,4 +1,4 @@
-﻿using StoreShared.Models;
+﻿using StoreShared.Models.StoreDb;
 
 namespace StoreShared.Interfaces
 {
@@ -12,7 +12,7 @@ namespace StoreShared.Interfaces
 
         Task<Area?> UpdateArea(Area Area, int id);
 
-        Task DeleteArea(int id);
+        Task<string?> DeleteArea(int id);
 
 
     }

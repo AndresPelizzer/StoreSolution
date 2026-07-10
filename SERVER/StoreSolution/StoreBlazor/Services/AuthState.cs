@@ -8,6 +8,8 @@
 
         public bool IsCapoArea { get; set; }
 
+        public bool BenvenutoMostrato { get; set; } = false;
+
 
     }
 }

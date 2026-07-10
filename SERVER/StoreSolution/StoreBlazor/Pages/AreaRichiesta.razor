@@ -1,0 +1,96 @@
+﻿@page "/area/{id:int}/richiesta"
+@using StoreShared.Interfaces
+
+<div class="container mt-5">
+    <div class="card-body">
+        <div class="card-header">
+            <h4 class="text-center">Assegna Richiesta</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <div class="form-label"> Seleziona Richiesta </div>
+                <select class="form-select" @bind="richiestaSel">
+                    <option value="Seleziona Richiesta"></option>
+                    @foreach(var richiesta in richieste!)
+                    {
+                        <option value="@richiesta.Codice">@richiesta.Titolo</option>
+                    }
+                </select>
+            </div>
+           
+            <div class="mb-3">
+                <div class="form-label">Seleziona Dipendente</div>
+                <select class="form-select" @bind="dipendenteSel">
+                    <option value="Seleziona Dipendente"> </option>
+                    @foreach(var dipendente in dipendenti!)
+                    {
+                        <option value="@dipendente.Codice">@dipendente.Nome</option>
+                    }
+
+                </select>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-outline-success" @onclick="()=> Assegna()">Assegna</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [Inject]
+    public IRichiesteService? RichiesteService { get; set; }
+
+
+    [Inject]
+    public IAreeService? AreeService { get; set; }
+
+    public List<Richiesta>? richieste = new();
+
+    [Inject]
+    public IDipendentiService? DipendentiService { get; set; }
+
+    public List<Dipendente>? dipendenti = new();
+
+    [Inject]
+    public NavigationManager? Navigation { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        Area? area = await AreeService!.GetArea(Id);
+
+
+        richieste = await RichiesteService!.GetRichieste();
+
+
+        richieste = richieste!.Where(r => r.CodiceArea == Id).ToList();
+
+        dipendenti = await DipendentiService!.GetDipendenti();
+
+        dipendenti = dipendenti!.Where(d => d.CodiceAreaAppl == Id).ToList();
+
+
+    }
+
+    int richiestaSel = 0;
+    int dipendenteSel = 0;
+
+    public async Task Assegna()
+    {
+        var richiesta = richieste!.FirstOrDefault(r => r.Codice == richiestaSel);
+        richiesta!.CodiceDipendente = dipendenteSel;
+
+        await RichiesteService!.UpdateRichiesta(richiesta, richiesta.Codice);
+
+        Navigation!.NavigateTo($"area/{Id}/richieste");
+
+
+    }
+
+}

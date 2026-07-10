@@ -1,4 +1,5 @@
 ﻿@page "/dipendenti"
+@layout AdminLayout
 
 <div class="container mt-4">
 
@@ -67,7 +68,7 @@
                                                 <i class="bi bi-trash fs-5"></i>
                                             </button>
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             <button type="button" class="btn btn-info" @onclick="()=>ToggleAccordion(dipendente.Codice)" @onclick:stopPropagation="true">@(DipendenteApertoId==dipendente.Codice? "Chiudi" : "Mostra")</button>
                                         </td>
 

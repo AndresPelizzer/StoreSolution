@@ -1,6 +1,6 @@
 ﻿
 using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 using System.Net.Http.Json;
 
 namespace StoreBlazor.Services
@@ -17,7 +17,7 @@ namespace StoreBlazor.Services
         public async Task<Dipendente?> AddDipendente(Dipendente Dipendente)
         {
             var response = await _http.PostAsJsonAsync<Dipendente?>("api/Dipendenti", Dipendente);
-            if (response != null)
+            if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<Dipendente>();
             }
@@ -49,7 +49,7 @@ namespace StoreBlazor.Services
         public async Task<Dipendente?> UpdateDipendente(Dipendente Dipendente, int id)
         {
             var response = await _http.PutAsJsonAsync<Dipendente>($"api/Dipendenti/{id}", Dipendente);
-            if (response != null)
+            if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<Dipendente>();
             }

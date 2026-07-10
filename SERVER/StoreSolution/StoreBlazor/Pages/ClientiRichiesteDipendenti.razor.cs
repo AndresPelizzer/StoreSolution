@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using StoreBlazor.Services;
 using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 
 namespace StoreBlazor.Pages
 {

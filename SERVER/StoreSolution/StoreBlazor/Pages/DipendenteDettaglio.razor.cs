@@ -1,6 +1,9 @@
+using BCrypt.Net;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using StoreBlazor.Services;
 using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +17,9 @@ namespace StoreBlazor.Pages
 
         Dipendente? NuovoDipendente { get; set; } = new();
         Dipendente DipendenteModificato { get; set; } = new Dipendente();
+
+        [Inject]
+        public IUtentiService? UtentiService {  get; set; }
 
        
         private List<Area> ListaAree { get; set; } = new();
@@ -29,6 +35,14 @@ namespace StoreBlazor.Pages
         public NavigationManager? Navigation { get; set; }
 
         bool loading = true;
+
+        Utente? Utente = new();
+
+        [Inject]
+        IJSRuntime? JS { get; set; }
+
+        public List<Dipendente>?dipendenti = new();
+        
 
         protected override async Task OnInitializedAsync()
         {
@@ -46,18 +60,53 @@ namespace StoreBlazor.Pages
             }
 
             loading = false;
+
+            Utente!.Ruolo = "dipendente";
+
+
+
+
+         
+            
         }
 
         async Task salvaDipendente(Dipendente dipendente)
         {
+            if (dipendente.CapoArea)
+            {
+                dipendenti = await DipendentiService!.GetDipendenti();
+                bool presente = dipendenti!.Any(d => d.CapoArea == dipendente.CapoArea && d.CodiceAreaAppl == dipendente.CodiceAreaAppl);
+                if (presente)
+                {
+                    await JS!.InvokeVoidAsync("alert","Non puoi inserire piu di un capo d'area all'interno della stessa area!!");
+                }
+            }
+           
             var salvato = await DipendentiService!.AddDipendente(dipendente);
             if (salvato != null)
+            {
+
+
+
+                Utente!.CodiceDipendente = salvato!.Codice;
+                Utente!.PasswordHash = BCrypt.Net.BCrypt.HashPassword(Utente.PasswordHash);
+
+                await UtentiService!.AddUtente(Utente!);
+
+
                 Navigation!.NavigateTo("/dipendenti");
+            }
+            
+
         }
 
         async Task modificaDipendente(Dipendente dipendente, int id)
         {
-            await DipendentiService!.UpdateDipendente(dipendente, id);
+            var risultato=await DipendentiService!.UpdateDipendente(dipendente, id);
+            if (risultato == null)
+            {
+                await JS!.InvokeVoidAsync("alert", "Troppi capi d'area");
+            }
             Navigation!.NavigateTo("/dipendenti");
         }
     }

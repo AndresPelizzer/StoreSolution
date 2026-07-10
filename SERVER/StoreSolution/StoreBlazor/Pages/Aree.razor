@@ -1,4 +1,5 @@
 ﻿@page "/aree"
+@layout AdminLayout
 
 <div class="container mt-4">
     @if (loading)
@@ -36,13 +37,13 @@
                             {
                                 @foreach (var area in aree)
                                 {
-                                    <tr @onclick="() => VaiArea(area.Codice ?? 0)" style="cursor:pointer">
+                                    <tr @onclick="() => VaiArea(area.Codice)" style="cursor:pointer">
                                         <td class="ps-3 text-center fw-bold text-muted">#@area.Codice</td>
                                         <td class="fw-semibold text-dark">@area.Descrizione</td>
                                         <td class="text-muted">@(string.IsNullOrEmpty(area.Note) ? "-" : area.Note)</td>
                                         <td class="text-center pe-3">
                                             <button type="button" class="btn btn-sm btn-link text-danger p-0"
-                                                    @onclick="() => elimina(area.Codice ?? 0)"
+                                                    @onclick="() => elimina(area.Codice)"
                                                     @onclick:stopPropagation="true">
                                                 <i class="bi bi-trash fs-5"></i>
                                             </button>

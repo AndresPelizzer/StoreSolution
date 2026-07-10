@@ -1,7 +1,8 @@
+using BCrypt.Net;
 using Microsoft.AspNetCore.Components;
 using StoreBlazor.Services;
 using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 using System.Runtime.CompilerServices;
 
 namespace StoreBlazor.Pages
@@ -27,6 +28,13 @@ namespace StoreBlazor.Pages
 
         [Inject]
         public IRichiesteService RichiesteService { get; set; } = default!;
+
+
+        Utente nuovoUtente = new Utente();
+
+
+        [Inject]
+        public IUtentiService UtentiService { get; set; }= default!;
 
 
         //public async Task modifica(int id)
@@ -61,8 +69,15 @@ namespace StoreBlazor.Pages
             if (clientesalvato != null)
             {
                 clienti.Add(clientesalvato);
+
+                nuovoUtente.CodiceCliente = clientesalvato.Codice;
+                nuovoUtente.PasswordHash = BCrypt.Net.BCrypt.HashPassword(nuovoUtente.PasswordHash); 
+                await UtentiService.AddUtente(nuovoUtente);
+
+                Navigation.NavigateTo("/clienti");
+
             }
-            Navigation.NavigateTo("/clienti");
+            
         }
 
 
@@ -88,6 +103,7 @@ namespace StoreBlazor.Pages
             {
                 ClienteModificato = await ClientiService!.GetCliente(Id) ?? new();
             }
+            nuovoUtente.Ruolo = "cliente";
         }
 
 

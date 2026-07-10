@@ -1,23 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using StoreAPI.Data;
-using StoreShared.Models;
+using StoreAPI.Hubs;
+using StoreShared.Models.StoreDb;
 
 [ApiController]
 [Route("api/[controller]")]
 public class DipendentiController : ControllerBase
 {
     private readonly StoreDbContext _context;
+    private readonly IHubContext<StoreHub> _hub;
 
-    public DipendentiController(StoreDbContext context)
+    public DipendentiController(StoreDbContext context, IHubContext<StoreHub> hub)
     {
         _context = context;
+        _hub = hub;
     }
 
     [HttpGet]
     public async Task<ActionResult<List<Dipendente>>> GetDipendenti()
     {
-        return await _context.Dipendenti.Include(d => d.Area).ToListAsync();
+        return await _context.Dipendente.Include(d => d.Area).ToListAsync();
     }
 
     [HttpGet("{id}")]
@@ -25,7 +28,7 @@ public class DipendentiController : ControllerBase
     public async Task<ActionResult<Dipendente>> GetDipendente(int id) {
 
 
-        Dipendente? dipendente = await _context.Dipendenti.Include(d => d.Area).FirstOrDefaultAsync(d => d.Codice == id);
+        Dipendente? dipendente = await _context.Dipendente.Include(d => d.Area).FirstOrDefaultAsync(d => d.Codice == id);
         if (dipendente != null)
         {
 
@@ -43,17 +46,18 @@ public class DipendentiController : ControllerBase
     [HttpDelete("{id}!")]
     public async Task<ActionResult<Dipendente>> DeleteDipendente(int id)
     {
-        Dipendente? dipendente = await _context.Dipendenti.FindAsync(id);
+        Dipendente? dipendente = await _context.Dipendente.FindAsync(id);
         if (dipendente == null)
         {
             return NotFound();
         }
 
-        _context.Dipendenti.Remove(dipendente);
+        _context.Dipendente.Remove(dipendente);
 
         try
         {
             await _context.SaveChangesAsync();
+            await _hub.Clients.All.SendAsync("AggiornaDipendenti");
             return Ok(dipendente);
         }
         catch (Microsoft.EntityFrameworkCore.DbUpdateException)
@@ -69,8 +73,17 @@ public class DipendentiController : ControllerBase
 
     public async Task<ActionResult<Dipendente>> AddDipendente(Dipendente dipendente)
     {
-        await _context.Dipendenti.AddAsync(dipendente);
+        if (dipendente.CapoArea)
+        {
+            bool giapresente = await _context.Dipendente.AnyAsync(d => d.CapoArea == true && d.CodiceAreaAppl == dipendente.CodiceAreaAppl);
+            if (giapresente)
+            {
+                return BadRequest("Un dipendente capo area é gia presente in questa area");
+            }
+        }
+        await _context.Dipendente.AddAsync(dipendente);
         await _context.SaveChangesAsync();
+        await _hub.Clients.All.SendAsync("AggiornaDipendenti");
         return dipendente;
 
     }
@@ -79,7 +92,16 @@ public class DipendentiController : ControllerBase
 
     public async Task<ActionResult<Dipendente>> UpdateDipendente(Dipendente dipendente, int id)
     {
-       Dipendente? dipendente_da_aggiornare =await _context.Dipendenti.FindAsync(id);
+
+        if (dipendente.CapoArea)
+        {
+            bool giapresente = await _context.Dipendente.AnyAsync(d => d.CodiceAreaAppl == dipendente.CodiceAreaAppl && d.CapoArea == true && d.Codice != id);
+            if (giapresente)
+            {
+                return BadRequest("Dipendente capo area già presente!!!");
+            }
+        }
+       Dipendente? dipendente_da_aggiornare =await _context.Dipendente.FindAsync(id);
         if (dipendente_da_aggiornare != null) {
             dipendente_da_aggiornare.Nome = dipendente.Nome;
             dipendente_da_aggiornare.Cognome = dipendente.Cognome;
@@ -90,6 +112,7 @@ public class DipendentiController : ControllerBase
            
 
             await _context.SaveChangesAsync();
+            await _hub.Clients.All.SendAsync("AggiornaDipendenti");
             return dipendente_da_aggiornare;
         }
         else

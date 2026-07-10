@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using StoreBlazor.Services;
 using StoreShared.Interfaces;
 using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 
 namespace StoreBlazor.Pages
 {
@@ -38,14 +39,13 @@ namespace StoreBlazor.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            utenti = await UtentiService!.GetUtenti();
-
-            
+            utenti = await UtentiService!.GetUtenti();            
         }
+
         public async Task login()
         {
             var risposta=await AuthService!.Login(credenziali);
-            if (risposta == null)
+            if (risposta == null || string.IsNullOrEmpty(risposta.Token))
             {
                 errore = "Credenziali errate";
                 successo = null;
@@ -59,7 +59,7 @@ namespace StoreBlazor.Pages
                 AuthState!.Token = risposta.Token;
                 AuthState.Ruolo = risposta.Ruolo;
                 AuthState.CodiceUtente = risposta.CodiceUtente;
-                AuthState.IsCapoArea = (bool)risposta.IsCapoArea!;
+                AuthState.IsCapoArea = risposta.IsCapoArea ?? false;
                 successo = "Login avvenuto con successo!";
 
 
@@ -88,10 +88,13 @@ namespace StoreBlazor.Pages
                 }
                 else if (AuthState.Ruolo == "cliente")
                 {
-
+                    
                     utente = utenti!.FirstOrDefault(u => u.Codice == risposta.CodiceUtente);
                     var cliente = await ClientiService!.GetCliente(utente!.CodiceCliente!.Value);
-                    Navigation!.NavigateTo($"cliente/{utente!.CodiceCliente}/home");
+                    if (cliente != null)
+                    {
+                        Navigation!.NavigateTo($"cliente/{utente!.CodiceCliente}/home");
+                    }
 
                 }
                 

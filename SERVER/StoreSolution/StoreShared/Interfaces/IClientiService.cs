@@ -1,4 +1,5 @@
 ﻿using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 
 namespace StoreShared.Interfaces
 {

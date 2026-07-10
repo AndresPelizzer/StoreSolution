@@ -2,22 +2,66 @@
 
 @if (loading)
 {
-    <div class="d-flex justify-content-center mt-5">
-        <div class="spinner-border text-primary" role="status"></div>
-    </div>
+    <Caricamento></Caricamento>
 }
 else
 {
 
 
     <div class="container mt-5">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5>Dipendenti : @dipendenti!.Count()</h5>
-                <button type="button" class="btn btn-outline-warning"  @onclick="()=> TornaIndietro(area!.Codice ?? 0)">Torna</button>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 fw-bold text-secondary">Dipendenti dell'Area<span class="badge bg-primary rounded-pill ms-2">  @dipendenti!.Count()</span></h5>
+                <button type="button" class="btn btn-sm btn-outline-secondary px-3" @onclick="() => TornaIndietro(area!.Codice)"><i class="bi bi-arrow-left me-1"></i>Torna</button>
             </div>
-            <div class="card-body">
-                @foreach(var dipendente in dipendenti!)
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-muted small uppercase">
+                            <tr>
+                                <th class="ps-4">Nome Completo</th>
+                                <th>Email</th>
+                                <th>Qualifica</th>
+                                <th>Ruolo</th>
+                                <th class="pe-4">Note</th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach(var dipendente in dipendenti!)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold text-dark">@dipendente.Nome @dipendente.Cognome</div>
+                                    </td>
+
+                                    <td>
+                                        <a href="mailto@dipendente.Email" class="text-decoration-none text-muted">@dipendente.Email</a>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-light text-dark border">@dipendente.Qualifica</span>
+                                    </td>
+                                    <td>
+                                        @if (dipendente.CapoArea)
+                                        {
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle">Capo Area</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">Team Member</span>
+                                        }
+                                    </td>
+                                    <td class="pe-4 text-muted small text-truncate">@dipendente.Note</td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+
+               @*  @foreach(var dipendente in dipendenti!)
                 {
                     <dl class="row mt-5">
                         <dt class="col-sm-3 text-muted">Nome</dt>
@@ -40,10 +84,12 @@ else
                         <dt class="col-sm-3 text-muted">Note</dt>
                         <dd class="col-sm-9">@dipendente.Note</dd>
                     </dl>
-                }
+                } *@
 
-                <button type="button" class="btn btn-outline-info">Assegna Richiesta +</button>
+                
             </div>
         </div>
     </div>
 }
+
+

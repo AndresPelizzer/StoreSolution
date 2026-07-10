@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using StoreAPI.Data;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -17,7 +16,7 @@ public class AreeController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<Area>>> GetAree()
     {
-        return await _context.Aree.ToListAsync();
+        return await _context.Area.ToListAsync();
     }
 
     [HttpGet("{id}")]
@@ -26,7 +25,7 @@ public class AreeController : ControllerBase
     {
 
 
-        Area? Area = await _context.Aree.FindAsync(id);
+        Area? Area = await _context.Area.FindAsync(id);
         if (Area != null)
         {
 
@@ -43,11 +42,18 @@ public class AreeController : ControllerBase
 
     public async Task<ActionResult<Area>> DeleteArea(int id)
     {
-        Area? Area = await _context.Aree.FindAsync(id);
+        Area? Area = await _context.Area.FindAsync(id);
         if (Area != null)
         {
 
-            _context.Aree.Remove(Area);
+            bool hadipendenti = await _context.Dipendente.AnyAsync(d => d.CodiceAreaAppl == id);
+            if (hadipendenti)
+            {
+                return BadRequest("Impossibile eliminare l'Area! Ci sono ancora dipendenti associati");
+            }
+
+
+            _context.Area.Remove(Area);
             await _context.SaveChangesAsync();
             return Ok(Area);
         }
@@ -64,7 +70,7 @@ public class AreeController : ControllerBase
 
     public async Task<ActionResult<Area>> AddArea(Area Area)
     {
-        await _context.Aree.AddAsync(Area);
+        await _context.Area.AddAsync(Area);
         await _context.SaveChangesAsync();
         return Area;
 
@@ -74,7 +80,7 @@ public class AreeController : ControllerBase
 
     public async Task<ActionResult<Area>> UpdateArea(Area Area, int id)
     {
-        Area? Area_da_aggiornare = await _context.Aree.FindAsync(id);
+        Area? Area_da_aggiornare = await _context.Area.FindAsync(id);
         if (Area_da_aggiornare != null)
         {
             Area_da_aggiornare.Descrizione = Area.Descrizione;

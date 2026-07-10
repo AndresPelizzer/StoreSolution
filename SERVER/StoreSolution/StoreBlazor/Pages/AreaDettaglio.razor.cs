@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using StoreBlazor.Services;
 using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 
 namespace StoreBlazor.Pages
 {
@@ -39,7 +39,7 @@ namespace StoreBlazor.Pages
         }
         public async Task modificaArea(Area area)
         {
-            await AreeService!.UpdateArea(area, area.Codice ?? 0);
+            await AreeService!.UpdateArea(area, area.Codice );
             Navigation!.NavigateTo("/aree");
         }
 

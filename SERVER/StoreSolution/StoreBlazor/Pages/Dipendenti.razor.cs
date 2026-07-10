@@ -1,16 +1,21 @@
+
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
 using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace StoreBlazor.Pages
 {
     public partial class Dipendenti
     {
+
+        HubConnection? hubConnection;
         [Inject] public IJSRuntime? JS { get; set; }
         [Inject] public IDipendentiService? DipendentiService { get; set; }
         [Inject] public NavigationManager? Navigation { get; set; }
@@ -28,6 +33,13 @@ namespace StoreBlazor.Pages
             try
             {
                 dipendenti = await DipendentiService!.GetDipendenti() ?? new();
+                hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7293/storehub").Build();
+                hubConnection.On("AggiornaDipendenti", async () =>
+                {
+                    dipendenti = await DipendentiService.GetDipendenti();
+                    await InvokeAsync(StateHasChanged);
+                });
+                await hubConnection.StartAsync();
             }
             finally
             {

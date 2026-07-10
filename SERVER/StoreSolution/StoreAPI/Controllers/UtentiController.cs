@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using StoreAPI.Data;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -17,7 +16,15 @@ public class UtentiController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<Utente>>> GetUtenti()
     {
-        return await _context.Utenti.ToListAsync();
+        try
+        {
+            return await _context.Utente.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            // log...
+            return new List<Utente>();
+        }
     }
 
     [HttpGet("{id}")]
@@ -26,7 +33,7 @@ public class UtentiController : ControllerBase
     {
 
 
-        Utente? utente = await _context.Utenti.FirstOrDefaultAsync(u => u.Codice == id);
+        Utente? utente = await _context.Utente.FirstOrDefaultAsync(u => u.Codice == id);
         if (utente != null)
         {
 
@@ -44,13 +51,13 @@ public class UtentiController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult<Utente>> DeleteUtente(int id)
     {
-        Utente? utente = await _context.Utenti.FindAsync(id);
+        Utente? utente = await _context.Utente.FindAsync(id);
         if (utente == null)
         {
             return NotFound();
         }
 
-        _context.Utenti.Remove(utente);
+        _context.Utente.Remove(utente);
 
         try
         {
@@ -70,7 +77,7 @@ public class UtentiController : ControllerBase
 
     public async Task<ActionResult<Utente>> AddUtente(Utente utente)
     {
-        await _context.Utenti.AddAsync(utente);
+        await _context.Utente.AddAsync(utente);
         await _context.SaveChangesAsync();
         return utente;
 
@@ -80,7 +87,7 @@ public class UtentiController : ControllerBase
 
     public async Task<ActionResult<Utente>> UpdateUtente(Utente utente, int id)
     {
-        Utente? utente_da_aggiornare = await _context.Utenti.FindAsync(id);
+        Utente? utente_da_aggiornare = await _context.Utente.FindAsync(id);
         if (utente_da_aggiornare != null)
         {
             utente_da_aggiornare.Username = utente.Username;
@@ -102,4 +109,5 @@ public class UtentiController : ControllerBase
 
     }
 }
+
 

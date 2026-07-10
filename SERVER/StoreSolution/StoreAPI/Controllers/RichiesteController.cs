@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using StoreAPI.Data;
-using StoreShared.Models;
+using Microsoft.Identity.Client;
+using StoreShared.Models.StoreDb;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -15,9 +15,18 @@ public class RichiesteController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Richiesta>>> GetRichieste()
+    public async Task<ActionResult<List<Richiesta>>?> GetRichieste()
     {
-        return await _context.Richieste.Include(r => r.Area).Include(r=>r.Cliente).Include(r=>r.Dipendente).ToListAsync();
+        try
+        {
+            var test = await _context.Richiesta.ToListAsync();
+            var result = await  _context.Richiesta.Include(r => r.Area).Include(r => r.Cliente).Include(r => r.Dipendente).ToListAsync();
+            return result;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     [HttpGet("{id}")]
@@ -26,7 +35,7 @@ public class RichiesteController : ControllerBase
     {
 
 
-        Richiesta? Richiesta = await _context.Richieste.Include(r => r.Area).Include(r => r.Cliente).Include(r => r.Dipendente).FirstOrDefaultAsync(r => r.Codice == id);
+        Richiesta? Richiesta = await _context.Richiesta.Include(r => r.Area).Include(r => r.Cliente).Include(r => r.Dipendente).FirstOrDefaultAsync(r => r.Codice == id);
         if (Richiesta != null)
         {
 
@@ -43,11 +52,11 @@ public class RichiesteController : ControllerBase
 
     public async Task<ActionResult<Richiesta>> DeleteRichiesta(int id)
     {
-        Richiesta? Richiesta = await _context.Richieste.FindAsync(id);
+        Richiesta? Richiesta = await _context.Richiesta.FindAsync(id);
         if (Richiesta != null)
         {
 
-            _context.Richieste.Remove(Richiesta);
+            _context.Richiesta.Remove(Richiesta);
             await _context.SaveChangesAsync();
             return Ok(Richiesta);
         }
@@ -64,7 +73,15 @@ public class RichiesteController : ControllerBase
 
     public async Task<ActionResult<Richiesta>> AddRichiesta(Richiesta Richiesta)
     {
-        await _context.Richieste.AddAsync(Richiesta);
+
+        if(Richiesta.CodiceCliente==null || Richiesta.CodiceCliente == 0)
+        {
+            return BadRequest("Codice Cliente Obbligatorio");
+        }
+
+
+
+        await _context.Richiesta.AddAsync(Richiesta);
         await _context.SaveChangesAsync();
         return Richiesta;
 
@@ -74,11 +91,33 @@ public class RichiesteController : ControllerBase
 
     public async Task<ActionResult<Richiesta>> UpdateRichiesta(Richiesta Richiesta, int id)
     {
-        Richiesta? Richiesta_da_aggiornare = await _context.Richieste.FindAsync(id);
+        Richiesta? Richiesta_da_aggiornare = await _context.Richiesta.FindAsync(id);
         if (Richiesta_da_aggiornare != null)
         {
             Richiesta_da_aggiornare.Titolo= Richiesta.Titolo;
+            string? vecchiostato = Richiesta_da_aggiornare.Stato;
+
+            if (Richiesta.Stato == "Conclusa" && vecchiostato!="Conclusa")
+            {
+                var cliente = await _context.Cliente.FirstOrDefaultAsync(c => c.Codice == Richiesta.CodiceCliente);
+
+                Notifica noti = new Notifica
+                {
+                    Messaggio = "La tua richiesta è stata conclusa!",
+                    Letta = false,
+                    DataCreazione = DateTime.Now,
+                    CodiceCliente = cliente!.Codice
+                };
+                _context.Notifica.Add(noti);
+
+            }
+
+
+            
+
+
             Richiesta_da_aggiornare.Stato = Richiesta.Stato;
+
             Richiesta_da_aggiornare.Descrizione = Richiesta.Descrizione;
             Richiesta_da_aggiornare.DataRichiesta = Richiesta.DataRichiesta;
             Richiesta_da_aggiornare.CodiceDipendente = Richiesta.CodiceDipendente;
@@ -97,3 +136,9 @@ public class RichiesteController : ControllerBase
 
     }
 }
+
+
+
+
+
+

@@ -6,16 +6,17 @@
 <div class="container mt-5">
   <div class="card">
         <div class="card-header">
-            <h4 class="text-center text-primary">AREA</h4>
+            <h4 class="text-center text-primary">Area @area!.Descrizione</h4>
         </div>
         <div class="card-body">
-            <h4>@area!.Descrizione</h4>
+            <h4>@area!.Note</h4>
         </div>
         <div class="card-footer d-flex justify-content-between align-items-center">
-            <button type="button" class="btn btn-outline-primary" @onclick="()=>VisualizzaRichieste(area.Codice ?? 0)">Visualizza Richieste</button>
-            <button type="button" class="btn btn-outline-primary"@onclick="()=>VisualizzaDipendenti(area.Codice ?? 0)">Visualizza Dipendenti</button>
+            <button type="button" class="btn btn-outline-primary" @onclick="()=>VisualizzaRichieste(area.Codice)">Visualizza Richieste</button>
+            <button type="button" class="btn btn-outline-primary"@onclick="()=>VisualizzaDipendenti(area.Codice)">Visualizza Dipendenti</button>
         </div>
         </div>
+
    
 </div>
 

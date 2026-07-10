@@ -1,6 +1,8 @@
+using Azure;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using StoreShared.Interfaces;
-using StoreShared.Models;
+using StoreShared.Models.StoreDb;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +17,9 @@ namespace StoreBlazor.Pages
         [Inject] public IAreeService? AreeService { get; set; }
 
         public List<Area>? aree = new();
+
+        [Inject]
+        IJSRuntime? JS { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -36,10 +41,20 @@ namespace StoreBlazor.Pages
 
         public async Task elimina(int id)
         {
-            await AreeService!.DeleteArea(id);
-            aree!.RemoveAll(a => a.Codice == id);
+            string?errore= await AreeService!.DeleteArea(id);
+
+            if (errore == null)
+            {
+                aree!.RemoveAll(a => a.Codice == id);
+            }
+            else
+            {
+                await JS!.InvokeVoidAsync("alert", errore);
+            }
+
         }
 
 
     }
 }
+

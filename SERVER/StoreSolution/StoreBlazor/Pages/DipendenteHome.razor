@@ -2,7 +2,7 @@
 @using Radzen.Blazor.Rendering
 @using StoreShared.Interfaces
 @using StoreShared.Models
-@layout DipendenteLayout
+@layout AdminLayout
 
 <div class="container mt-5"> 
 
@@ -132,7 +132,6 @@
 
     [Inject]
     public IRichiesteService? RichiesteService { get; set; }
-
 
     [Inject]
     public IDipendentiService? DipendentiService { get; set; }
