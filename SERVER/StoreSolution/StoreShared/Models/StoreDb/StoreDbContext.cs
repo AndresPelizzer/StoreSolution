@@ -21,6 +21,8 @@ public partial class StoreDbContext : DbContext
 
     public virtual DbSet<Utente> Utente { get; set; }
 
+    public virtual DbSet<Sede> Sede { get; set; }
+
     public virtual DbSet<Notifica> Notifica { get; set; }
 
     public virtual DbSet<PasswordResetToken> PasswordResetToken { get; set; }

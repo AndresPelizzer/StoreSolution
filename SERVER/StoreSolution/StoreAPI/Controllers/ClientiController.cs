@@ -13,7 +13,7 @@ public class ClientiController : ControllerBase
     private readonly StoreDbContext _context;
     private readonly IHubContext<StoreHub> _hub;
 
-    public ClientiController(StoreDbContext context, IHubContext<StoreHub>hub)
+    public ClientiController(StoreDbContext context, IHubContext<StoreHub> hub)
     {
         _context = context;
         _hub = hub;
@@ -86,7 +86,7 @@ public class ClientiController : ControllerBase
             return BadRequest($"Esiste già un cliente con questa partita IVA({Cliente.PartitaIva})");
         }
 
-        if(string.IsNullOrWhiteSpace(Cliente.Nome)|| Cliente.Nome.Length < 6)
+        if (string.IsNullOrWhiteSpace(Cliente.Nome) || Cliente.Nome.Length < 6)
         {
             return BadRequest("Il nome deve contenere almeno 6 caratteri");
         }
@@ -146,7 +146,7 @@ public class ClientiController : ControllerBase
                 var sheet = package.Workbook.Worksheets[0];
                 int lastRow = sheet.Dimension.End.Row;
 
-                for (int row = 2; row <= lastRow; row++) 
+                for (int row = 2; row <= lastRow; row++)
                 {
                     processed++;
 
@@ -164,12 +164,12 @@ public class ClientiController : ControllerBase
                     bool esisteGia = await _context.Cliente.AnyAsync(c => c.PartitaIva == partitaIva);
                     if (esisteGia)
                     {
-                       
+
                         continue;
                     }
 
                     if (string.IsNullOrWhiteSpace(nome) && string.IsNullOrWhiteSpace(cognome))
-                        continue; 
+                        continue;
 
                     var cliente = new Cliente
                     {
@@ -177,7 +177,7 @@ public class ClientiController : ControllerBase
                         Cognome = cognome,
                         Email = email,
                         Settore = settore,
-                        PartitaIva=partitaIva
+                        PartitaIva = partitaIva
                     };
 
                     _context.Cliente.Add(cliente);
@@ -191,7 +191,7 @@ public class ClientiController : ControllerBase
         }
 
 
-      
+
 
 
 
@@ -206,7 +206,7 @@ public class ClientiController : ControllerBase
         int inserted = 0;
         var file = Request.Form.Files[0];
 
-        if(file==null || file.Length == 0)
+        if (file == null || file.Length == 0)
         {
             return BadRequest("Nessun File ricevuto");
         }
@@ -225,7 +225,7 @@ public class ClientiController : ControllerBase
                     continue;
                 }
                 processed++;
-                var values= line.Split(',');
+                var values = line.Split(',');
 
                 if (values.Length < 5)
                 {
@@ -234,8 +234,8 @@ public class ClientiController : ControllerBase
 
                 string nome = values[0].Trim();
                 string cognome = values[1].Trim();
-                string email= values[2].Trim();
-                string settore= values[3].Trim();
+                string email = values[2].Trim();
+                string settore = values[3].Trim();
                 string partitaIva = values[4].Trim();
 
                 if (string.IsNullOrWhiteSpace(partitaIva))
@@ -243,7 +243,7 @@ public class ClientiController : ControllerBase
                     continue;
                 }
 
-                bool esistegia= await _context.Cliente.AnyAsync(c=>c.PartitaIva== partitaIva );
+                bool esistegia = await _context.Cliente.AnyAsync(c => c.PartitaIva == partitaIva);
 
                 if (string.IsNullOrWhiteSpace(nome) && string.IsNullOrWhiteSpace(cognome))
                     continue;
@@ -269,3 +269,4 @@ public class ClientiController : ControllerBase
     }
 
 }
+

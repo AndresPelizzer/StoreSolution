@@ -1,0 +1,50 @@
+﻿@page "/SedeHome"
+@using StoreShared.Interfaces
+
+
+<div class="container mt-5">
+    <div class="card p-2">
+        <div class="card-title bg-info mt-1 d-flex justify-content-center align-items-center">
+
+            <h3>SedeHome</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Citta</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var sede in sedi!)
+                        {
+                           <tr>
+                               <td>@sede.Nome</td>
+                               <td>@sede.Citta</td>
+                           </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    public List<Sede>? sedi = new();
+
+
+    [Inject]
+    public ISedeService? SedeService { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        sedi = await SedeService!.GetSedi();
+    }
+
+}
