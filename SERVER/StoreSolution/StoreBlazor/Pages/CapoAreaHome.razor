@@ -1,7 +1,9 @@
 ﻿@page "/capoarea/{id:int}/home"
-@using StoreBlazor.Services
 @using StoreShared.Interfaces
 @using StoreShared.Models
+@using Radzen
+@using Radzen.Blazor
+
 
 <div class="container mt-5">
   <div class="card">
@@ -17,10 +19,31 @@
         </div>
         </div>
 
+
+        <h4>Calendario</h4>
+        <RadzenScheduler @ref=scheduler
+                 style="height: 768px;"
+                 TItem="Richiesta"
+                 Data="@richieste"
+                 StartProperty="DataRichiesta"
+                 EndProperty="DataRichiesta"
+                 TextProperty="Titolo"
+                 SelectedView="SchedulerView.Month"
+                 AppointmentRender="OnAppointmentRender"
+                 AppointmentSelect="OnAppointmentSelect">
+    <ChildContent>
+        <RadzenMonthView />
+    </ChildContent>
+    <Template Context="data">
+        @data.Titolo
+    </Template>
+</RadzenScheduler>
+
+
    
 </div>
 
-@code {
+@* @code {
 
     [Parameter]
     public int Id { get; set; }
@@ -46,4 +69,74 @@
     {
         Navigation!.NavigateTo($"area/{Id}/dipendenti");
     }
+} *@
+@code {
+    RadzenScheduler<Richiesta>? scheduler;
+
+    [Inject]
+    public IRichiesteService? RichiesteService { get; set; }
+
+    [Inject]
+    public IDipendentiService? DipendentiService { get; set; }
+
+    public List<Richiesta>? richieste = new();
+
+    [Parameter]
+    public int Id { get; set; }
+
+    Area? area = new();
+
+    [Inject]
+    public IAreeService? AreeService { get; set; }
+
+    [Inject]
+    public NavigationManager? Navigation { get; set; }
+    public void VisualizzaRichieste(int Id)
+    {
+        Navigation!.NavigateTo($"area/{Id}/richieste");
+    }
+    public void VisualizzaDipendenti(int Id)
+    {
+        Navigation!.NavigateTo($"area/{Id}/dipendenti");
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var dipendente = await DipendentiService!.GetDipendente(Id);
+        area = await AreeService!.GetArea(Id);
+        richieste = await RichiesteService!.GetRichieste();
+
+        richieste = richieste!.Where(r => r.CodiceArea == Id).ToList();
+    }
+    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Richiesta> args)
+    {
+        // Pulisce tutto: spazi, \r, \n, e confronta ignorando maiuscole
+        var stato = (args.Data!.Stato ?? "")
+            .Trim()
+            .Replace("\r", "")
+            .Replace("\n", "");
+
+        if (stato.Equals("Aperta", StringComparison.OrdinalIgnoreCase))
+        {
+            args.Attributes["style"] = "background: #198754; color: white;";
+        }
+        else if (stato.Equals("In lavorazione", StringComparison.OrdinalIgnoreCase))
+        {
+            args.Attributes["style"] = "background: #ffc107; color: black;";
+        }
+        else if (stato.Equals("Conclusa", StringComparison.OrdinalIgnoreCase))
+        {
+          
+            args.Attributes["style"] = "background: #dc3545; color: white;";
+        }
+    }
+    void OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Richiesta> args)
+    {
+        Navigation!.NavigateTo($"/richiesta/{args.Data!.Codice}");
+    }
 }
+
+
+
+        
