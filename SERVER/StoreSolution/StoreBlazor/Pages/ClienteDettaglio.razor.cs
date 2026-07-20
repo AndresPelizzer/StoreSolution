@@ -78,7 +78,7 @@ namespace StoreBlazor.Pages
                     clienti.Add(clientesalvato);
 
                     nuovoUtente.CodiceCliente = clientesalvato.Codice;
-                    nuovoUtente.PasswordHash = BCrypt.Net.BCrypt.HashPassword(nuovoUtente.PasswordHash);
+                    //nuovoUtente.PasswordHash = BCrypt.Net.BCrypt.HashPassword(nuovoUtente.PasswordHash);
                     await UtentiService.AddUtente(nuovoUtente);
 
                     Navigation.NavigateTo("/clienti");

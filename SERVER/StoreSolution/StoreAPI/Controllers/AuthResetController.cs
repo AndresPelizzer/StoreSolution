@@ -37,7 +37,7 @@ public class AuthResetController : Controller
         var token = Guid.NewGuid().ToString("N");
         _db.PasswordResetToken.Add(new PasswordResetToken
         {
-            CodiceUtente = utente.Codice,
+            CodiceUtente = utente.Codice, 
             Token = token,
             Scadenza = DateTime.UtcNow.AddHours(1),
             Usato = false

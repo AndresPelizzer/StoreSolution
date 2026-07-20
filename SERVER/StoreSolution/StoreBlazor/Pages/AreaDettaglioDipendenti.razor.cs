@@ -32,16 +32,20 @@ namespace StoreBlazor.Pages
         {
             loading = true;
 
-            area = await AreeService!.GetArea(Id);
+
 
 
             dipendenti = await DipendentiService!.GetDipendenti();
             if (dipendenti != null)
             {
-                dipendenti = dipendenti.Where(d => d.CodiceAreaAppl == area!.Codice).ToList();
+                dipendenti = dipendenti.Where(d => d.CodiceAreaAppl == Id).ToList();
             }
-            
+
             loading = false;
+
+
+
+
 
 
         }

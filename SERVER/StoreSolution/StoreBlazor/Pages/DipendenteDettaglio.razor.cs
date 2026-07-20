@@ -89,7 +89,7 @@ namespace StoreBlazor.Pages
 
 
                 Utente!.CodiceDipendente = salvato!.Codice;
-                Utente!.PasswordHash = BCrypt.Net.BCrypt.HashPassword(Utente.PasswordHash);
+                //Utente!.PasswordHash = BCrypt.Net.BCrypt.HashPassword(Utente.PasswordHash);
 
                 await UtentiService!.AddUtente(Utente!);
 

@@ -19,16 +19,32 @@ public class ClientiController : ControllerBase
         _hub = hub;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<Cliente>>> GetClienti(int pageNumber = 1, int pageSize = 10)
-    {
-        int elementidasaltare = (pageNumber - 1) * pageSize;
+    //[HttpGet]
+    //public async Task<ActionResult<List<Cliente>>> GetClienti(int pageNumber = 1, int pageSize = 10)
+    //{
+    //    int elementidasaltare = (pageNumber - 1) * pageSize;
 
-        return await _context.Cliente
-                              .Skip(elementidasaltare)
-                              .Take(pageSize)
-                              .ToListAsync();
+    //    return await _context.Cliente
+    //                          .Skip(elementidasaltare)
+    //                          .Take(pageSize)
+    //                          .ToListAsync();
+    //}
+
+    [HttpGet]
+    public async Task<ActionResult<List<Cliente>>> GetClienti()
+    {
+
+        return await _context.Cliente.ToListAsync();
     }
+
+
+
+
+
+
+
+
+
 
     [HttpGet("{id}")]
 
