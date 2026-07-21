@@ -13,12 +13,20 @@
         <div class="card-body">
             <h4>@area!.Note</h4>
         </div>
-        <div class="card-footer d-flex justify-content-between align-items-center">
+        <div class="card-footer d-flex justify-content-around align-items-center">
             <button type="button" class="btn btn-outline-primary" @onclick="()=>VisualizzaRichieste(area.Codice)">Visualizza Richieste</button>
             <button type="button" class="btn btn-outline-primary"@onclick="()=>VisualizzaDipendenti(area.Codice)">Visualizza Dipendenti</button>
-        </div>
-        </div>
-
+            <div class="mb-4 align-items-center justify-content-center">
+                <h4 class="text-uppercase text-success">Richieste aperte</h4>
+            
+                    <h4 class="text-uppercase text-center">
+                        @richiesteaperte
+                    </h4>
+               
+            </div>
+            
+       </div>
+    </div>
 
         <h4>Calendario</h4>
         <RadzenScheduler @ref=scheduler
@@ -37,7 +45,7 @@
     <Template Context="data">
         @data.Titolo
     </Template>
-</RadzenScheduler>
+ </RadzenScheduler>
 
 
    
@@ -76,6 +84,8 @@
     [Inject]
     public IRichiesteService? RichiesteService { get; set; }
 
+    int richiesteaperte = 0;
+
     [Inject]
     public IDipendentiService? DipendentiService { get; set; }
 
@@ -103,15 +113,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var dipendente = await DipendentiService!.GetDipendente(Id);
+
         area = await AreeService!.GetArea(Id);
         richieste = await RichiesteService!.GetRichieste();
 
         richieste = richieste!.Where(r => r.CodiceArea == Id).ToList();
+
+        richiesteaperte = richieste.Count(r => r.Stato?.Trim() == "Aperta");
     }
     void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Richiesta> args)
     {
-        // Pulisce tutto: spazi, \r, \n, e confronta ignorando maiuscole
+        
         var stato = (args.Data!.Stato ?? "")
             .Trim()
             .Replace("\r", "")
@@ -135,6 +147,12 @@
     {
         Navigation!.NavigateTo($"/richiesta/{args.Data!.Codice}");
     }
+
+
+
+
+
+
 }
 
 

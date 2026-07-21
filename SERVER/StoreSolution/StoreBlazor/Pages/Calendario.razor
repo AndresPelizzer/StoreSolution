@@ -1,10 +1,23 @@
 ﻿@page "/calendario/{id:int}"
-@using StoreShared.Interfaces
-@using StoreShared.Models
 @using Radzen
 @using Radzen.Blazor
+@using StoreBlazor.Services
+@using StoreShared.Interfaces
+@using StoreShared.Models
+
+@inject AuthState AuthState
 
 <h3>Calendario</h3>
+@if (AuthState.IsCapoArea==false)
+{
+    <button class="btn btn-outline-secondary" @onclick='() => Navigation!.NavigateTo($"dipendente/{Id}/home")'>Torna indietro</button>
+}
+@* else 
+{
+    <button class="btn btn-outline-secondary" @onclick='() => Navigation!.NavigateTo($"capoarea/{area!.Codice}/home")'>Torna indietro</button>
+} *@
+
+
 
 <RadzenScheduler @ref=scheduler
                  style="height: 768px;"
@@ -38,6 +51,11 @@
     [Parameter]
     public int Id { get; set; }
 
+    Area? area = new();
+
+    [Inject]
+    IAreeService? AreeService { get; set; }
+
     [Inject]
     public NavigationManager? Navigation { get; set; }
 
@@ -47,6 +65,7 @@
         richieste = await RichiesteService!.GetRichieste();
 
         richieste = richieste!.Where(r => r.CodiceDipendente == dipendente!.Codice).ToList();
+        area = await AreeService!.GetArea(dipendente!.CodiceAreaAppl ?? 0);
     }
     void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Richiesta> args)
     {
@@ -54,7 +73,8 @@
 
         if (stato == "aperta")
         {
-            args.Attributes["style"] = "background: #dc3545;";
+           
+            args.Attributes["style"] = "background: #198754;";
         }
         else if (stato == "in lavorazione")
         {
@@ -62,7 +82,7 @@
         }
         else if (stato == "conclusa")
         {
-            args.Attributes["style"] = "background: #198754;";
+            args.Attributes["style"] = "background: #dc3545;";
         }
     }
     void OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Richiesta> args)

@@ -26,6 +26,7 @@ public partial class StoreDbContext : DbContext
     public virtual DbSet<Notifica> Notifica { get; set; }
 
     public virtual DbSet<PasswordResetToken> PasswordResetToken { get; set; }
+    public DbSet<RichiestaFerie> RichiesteFerie { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

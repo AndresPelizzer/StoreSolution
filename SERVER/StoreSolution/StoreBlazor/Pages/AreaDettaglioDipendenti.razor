@@ -12,7 +12,7 @@ else
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
                 <h5 class="mb-0 fw-bold text-secondary">Dipendenti dell'Area<span class="badge bg-primary rounded-pill ms-2">  @dipendenti!.Count()</span></h5>
-                <button type="button" class="btn btn-sm btn-outline-secondary px-3" @onclick="() => TornaIndietro(area!.Codice)"><i class="bi bi-arrow-left me-1"></i>Torna</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary px-3" @onclick=" TornaIndietro"><i class="bi bi-arrow-left me-1"></i>Torna</button>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -31,7 +31,7 @@ else
                         <tbody>
                             @foreach(var dipendente in dipendenti!)
                             {
-                                <tr>
+                                <tr @onclick="()=> CalendarioDipendente(dipendente.Codice)" style="cursor:pointer">
                                     <td class="ps-4">
                                         <div class="fw-bold text-dark">@dipendente.Nome @dipendente.Cognome</div>
                                     </td>

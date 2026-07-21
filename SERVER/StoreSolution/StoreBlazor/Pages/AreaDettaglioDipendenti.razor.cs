@@ -50,13 +50,16 @@ namespace StoreBlazor.Pages
 
         }
 
-        void TornaIndietro(int id)
+        void TornaIndietro()
         {
-            Navigation!.NavigateTo($"/aree/{id}");
+            Navigation!.NavigateTo($"/capoarea/{Id}/home");
         }
 
 
-       
+       void CalendarioDipendente(int codice)
+        {
+            Navigation!.NavigateTo($"calendario/{codice}");
+        }
 
 
 

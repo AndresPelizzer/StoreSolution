@@ -1,4 +1,4 @@
-﻿@page "/area/{id:int}/richiesta"
+﻿@page "/area/{id:int}/richiesta/{codice:int}"
 @using StoreShared.Interfaces
 
 <div class="container mt-5">
@@ -8,14 +8,17 @@
         </div>
         <div class="card-body">
             <div class="mb-3">
-                <div class="form-label"> Seleziona Richiesta </div>
+              @*   <div class="form-label"> Seleziona Richiesta </div>
                 <select class="form-select" @bind="richiestaSel">
                     <option value="Seleziona Richiesta"></option>
                     @foreach(var richiesta in richieste!)
                     {
                         <option value="@richiesta.Codice">@richiesta.Titolo</option>
                     }
-                </select>
+                </select> *@
+                
+                <label class="form-label">richiesta:@richiestaa!.Codice</label>
+
             </div>
            
             <div class="mb-3">
@@ -46,6 +49,9 @@
     [Inject]
     public IRichiesteService? RichiesteService { get; set; }
 
+    [Parameter]
+    public int codice { get; set; }
+
 
     [Inject]
     public IAreeService? AreeService { get; set; }
@@ -60,6 +66,8 @@
     [Inject]
     public NavigationManager? Navigation { get; set; }
 
+    Richiesta? richiestaa = new();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,6 +78,7 @@
 
 
         richieste = richieste!.Where(r => r.CodiceArea == Id).ToList();
+        richiestaa = richieste!.FirstOrDefault(r => r.Codice == codice);
 
         dipendenti = await DipendentiService!.GetDipendenti();
 
@@ -83,10 +92,10 @@
 
     public async Task Assegna()
     {
-        var richiesta = richieste!.FirstOrDefault(r => r.Codice == richiestaSel);
-        richiesta!.CodiceDipendente = dipendenteSel;
+       
+        richiestaa!.CodiceDipendente = dipendenteSel;
 
-        await RichiesteService!.UpdateRichiesta(richiesta, richiesta.Codice);
+        await RichiesteService!.UpdateRichiesta(richiestaa, richiestaa.Codice);
 
         Navigation!.NavigateTo($"area/{Id}/richieste");
 

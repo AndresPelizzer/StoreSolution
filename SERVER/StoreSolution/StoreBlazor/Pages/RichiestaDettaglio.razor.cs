@@ -27,6 +27,8 @@ namespace StoreBlazor.Pages
         IClientiService? ClientiService { get; set; }
 
 
+
+
         [Inject]
         IAreeService? AreeService { get; set; }
 
@@ -47,6 +49,14 @@ namespace StoreBlazor.Pages
         [Inject]
         IJSRuntime? JS { get; set; }
 
+        [Inject]
+        IUtentiService? UtentiService { get; set; }
+
+        Area? area = new();
+
+        
+        public List<Utente>? utenti = new List<Utente>();
+        Utente? utente = new();
 
         protected override async Task OnInitializedAsync()
         {
@@ -54,17 +64,17 @@ namespace StoreBlazor.Pages
             if (Id != 0)
             {
                 RichiestaModificata = await RichiesteService!.GetRichiesta(Id);
-                
-
                 clienti = await ClientiService!.GetClienti();
                 aree = await AreeService!.GetAree();
                 dipendenti = await DipendentiService!.GetDipendenti();
+                utente = await UtentiService!.GetUtente(AuthState.CodiceUtente ?? 0);
+                var dipendente = await DipendentiService!.GetDipendente(utente!.CodiceDipendente ?? 0);
+                area = await AreeService!.GetArea(dipendente!.CodiceAreaAppl ?? 0);
+
             }
             else
             {
-                NuovaRichiesta = new Richiesta();
-
-               
+                NuovaRichiesta = new Richiesta();  
                 var oraAttuale = DateTime.Now;
                 NuovaRichiesta!.DataRichiesta = new DateTime(
                     oraAttuale.Year,
@@ -78,6 +88,8 @@ namespace StoreBlazor.Pages
                 clienti = await ClientiService!.GetClienti();
                 aree = await AreeService!.GetAree();
                 dipendenti = await DipendentiService!.GetDipendenti();
+                var dipendente = await DipendentiService!.GetDipendente(utente!.CodiceDipendente ?? 0);
+                area = await AreeService!.GetArea(dipendente!.CodiceAreaAppl ?? 0);
             }
             loading = false;
         }

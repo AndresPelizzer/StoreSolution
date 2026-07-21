@@ -9,8 +9,9 @@
 <div class="container mt-5">
     <div class="card">
         <div class="card-body">
-            <div class="card-header">
+            <div class="card-header justify-content-between">
                 <h4 class="text-center">Richieste</h4>
+                <button type="button" class="btn btn-sm btn-outline-secondary px-3" @onclick=" Torna"><i class="bi bi-arrow-left me-1"></i>Torna</button>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -27,19 +28,20 @@
                         <tbody>
                             @foreach(var richiesta in richieste!)
                             {
-                                <tr>
+                                <tr >
                                     <td>@richiesta.Codice</td>
                                     <td>@richiesta.Descrizione</td>
                                     <td>@richiesta.DataRichiesta</td>
+                                    <td> <button type="button" class="btn btn-sm btn-outline-primary" @onclick="() => AssegnaRichieste(richiesta.Codice)">Assegna Richiesta</button></td>
                                 </tr>
                             }
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="card-footer">
+            @* <div class="card-footer">
                 <button type="button" class="btn btn-sm btn-outline-primary" @onclick="()=>AssegnaRichieste(Id)">Assegna Richiesta</button>
-            </div>
+            </div> *@
         </div>
     </div>
 </div>
@@ -71,10 +73,14 @@
         richieste = richieste!.Where(r => r.CodiceArea == Id).ToList();
     }
 
-    public void AssegnaRichieste(int id)
+    public void AssegnaRichieste(int codice)
     {
-        Navigation!.NavigateTo($"area/{id}/richiesta");
+        Navigation!.NavigateTo($"area/{Id}/richiesta/{codice}");
 
-        
+
+    }
+    public void Torna()
+    {
+        Navigation?.NavigateTo($"capoarea/{Id}/home");
     }
 }

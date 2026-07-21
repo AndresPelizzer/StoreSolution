@@ -1,4 +1,7 @@
 ﻿@page "/richiesta/{id:int}"
+@using StoreBlazor.Services
+
+@inject AuthState AuthState
 
 <h3>RichiestaDettaglio</h3>
 
@@ -16,9 +19,28 @@ else
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Aggiungi Richiesta</h5>
-                    <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo("/richieste")'>
-                        <i class="bi bi-arrow-left"></i> Torna
-                    </button>
+
+                    
+
+                    @if (AuthState.Ruolo == "Admin")
+                    {
+                        <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo("/richieste")'>
+                            <i class="bi bi-arrow-left"></i> Torna
+                        </button>
+                    }
+                    else if(AuthState.Ruolo=="dipendente" && AuthState.IsCapoArea==false)
+                    {
+                        <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo($"/calendario/{utente!.CodiceDipendente}")'>
+                            <i class="bi bi-arrow-left"></i> Torna
+                        </button>
+                    }
+                    else if (AuthState.Ruolo == "dipendente" && AuthState.IsCapoArea == true)
+                    {
+                        <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo($"/capoarea/{area!.Codice}/home")'>
+                            <i class="bi bi-arrow-left"></i> Torna
+                        </button>
+                    }
+                    
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
@@ -103,9 +125,28 @@ else
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Aggiungi Richiesta</h5>
-                    <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo("/richieste")'>
-                        <i class="bi bi-arrow-left"></i> Torna
-                    </button>
+
+                    
+                    
+                    @if (AuthState.Ruolo == "Admin")
+                    {
+                        <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo("/richieste")'>
+                            <i class="bi bi-arrow-left"></i> Torna
+                        </button>
+                    }
+                    else if (AuthState.Ruolo == "dipendente" && AuthState.IsCapoArea == false)
+                    {
+                        <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo($"/calendario/{utente!.CodiceDipendente}")'>
+                            <i class="bi bi-arrow-left"></i> Torna
+                        </button>
+                    }
+                    else if (AuthState.Ruolo == "dipendente" && AuthState.IsCapoArea == true)
+                    {
+                        <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo($"/capoarea/{area!.Codice}/home")'>
+                            <i class="bi bi-arrow-left"></i> Torna
+                        </button>
+                    }
+
                 </div>
                 <div class="card-body">
                     <div class="mb-3">

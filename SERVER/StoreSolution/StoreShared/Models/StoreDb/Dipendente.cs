@@ -37,6 +37,9 @@ public partial class Dipendente
     [InverseProperty("Dipendente")]
     public virtual ICollection<Richiesta> Richiesta { get; set; } = new List<Richiesta>();
 
+    [InverseProperty("Dipendente")]
+    public virtual ICollection<RichiestaFerie> RichiestaFerie { get; set; } = new List<RichiestaFerie>();
+
     [InverseProperty("CodiceDipendenteNavigation")]
     public virtual ICollection<Utente> Utente { get; set; } = new List<Utente>();
 }

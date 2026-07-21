@@ -1,0 +1,61 @@
+﻿@page "/richiestaferie/{id:int}"
+@using StoreShared.Interfaces
+@using StoreShared.Models.StoreDb
+
+<div class="container mt-5">
+    <div class="card-header">
+        <h3 class="text-uppercase">Modulo Richiesta Ferie</h3>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <div class="form-label">Inserisci Data Inizio Ferie</div>
+            <input class="form-control" type="datetime-local" placeholder="Inserisci Data" @bind="feria.DataInizio"/>
+        </div>
+        <div class="mb-3">
+            <div class="form-label">Inserisci Data Fine Ferie</div>
+            <input class="form-control" type="datetime-local" placeholder="Inserisci Data" @bind="feria.DataFine" />
+        </div>
+        <div class="mb-3">
+            <div class="form-label">Inserisci delle note(opzionale)</div>
+            <input class="form-control" type="text" placeholder="Inserire Note" @bind="feria.Note" />
+        </div>
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-outline-secondary" @onclick="()=> Salva(feria)"> Salva </button>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    StoreShared.Models.StoreDb.RichiestaFerie feria = new StoreShared.Models.StoreDb.RichiestaFerie
+    {
+        DataInizio = DateTime.Now,
+        DataFine = DateTime.Now
+    };
+    [Inject]
+
+    IRichiesteFerieService? RichiestaFerieService { get; set; }
+
+    [Inject]
+    NavigationManager? Navigation { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+
+    public async Task<StoreShared.Models.StoreDb.RichiestaFerie> Salva(StoreShared.Models.StoreDb.RichiestaFerie feria)
+    {
+        feria.CodiceDipendente = Id;
+
+        await RichiestaFerieService!.AddFeria(feria);
+
+        Navigation!.NavigateTo($"dipendente/{Id}/home");
+        return feria;
+    }
+}
+

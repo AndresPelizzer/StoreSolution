@@ -20,4 +20,11 @@ public partial class Notifica
     [ForeignKey("CodiceCliente")]
     [InverseProperty("Notifica")]
     public virtual Cliente? Cliente { get; set; }
+
+    
+    public int? CodiceDipendente { get; set; }
+
+    [ForeignKey("CodiceDipendente")]
+  
+    public virtual Dipendente? Dipendente { get; set; }
 }

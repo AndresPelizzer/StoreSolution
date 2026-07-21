@@ -13,6 +13,7 @@
                     <i class="bi bi-calendar3 me-2"></i>CALENDARIO
                 </h3>
             </a>
+            <button class="btn btn-outline-primary" @onclick="RichiediFerie">Richiedi Ferie</button>
         </div>
         <div class="card-body">
 
@@ -176,15 +177,18 @@
 
     private object GetValore( Richiesta r,string colonna) => colonna switch
     {
-    "Titolo" => r.Titolo ?? "",
-    "Stato" => r.Stato ?? "",
-    "Descrizione" => r.Descrizione ?? "",
-    "Data" => r.DataRichiesta,
-    _ => ""
+        "Titolo" => r.Titolo ?? "",
+        "Stato" => r.Stato ?? "",
+        "Descrizione" => r.Descrizione ?? "",
+        "Data" => r.DataRichiesta,
+        _ => ""
 
     };
-    
 
+    void RichiediFerie()
+    {
+        Navigation!.NavigateTo($"richiestaferie/{Id}");
+    }
 
 }
 
