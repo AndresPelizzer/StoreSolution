@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\StoreBlazor\StoreBlazor.csproj" />
     <ProjectReference Include="..\StoreShared\StoreShared.csproj" />
   </ItemGroup>
 

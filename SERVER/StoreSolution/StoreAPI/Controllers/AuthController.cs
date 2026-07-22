@@ -62,7 +62,8 @@ using Microsoft.EntityFrameworkCore;
                     );
 
                     var dipendente = await _context.Dipendente
-                            .FirstOrDefaultAsync(d => d.Codice == utente.CodiceDipendente);
+    .AsNoTracking()
+    .FirstOrDefaultAsync(d => d.Codice == utente.CodiceDipendente);
 
                     var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 

@@ -51,6 +51,13 @@ public partial class StoreDbContext : DbContext
             entity.HasOne(d => d.CodiceDipendenteNavigation).WithMany(p => p.Utente).HasConstraintName("FK_Utente_Dipendente");
         });
 
+        modelBuilder.Entity<RichiestaFerie>(entity =>
+        {
+            entity.ToTable("RichiesteFerie");
+            entity.HasKey(e => e.Codice);
+            entity.Property(e => e.CodiceDipendente).HasColumnName("CodiceDipendente");
+        });
+
         OnModelCreatingPartial(modelBuilder);
     }
 

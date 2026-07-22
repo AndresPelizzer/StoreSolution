@@ -31,15 +31,18 @@ public partial class Dipendente
     public int? CodiceAreaAppl { get; set; }
 
     [ForeignKey("CodiceAreaAppl")]
-    [InverseProperty("Dipendente")]
+    
     public virtual Area? Area { get; set; }
 
-    [InverseProperty("Dipendente")]
+    
     public virtual ICollection<Richiesta> Richiesta { get; set; } = new List<Richiesta>();
 
-    [InverseProperty("Dipendente")]
-    public virtual ICollection<RichiestaFerie> RichiestaFerie { get; set; } = new List<RichiestaFerie>();
 
-    [InverseProperty("CodiceDipendenteNavigation")]
+
+    //// Dipendente.cs - lascia SOLO InverseProperty, togli ForeignKey
+    //[InverseProperty("Dipendente")]
+    //public virtual ICollection<RichiestaFerie> RichiesteFerie { get; set; } = new List<RichiestaFerie>();
+
+
     public virtual ICollection<Utente> Utente { get; set; } = new List<Utente>();
 }

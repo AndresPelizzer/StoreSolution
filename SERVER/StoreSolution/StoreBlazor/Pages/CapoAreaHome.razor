@@ -1,54 +1,80 @@
 ﻿@page "/capoarea/{id:int}/home"
-@using StoreShared.Interfaces
-@using StoreShared.Models
 @using Radzen
 @using Radzen.Blazor
+@using StoreBlazor.Services
+@using StoreShared.Interfaces
+@using StoreShared.Models
 
 
-<div class="container mt-5">
-  <div class="card">
-        <div class="card-header">
-            <h4 class="text-center text-primary">Area @area!.Descrizione</h4>
+<div class="container my-4">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Area @area!.Descrizione</h4>
+            <button type="button" class="btn btn-light position-relative" @onclick="seleziona">
+                Notifiche
+                @if (notifiche.Any())
+                {
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        @notifiche.Count()
+                    </span>
+                }
+            </button>
         </div>
+
         <div class="card-body">
-            <h4>@area!.Note</h4>
-        </div>
-        <div class="card-footer d-flex justify-content-around align-items-center">
-            <button type="button" class="btn btn-outline-primary" @onclick="()=>VisualizzaRichieste(area.Codice)">Visualizza Richieste</button>
-            <button type="button" class="btn btn-outline-primary"@onclick="()=>VisualizzaDipendenti(area.Codice)">Visualizza Dipendenti</button>
-            <div class="mb-4 align-items-center justify-content-center">
-                <h4 class="text-uppercase text-success">Richieste aperte</h4>
-            
-                    <h4 class="text-uppercase text-center">
-                        @richiesteaperte
-                    </h4>
-               
+            <p class="text-muted">@area!.Note</p>
+            <div class="d-flex gap-3">
+                <button class="btn btn-outline-primary" @onclick="() => VisualizzaRichieste(area.Codice)">Richieste</button>
+                <button class="btn btn-outline-primary" @onclick="() => VisualizzaDipendenti(area.Codice)">Dipendenti</button>
+                <div class="ms-auto me-3 align-self-center">
+                    <strong>Richieste Aperte:</strong>
+                    <span class="badge bg-success fs-6">@richiesteaperte</span>
+                </div>
             </div>
-            
-       </div>
+        </div>
     </div>
 
-        <h4>Calendario</h4>
-        <RadzenScheduler @ref=scheduler
-                 style="height: 768px;"
-                 TItem="Richiesta"
-                 Data="@richieste"
-                 StartProperty="DataRichiesta"
-                 EndProperty="DataRichiesta"
-                 TextProperty="Titolo"
-                 SelectedView="SchedulerView.Month"
-                 AppointmentRender="OnAppointmentRender"
-                 AppointmentSelect="OnAppointmentSelect">
-    <ChildContent>
-        <RadzenMonthView />
-    </ChildContent>
-    <Template Context="data">
-        @data.Titolo
-    </Template>
- </RadzenScheduler>
+    @if (notificaselezionata && notifiche.Any())
+    {
+        <div class="card shadow-sm mb-4 border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Notifiche da Gestire</h5>
+            </div>
+            <div class="card-body">
+                @if (!notifiche.Any())
+                {
+                    <p class="text-muted mb-0">Nessuna nuova notifica presente.</p>
+                }
+                @foreach (var n in notifiche)
+                {
+                    <div class="border-bottom pb-2 mb-2 d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>@n.Dipendente?.Nome @n.Dipendente?.Cognome</strong>
+                            <div class="small text-muted">@n.DataCreazione.ToString("dd/MM/yyyy HH:mm")</div>
+                            <div>@n.Messaggio</div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-success" @onclick="() => accetta(n)">Accetta</button>
+                            <button class="btn btn-sm btn-danger" @onclick="() => Rifiuta(n)">Rifiuta</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
 
-
-   
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Calendario Richieste</h5>
+        </div>
+        <div class="card-body p-2">
+            <RadzenScheduler @ref=scheduler style="height: 768px;" TItem="Richiesta" Data="@richieste" StartProperty="DataRichiesta" 
+            EndProperty="DataRichiesta" 
+            TextProperty="Titolo" SelectedView="SchedulerView.Month" AppointmentRender="OnAppointmentRender" 
+            AppointmentSelect="OnAppointmentSelect">
+           <ChildContent> <RadzenMonthView /> </ChildContent> <Template Context="data"> @data.Titolo </Template> </RadzenScheduler>
+        </div>
+    </div>
 </div>
 
 @* @code {
@@ -86,6 +112,8 @@
 
     int richiesteaperte = 0;
 
+    bool notificaselezionata = false;
+
     [Inject]
     public IDipendentiService? DipendentiService { get; set; }
 
@@ -94,7 +122,15 @@
     [Parameter]
     public int Id { get; set; }
 
+    [Inject]
+    public NotificheService? NotificheService{ get; set; }
+
     Area? area = new();
+
+    [Inject]
+    public IRichiesteFerieService ? RichiesteFerieService { get; set; }
+
+    public List<Notifica> notifiche = new();
 
     [Inject]
     public IAreeService? AreeService { get; set; }
@@ -111,6 +147,8 @@
     }
 
 
+
+
     protected override async Task OnInitializedAsync()
     {
 
@@ -120,10 +158,16 @@
         richieste = richieste!.Where(r => r.CodiceArea == Id).ToList();
 
         richiesteaperte = richieste.Count(r => r.Stato?.Trim() == "Aperta");
+        var dipendenti = await DipendentiService!.GetDipendenti();
+        var capoArea = dipendenti!.FirstOrDefault(d => d.CodiceAreaAppl == Id && d.CapoArea == true);
+
+
+        notifiche = await NotificheService!.GetNotificheCapoArea(capoArea!.Codice);
+
     }
     void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Richiesta> args)
     {
-        
+
         var stato = (args.Data!.Stato ?? "")
             .Trim()
             .Replace("\r", "")
@@ -139,7 +183,7 @@
         }
         else if (stato.Equals("Conclusa", StringComparison.OrdinalIgnoreCase))
         {
-          
+
             args.Attributes["style"] = "background: #dc3545; color: white;";
         }
     }
@@ -149,9 +193,72 @@
     }
 
 
+    void seleziona()
+    {
+        notificaselezionata = !notificaselezionata;
+    }
 
 
+    public async Task accetta(Notifica notifica)
+    {
+       
+        notifiche.Remove(notifica);
+        StateHasChanged();
 
+       
+        var tutteLeFerie = await RichiesteFerieService!.GetFerie();
+        var feriaInAttesa = tutteLeFerie
+            .Where(f => f.Stato == "In Attesa")
+            .OrderByDescending(f => f.DataInizio)
+            .FirstOrDefault();
+
+        if (feriaInAttesa != null)
+        {
+            
+            await RichiesteFerieService!.AggiornaStato(feriaInAttesa.Codice, "Accettata");
+
+           
+            await NotificheService!.AddNotifica(new Notifica
+            {
+                CodiceDipendente = feriaInAttesa.CodiceDipendente, 
+                Messaggio = $"La tua richiesta di ferie dal {feriaInAttesa.DataInizio:dd/MM/yyyy} è stata ACCETTATA ✅",
+                DataCreazione = DateTime.Now,
+                Letta = false
+            });
+        }
+
+        
+        await NotificheService!.UpdateNotifica(notifica.Codice);
+    }
+
+    async Task Rifiuta(Notifica n)
+    {
+        notifiche.Remove(n);
+        StateHasChanged();
+
+        var tutteLeFerie = await RichiesteFerieService!.GetFerie();
+        var feriaInAttesa = tutteLeFerie
+            .Where(f => f.Stato == "In Attesa")
+            .OrderByDescending(f => f.DataInizio)
+            .FirstOrDefault();
+
+        if (feriaInAttesa != null)
+        {
+            
+            await RichiesteFerieService!.AggiornaStato(feriaInAttesa.Codice, "Rifiutata");
+
+           
+            await NotificheService!.AddNotifica(new Notifica
+            {
+                CodiceDipendente = feriaInAttesa.CodiceDipendente,
+                Messaggio = $"La tua richiesta di ferie dal {feriaInAttesa.DataInizio:dd/MM/yyyy} è stata RIFIUTATA ❌",
+                DataCreazione = DateTime.Now,
+                Letta = false
+            });
+        }
+
+        await NotificheService!.UpdateNotifica(n.Codice);
+    }
 
 }
 

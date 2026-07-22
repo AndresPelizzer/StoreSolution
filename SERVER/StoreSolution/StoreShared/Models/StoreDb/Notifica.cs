@@ -15,10 +15,10 @@ public partial class Notifica
 
     public DateTime DataCreazione { get; set; }
 
-    public int CodiceCliente { get; set; }
+    public int? CodiceCliente { get; set; }
 
     [ForeignKey("CodiceCliente")]
-    [InverseProperty("Notifica")]
+   
     public virtual Cliente? Cliente { get; set; }
 
     
@@ -28,3 +28,4 @@ public partial class Notifica
   
     public virtual Dipendente? Dipendente { get; set; }
 }
+

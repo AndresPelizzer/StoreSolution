@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using StoreShared.Models.StoreDb;
 
 namespace StoreAPI.Controllers;
@@ -20,9 +21,32 @@ public class NotificheController : ControllerBase
     [HttpGet("{id}")]
 
 
+
+    
     public async Task<ActionResult<List<Notifica>>> GetNotifiche(int id)
     {
+
+       
         return await _context.Notifica.Where(n => n.CodiceCliente == id && !n.Letta).ToListAsync();
+    }
+
+
+    [HttpGet("dipendente/{id}")]
+    public async Task<ActionResult<List<Notifica>>> GetNotificheCapoArea(int id)
+    {
+        return await _context.Notifica.Where(n => n.CodiceDipendente == id && !n.Letta).ToListAsync();
+    }
+
+    [HttpPost]
+
+    public async Task<ActionResult<Notifica>> AddNotifica(Notifica notifica)
+    {
+        notifica.DataCreazione = DateTime.Now;
+        notifica.Letta = false;
+        await _context.Notifica.AddAsync(notifica);
+        await _context.SaveChangesAsync();
+        return Ok(notifica);
+        
     }
 
     [HttpPut("{id}/letta")]

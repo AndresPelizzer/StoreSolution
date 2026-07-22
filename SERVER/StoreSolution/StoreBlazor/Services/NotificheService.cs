@@ -21,6 +21,18 @@ public class NotificheService
         return notifiche ?? new List<Notifica>();
     }
 
+    public async Task<List<Notifica>> GetNotificheCapoArea(int id)
+    {
+        var notifiche = await _http.GetFromJsonAsync<List<Notifica>>($"api/Notifiche/dipendente/{id}");
+        return notifiche ?? new List<Notifica>();
+    }
+
+
+    public async Task<bool> AddNotifica(Notifica notifica)
+    {
+        var response = await _http.PostAsJsonAsync("api/Notifiche", notifica);
+        return response.IsSuccessStatusCode;
+    }
 
     public async Task<bool> UpdateNotifica(int id)
     {

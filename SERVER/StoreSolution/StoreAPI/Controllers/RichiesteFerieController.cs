@@ -23,9 +23,12 @@ public class RichiesteFerieController : ControllerBase
 
     [HttpGet]
 
+    [HttpGet]
     public async Task<ActionResult<List<RichiestaFerie>>> GetFerie()
     {
-        return await _context.RichiesteFerie.ToListAsync();
+        return await _context.RichiesteFerie
+            .Include(f => f.Dipendente) 
+            .ToListAsync();
     }
 
     [HttpGet("{id}")]
@@ -43,8 +46,8 @@ public class RichiesteFerieController : ControllerBase
         await _context.RichiesteFerie.AddAsync(feria);
         await _context.SaveChangesAsync();
 
-        var dipendente= await _context.Dipendente.FirstOrDefaultAsync(d=>d.Codice==feria.CodiceDipendente);
-        if(dipendente!=null && dipendente.CodiceAreaAppl != null)
+        var dipendente = await _context.Dipendente.FirstOrDefaultAsync(d => d.Codice == feria.CodiceDipendente);
+        if (dipendente != null && dipendente.CodiceAreaAppl != null)
         {
             var capoArea = await _context.Dipendente.FirstOrDefaultAsync(d => d.CodiceAreaAppl == dipendente.CodiceAreaAppl && d.CapoArea == true);
             if (capoArea != null)
@@ -52,9 +55,11 @@ public class RichiesteFerieController : ControllerBase
                 var notifica = new Notifica
                 {
                     Letta = false,
-                    Messaggio = $"Nuova richiesta di ferie ricevuta da {dipendente.Nome} {dipendente.Cognome}",
-                    CodiceDipendente=capoArea.Codice,
-                   
+                    Messaggio = $"Nuova richiesta di ferie ricevuta da {dipendente.Nome} {dipendente.Cognome} (ID: {dipendente.Codice})",
+                    CodiceDipendente = capoArea.Codice,
+                    DataCreazione = DateTime.Now,
+                    CodiceCliente = null
+
                 };
                 _context.Notifica.Add(notifica);
                 await _context.SaveChangesAsync();
@@ -75,18 +80,39 @@ public class RichiesteFerieController : ControllerBase
 
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<RichiestaFerie>>UpdateFeria(int id, RichiestaFerie feria)
+    public async Task<ActionResult<RichiestaFerie>> UpdateFeria(int id, RichiestaFerie feria)
     {
-        var fer=  await _context.RichiesteFerie.FindAsync(id);
-        fer!.Note= feria.Note;
-        fer.Stato= feria.Stato;
+        var fer = await _context.RichiesteFerie.FindAsync(id);
+        fer!.Note = feria.Note;
+        fer.Stato = feria.Stato;
         fer.CodiceDipendente = feria.CodiceDipendente;
-       
-        fer.DataInizio= feria.DataInizio;
-        fer.DataFine= feria.DataFine;
+
+        fer.DataInizio = feria.DataInizio;
+        fer.DataFine = feria.DataFine;
         await _context.SaveChangesAsync();
 
         return Ok(fer);
     }
+
+
+
+    [HttpGet("dipendente/{id}")]
+    public async Task<ActionResult<List<RichiestaFerie>>> GetFerieDipendente(int id)
+    {
+        return await _context.RichiesteFerie
+            .Where(f => f.CodiceDipendente == id && f.Stato == "In Attesa")
+            .ToListAsync();
+    }
+
+    [HttpPut("{id}/stato")]
+    public async Task<ActionResult> AggiornaStato(int id, [FromBody] string stato)
+    {
+        var feria = await _context.RichiesteFerie.FindAsync(id);
+        if (feria == null) return NotFound();
+        feria.Stato = stato.Replace("\"", "").Trim();
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
 }
+
 

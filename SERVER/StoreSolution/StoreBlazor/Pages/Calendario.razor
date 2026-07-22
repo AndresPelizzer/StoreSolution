@@ -3,40 +3,32 @@
 @using Radzen.Blazor
 @using StoreBlazor.Services
 @using StoreShared.Interfaces
-@using StoreShared.Models
+@using StoreShared.Models.StoreDb
 
 @inject AuthState AuthState
-
 <h3>Calendario</h3>
-@if (AuthState.IsCapoArea==false)
+
+@if (AuthState.IsCapoArea == false)
 {
     <button class="btn btn-outline-secondary" @onclick='() => Navigation!.NavigateTo($"dipendente/{Id}/home")'>Torna indietro</button>
 }
-@* else 
-{
-    <button class="btn btn-outline-secondary" @onclick='() => Navigation!.NavigateTo($"capoarea/{area!.Codice}/home")'>Torna indietro</button>
-} *@
 
 
-
-<RadzenScheduler @ref=scheduler
+<RadzenScheduler TItem="EventoCalendario"
                  style="height: 768px;"
-                 TItem="Richiesta"
-                 Data="@richieste"
-                 StartProperty="DataRichiesta"
-                 EndProperty="DataRichiesta"
+                 Data="@eventiCalendario"
+                 StartProperty="DataInizio"
+                 EndProperty="DataFine"
                  TextProperty="Titolo"
                  SelectedView="SchedulerView.Month"
-                 AppointmentRender="OnAppointmentRender"
-                 AppointmentSelect="OnAppointmentSelect">
+                 AppointmentRender="OnAppointmentRenderEvento">
     <ChildContent>
         <RadzenMonthView />
     </ChildContent>
-    <Template Context="data">
-        @data.Titolo
+    <Template Context="ev">
+        <span>@ev.Titolo</span>
     </Template>
 </RadzenScheduler>
-
 @code {
     RadzenScheduler<Richiesta>? scheduler;
 
@@ -53,6 +45,11 @@
 
     Area? area = new();
 
+    public List<StoreShared.Models.StoreDb.RichiestaFerie> ferieAccettate = new();
+
+    [Inject]
+    IRichiesteFerieService? RichiesteFerieService { get; set; }
+
     [Inject]
     IAreeService? AreeService { get; set; }
 
@@ -66,30 +63,55 @@
 
         richieste = richieste!.Where(r => r.CodiceDipendente == dipendente!.Codice).ToList();
         area = await AreeService!.GetArea(dipendente!.CodiceAreaAppl ?? 0);
-    }
-    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Richiesta> args)
-    {
-        var stato = args.Data!.Stato?.Trim().ToLower();
 
-        if (stato == "aperta")
+        var tutteLeFerie = await RichiesteFerieService!.GetFerie();
+        ferieAccettate = tutteLeFerie
+        .Where(f => f.Stato == "Accettata" && f.CodiceDipendente == dipendente!.Codice)
+        .ToList();
+
+        eventiCalendario = richieste!.Select(r => new EventoCalendario
         {
-           
-            args.Attributes["style"] = "background: #198754;";
+            Titolo = r.Titolo ?? "",
+            DataInizio = r.DataRichiesta,
+            DataFine = r.DataRichiesta,
+            Tipo = "Richiesta"
+        }).ToList();
+
+        eventiCalendario.AddRange(ferieAccettate.Select(f => new EventoCalendario
+        {
+            Titolo = $"Ferie - {f.CodiceDipendente}",
+            DataInizio = f.DataInizio,
+            DataFine = f.DataFine,
+            Tipo = "Ferie"
+        }));
+    }
+
+    void OnAppointmentRenderEvento(SchedulerAppointmentRenderEventArgs<EventoCalendario> args)
+    {
+        if (args.Data.Tipo == "Ferie")
+        {
+            args.Attributes["style"] = "background: #0d6efd; color: white;"; // blu per ferie
         }
-        else if (stato == "in lavorazione")
+        else
         {
-            args.Attributes["style"] = "background: #ffc107; color: black;";
-        }
-        else if (stato == "conclusa")
-        {
-            args.Attributes["style"] = "background: #dc3545;";
+            var stato = args.Data.Titolo;
+            args.Attributes["style"] = "background: #198754; color: white;";
         }
     }
+
     void OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Richiesta> args)
     {
         Navigation!.NavigateTo($"/richiesta/{args.Data!.Codice}");
     }
+    public class EventoCalendario
+    {
+        public string Titolo { get; set; } = "";
+        public DateTime DataInizio { get; set; }
+        public DateTime DataFine { get; set; }
+        public string Tipo { get; set; } = ""; 
+    }
+
+    public List<EventoCalendario> eventiCalendario = new();
+
 }
-
-
 

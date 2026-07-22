@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace StoreShared.Models.StoreDb;
 
+[Table("RichiesteFerie")]
 [Index("CodiceDipendente", Name = "IX_RichiestaFerie_CodiceDipendente")]
 public partial class RichiestaFerie
 {
@@ -23,9 +23,10 @@ public partial class RichiestaFerie
 
     public string? MotivoRifiuto { get; set; }
 
+    [Column("CodiceDipendente")]  
     public int? CodiceDipendente { get; set; }
 
     [ForeignKey("CodiceDipendente")]
-   
+    //[InverseProperty("RichiesteFerie")]
     public virtual Dipendente? Dipendente { get; set; }
 }

@@ -17,5 +17,8 @@ namespace StoreShared.Interfaces
         Task<RichiestaFerie?> UpdateFeria(int id, RichiestaFerie feria);
 
 
+        Task<List<RichiestaFerie>> GetFerieDipendente(int id);
+        Task<bool> AggiornaStato(int id, string stato);
+
     }
 }
