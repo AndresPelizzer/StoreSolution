@@ -4,6 +4,7 @@
 @using StoreBlazor.Services
 @using StoreShared.Interfaces
 @using StoreShared.Models
+@layout AdminLayout
 
 
 <div class="container my-4">
@@ -64,148 +65,117 @@
     }
 
     <div class="card shadow-sm">
-        <div class="card-header bg-light">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Calendario Richieste</h5>
+            <div class="d-flex gap-3 align-items-center small">
+                <span><span class="badge" style="background:#198754;">&nbsp;&nbsp;&nbsp;</span> Aperta</span>
+                <span><span class="badge" style="background:#ffc107; color:black;">&nbsp;&nbsp;&nbsp;</span> In lavorazione</span>
+                <span><span class="badge" style="background:#dc3545;">&nbsp;&nbsp;&nbsp;</span> Conclusa</span>
+                <span><span class="badge" style="background:#0d6efd;">&nbsp;&nbsp;&nbsp;</span> Ferie</span>
+            </div>
         </div>
         <div class="card-body p-2">
-            <RadzenScheduler @ref=scheduler style="height: 768px;" TItem="Richiesta" Data="@richieste" StartProperty="DataRichiesta" 
-            EndProperty="DataRichiesta" 
-            TextProperty="Titolo" SelectedView="SchedulerView.Month" AppointmentRender="OnAppointmentRender" 
-            AppointmentSelect="OnAppointmentSelect">
-           <ChildContent> <RadzenMonthView /> </ChildContent> <Template Context="data"> @data.Titolo </Template> </RadzenScheduler>
+            <RadzenScheduler @ref=scheduler style="height: 768px;" TItem="EventoCalendario"
+                             Data="@eventiCalendario"
+                             StartProperty="DataInizio"
+                             EndProperty="DataFine"
+                             TextProperty="Titolo"
+                             SelectedView="SchedulerView.Month"
+                             AppointmentRender="OnAppointmentRenderEvento"
+                             AppointmentSelect="OnAppointmentSelectEvento">
+                <ChildContent><RadzenMonthView /></ChildContent>
+                <Template Context="ev">@ev.Titolo</Template>
+            </RadzenScheduler>
         </div>
     </div>
 </div>
 
-@* @code {
-
-    [Parameter]
-    public int Id { get; set; }
-
-    [Inject]
-    public IAreeService? AreeService { get; set; }
-
-    [Inject]
-    public NavigationManager? Navigation { get; set; }
-
-    Area? area = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        area = await AreeService!.GetArea(Id);
-
-    }
-    public void VisualizzaRichieste(int Id)
-    {
-        Navigation!.NavigateTo($"area/{Id}/richieste");
-    }
-    public void VisualizzaDipendenti(int Id)
-    {
-        Navigation!.NavigateTo($"area/{Id}/dipendenti");
-    }
-} *@
 @code {
-    RadzenScheduler<Richiesta>? scheduler;
 
-    [Inject]
-    public IRichiesteService? RichiesteService { get; set; }
+    
+    public class EventoCalendario
+    {
+        public string Titolo { get; set; } = "";
+        public DateTime DataInizio { get; set; }
+        public DateTime DataFine { get; set; }
+        public string Tipo { get; set; } = "";
+        public int? CodiceRichiesta { get; set; }
+    }
+
+   
+    RadzenScheduler<EventoCalendario>? scheduler;
+
+  
+    [Inject] public IAreeService? AreeService { get; set; }
+    [Inject] public IRichiesteService? RichiesteService { get; set; }
+    [Inject] public IDipendentiService? DipendentiService { get; set; }
+    [Inject] public NotificheService? NotificheService { get; set; }
+    [Inject] public IRichiesteFerieService? RichiesteFerieService { get; set; }
+    [Inject] public NavigationManager? Navigation { get; set; }
+
+    [Parameter] public int Id { get; set; }
+
+    
+    Area? area = new();
+    List<Richiesta>? richieste = new();
+    List<Notifica> notifiche = new();
+    List<EventoCalendario> eventiCalendario = new();
 
     int richiesteaperte = 0;
-
     bool notificaselezionata = false;
 
-    [Inject]
-    public IDipendentiService? DipendentiService { get; set; }
-
-    public List<Richiesta>? richieste = new();
-
-    [Parameter]
-    public int Id { get; set; }
-
-    [Inject]
-    public NotificheService? NotificheService{ get; set; }
-
-    Area? area = new();
-
-    [Inject]
-    public IRichiesteFerieService ? RichiesteFerieService { get; set; }
-
-    public List<Notifica> notifiche = new();
-
-    [Inject]
-    public IAreeService? AreeService { get; set; }
-
-    [Inject]
-    public NavigationManager? Navigation { get; set; }
-    public void VisualizzaRichieste(int Id)
-    {
-        Navigation!.NavigateTo($"area/{Id}/richieste");
-    }
-    public void VisualizzaDipendenti(int Id)
-    {
-        Navigation!.NavigateTo($"area/{Id}/dipendenti");
-    }
-
-
-
-
+  
     protected override async Task OnInitializedAsync()
     {
-
         area = await AreeService!.GetArea(Id);
+
+      
         richieste = await RichiesteService!.GetRichieste();
-
         richieste = richieste!.Where(r => r.CodiceArea == Id).ToList();
-
         richiesteaperte = richieste.Count(r => r.Stato?.Trim() == "Aperta");
+
+       
         var dipendenti = await DipendentiService!.GetDipendenti();
         var capoArea = dipendenti!.FirstOrDefault(d => d.CodiceAreaAppl == Id && d.CapoArea == true);
-
-
         notifiche = await NotificheService!.GetNotificheCapoArea(capoArea!.Codice);
 
-    }
-    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Richiesta> args)
-    {
+       
+        var tutteLeFerie = await RichiesteFerieService!.GetFerie();
+        var ferieArea = tutteLeFerie
+            .Where(f => f.Stato == "Accettata" && f.Dipendente?.CodiceAreaAppl == Id)
+            .ToList();
 
-        var stato = (args.Data!.Stato ?? "")
-            .Trim()
-            .Replace("\r", "")
-            .Replace("\n", "");
-
-        if (stato.Equals("Aperta", StringComparison.OrdinalIgnoreCase))
+        
+        eventiCalendario = richieste.Select(r => new EventoCalendario
         {
-            args.Attributes["style"] = "background: #198754; color: white;";
-        }
-        else if (stato.Equals("In lavorazione", StringComparison.OrdinalIgnoreCase))
+            Titolo = r.Titolo ?? "",
+            DataInizio = r.DataRichiesta,
+            DataFine = r.DataRichiesta,
+            Tipo = "Richiesta",
+            CodiceRichiesta = r.Codice
+        }).ToList();
+
+        eventiCalendario.AddRange(ferieArea.Select(f => new EventoCalendario
         {
-            args.Attributes["style"] = "background: #ffc107; color: black;";
-        }
-        else if (stato.Equals("Conclusa", StringComparison.OrdinalIgnoreCase))
-        {
-
-            args.Attributes["style"] = "background: #dc3545; color: white;";
-        }
-    }
-    void OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Richiesta> args)
-    {
-        Navigation!.NavigateTo($"/richiesta/{args.Data!.Codice}");
+            Titolo = $"Ferie - {f.Dipendente?.Nome} {f.Dipendente?.Cognome}",
+            DataInizio = f.DataInizio,
+            DataFine = f.DataFine,
+            Tipo = "Ferie"
+        }));
     }
 
+   
+    public void VisualizzaRichieste(int id) => Navigation!.NavigateTo($"area/{id}/richieste");
+    public void VisualizzaDipendenti(int id) => Navigation!.NavigateTo($"area/{id}/dipendenti");
 
-    void seleziona()
-    {
-        notificaselezionata = !notificaselezionata;
-    }
-
+    
+    void seleziona() => notificaselezionata = !notificaselezionata;
 
     public async Task accetta(Notifica notifica)
     {
-       
         notifiche.Remove(notifica);
         StateHasChanged();
 
-       
         var tutteLeFerie = await RichiesteFerieService!.GetFerie();
         var feriaInAttesa = tutteLeFerie
             .Where(f => f.Stato == "In Attesa")
@@ -214,20 +184,27 @@
 
         if (feriaInAttesa != null)
         {
-            
             await RichiesteFerieService!.AggiornaStato(feriaInAttesa.Codice, "Accettata");
 
-           
             await NotificheService!.AddNotifica(new Notifica
             {
-                CodiceDipendente = feriaInAttesa.CodiceDipendente, 
+                CodiceDipendente = feriaInAttesa.CodiceDipendente,
                 Messaggio = $"La tua richiesta di ferie dal {feriaInAttesa.DataInizio:dd/MM/yyyy} è stata ACCETTATA ✅",
                 DataCreazione = DateTime.Now,
                 Letta = false
             });
+
+          
+            eventiCalendario.Add(new EventoCalendario
+            {
+                Titolo = $"Ferie - {feriaInAttesa.Dipendente?.Nome} {feriaInAttesa.Dipendente?.Cognome}",
+                DataInizio = feriaInAttesa.DataInizio,
+                DataFine = feriaInAttesa.DataFine,
+                Tipo = "Ferie"
+            });
+            StateHasChanged();
         }
 
-        
         await NotificheService!.UpdateNotifica(notifica.Codice);
     }
 
@@ -244,10 +221,8 @@
 
         if (feriaInAttesa != null)
         {
-            
             await RichiesteFerieService!.AggiornaStato(feriaInAttesa.Codice, "Rifiutata");
 
-           
             await NotificheService!.AddNotifica(new Notifica
             {
                 CodiceDipendente = feriaInAttesa.CodiceDipendente,
@@ -260,8 +235,30 @@
         await NotificheService!.UpdateNotifica(n.Codice);
     }
 
-}
-
-
+  
+    void OnAppointmentRenderEvento(SchedulerAppointmentRenderEventArgs<EventoCalendario> args)
+    {
+        if (args.Data.Tipo == "Ferie")
+        {
+            args.Attributes["style"] = "background: #0d6efd; color: white;";
+            return;
+        }
 
         
+        var richiesta = richieste!.FirstOrDefault(r => r.Codice == args.Data.CodiceRichiesta);
+        var stato = (richiesta?.Stato ?? "").Trim().Replace("\r", "").Replace("\n", "");
+
+        if (stato.Equals("Aperta", StringComparison.OrdinalIgnoreCase))
+            args.Attributes["style"] = "background: #198754; color: white;";
+        else if (stato.Equals("In lavorazione", StringComparison.OrdinalIgnoreCase))
+            args.Attributes["style"] = "background: #ffc107; color: black;";
+        else if (stato.Equals("Conclusa", StringComparison.OrdinalIgnoreCase))
+            args.Attributes["style"] = "background: #dc3545; color: white;";
+    }
+
+    void OnAppointmentSelectEvento(SchedulerAppointmentSelectEventArgs<EventoCalendario> args)
+    {
+        if (args.Data.Tipo == "Richiesta" && args.Data.CodiceRichiesta.HasValue)
+            Navigation!.NavigateTo($"/richiesta/{args.Data.CodiceRichiesta}");
+    }
+}
