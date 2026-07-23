@@ -38,7 +38,7 @@ builder.Services.AddScoped<AuthResetService>();
 builder.Services.AddScoped<NotificheService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<IRichiesteFerieService, RichiestaFerieService>();
-
+builder.Services.AddScoped<IStraordinarieService, StraordinarieService>();
 
 builder.Services.AddScoped<DialogService>();
 builder.Services.AddScoped<NotificationService>();

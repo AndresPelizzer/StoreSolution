@@ -28,6 +28,8 @@ public partial class StoreDbContext : DbContext
     public virtual DbSet<PasswordResetToken> PasswordResetToken { get; set; }
     public DbSet<RichiestaFerie> RichiesteFerie { get; set; }
 
+    public DbSet<Straordinaria> Straordinaria { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Dipendente>(entity =>
@@ -56,6 +58,17 @@ public partial class StoreDbContext : DbContext
             entity.ToTable("RichiesteFerie");
             entity.HasKey(e => e.Codice);
             entity.Property(e => e.CodiceDipendente).HasColumnName("CodiceDipendente");
+        });
+
+        modelBuilder.Entity<Straordinaria>(entity =>
+        {
+            entity.ToTable("Straordinaria");
+            entity.HasKey(e => e.Codice);
+            entity.Property(e => e.CodiceDipendente).HasColumnName("CodiceDipendente"); 
+            entity.HasOne(e => e.Dipendente)
+                  .WithMany()
+                  .HasForeignKey(e => e.CodiceDipendente)
+                  .HasConstraintName("CodiceDip");
         });
 
         OnModelCreatingPartial(modelBuilder);

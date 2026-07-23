@@ -1,0 +1,76 @@
+﻿@page "/richiestastraordinarie/{id:int}"
+@using StoreShared.Interfaces
+
+<h3>Modulo Richiesta Straordinarie</h3>
+
+
+<div class="container mt-5">
+   <div class="card">
+       <div class="card-header">
+           <h4 class="text-uppercase text-capitalize text-center text-dark-emphasis">Richiesta</h4>
+       </div>
+       <div class="card-body">
+           <div class="mb-3">
+               <div class="form-label">Inserisci Data Inizio</div>
+               <input class="form-control" type="datetime-local" @bind="straordinaria.DataInizio" /> 
+           </div>
+           <div class="mb-3">
+               <div class="form-label">Inserisci Data Fine</div>
+               <input class="form-control" type="datetime-local" @bind="straordinaria.DataFine"/>
+           </div>
+           <div class="mb-3">
+               <div class="form-label">Inserisci Numero Ore</div>
+               <input class="form-control" type="number" @bind="straordinaria.NumeroOre"/>
+           </div>
+           <div class="mb-3">
+               <div class="form-label">Inserisci Motivo</div>
+               <input class="form-control" type="text" @bind="straordinaria.Motivo"/>
+           </div>
+            
+
+           
+       </div>
+       <div class="card-footer">
+           <button class="btn btn-outline-success" @onclick="()=>Salva(straordinaria)">Salva</button>
+       </div>
+   </div>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    Straordinaria straordinaria = new();
+
+
+    [Inject]
+    IStraordinarieService? StraordinarieService { get; set; }
+
+    [Inject]
+    NavigationManager? Navigation { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        straordinaria.DataInizio = DateTime.Now;
+        straordinaria.DataFine = DateTime.Now;
+    }
+
+
+    public async Task Salva(Straordinaria s)
+    {
+
+        s.CodiceDipendente = Id;
+        s.Stato = "In Attesa";
+
+
+        await StraordinarieService!.PostStraordinaria(s);
+
+
+        Navigation!.NavigateTo($"dipendente/{Id}/home");
+    }
+
+}
+
+

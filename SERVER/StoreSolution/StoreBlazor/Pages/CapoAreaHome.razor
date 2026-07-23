@@ -92,7 +92,7 @@
 
 @code {
 
-    
+
     public class EventoCalendario
     {
         public string Titolo { get; set; } = "";
@@ -102,50 +102,51 @@
         public int? CodiceRichiesta { get; set; }
     }
 
-   
+
     RadzenScheduler<EventoCalendario>? scheduler;
 
-  
+
     [Inject] public IAreeService? AreeService { get; set; }
     [Inject] public IRichiesteService? RichiesteService { get; set; }
     [Inject] public IDipendentiService? DipendentiService { get; set; }
     [Inject] public NotificheService? NotificheService { get; set; }
     [Inject] public IRichiesteFerieService? RichiesteFerieService { get; set; }
     [Inject] public NavigationManager? Navigation { get; set; }
-
+    [Inject] public IStraordinarieService? StraordinarieService { get; set; }
     [Parameter] public int Id { get; set; }
 
-    
+
     Area? area = new();
     List<Richiesta>? richieste = new();
     List<Notifica> notifiche = new();
     List<EventoCalendario> eventiCalendario = new();
+    public List<Straordinaria>? straordinarie = new();
 
     int richiesteaperte = 0;
     bool notificaselezionata = false;
 
-  
+
     protected override async Task OnInitializedAsync()
     {
         area = await AreeService!.GetArea(Id);
 
-      
+
         richieste = await RichiesteService!.GetRichieste();
         richieste = richieste!.Where(r => r.CodiceArea == Id).ToList();
         richiesteaperte = richieste.Count(r => r.Stato?.Trim() == "Aperta");
 
-       
+
         var dipendenti = await DipendentiService!.GetDipendenti();
         var capoArea = dipendenti!.FirstOrDefault(d => d.CodiceAreaAppl == Id && d.CapoArea == true);
         notifiche = await NotificheService!.GetNotificheCapoArea(capoArea!.Codice);
 
-       
+
         var tutteLeFerie = await RichiesteFerieService!.GetFerie();
         var ferieArea = tutteLeFerie
             .Where(f => f.Stato == "Accettata" && f.Dipendente?.CodiceAreaAppl == Id)
             .ToList();
 
-        
+
         eventiCalendario = richieste.Select(r => new EventoCalendario
         {
             Titolo = r.Titolo ?? "",
@@ -164,23 +165,58 @@
         }));
     }
 
-   
+
     public void VisualizzaRichieste(int id) => Navigation!.NavigateTo($"area/{id}/richieste");
     public void VisualizzaDipendenti(int id) => Navigation!.NavigateTo($"area/{id}/dipendenti");
 
-    
+
     void seleziona() => notificaselezionata = !notificaselezionata;
 
     public async Task accetta(Notifica notifica)
     {
+
+
         notifiche.Remove(notifica);
         StateHasChanged();
+
+       
+
+        straordinarie = await StraordinarieService!.GetStraordinarie();
+        var straordinaria = straordinarie!.FirstOrDefault(s => s.Stato == "In Attesa");
+
+        var notific = new Notifica
+        {
+            CodiceCliente=null,
+            Messaggio="La tua richiesta é stata accettata",
+            DataCreazione=DateTime.Now,
+            Letta=false,
+            CodiceDipendente= straordinaria!.CodiceDipendente
+
+        };
+
+        await NotificheService!.AddNotifica(notific);
+
+        straordinaria.Stato = "Accettata";
+
+
+
+
+
+
+
+
+
+
+
 
         var tutteLeFerie = await RichiesteFerieService!.GetFerie();
         var feriaInAttesa = tutteLeFerie
             .Where(f => f.Stato == "In Attesa")
             .OrderByDescending(f => f.DataInizio)
             .FirstOrDefault();
+
+
+
 
         if (feriaInAttesa != null)
         {
