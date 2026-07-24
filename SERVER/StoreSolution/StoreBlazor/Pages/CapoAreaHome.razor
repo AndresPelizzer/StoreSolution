@@ -8,8 +8,6 @@
 
 
 
-
-
 <div class="container my-4">
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
@@ -75,6 +73,7 @@
                 <span><span class="badge" style="background:#ffc107; color:black;">&nbsp;&nbsp;&nbsp;</span> In lavorazione</span>
                 <span><span class="badge" style="background:#dc3545;">&nbsp;&nbsp;&nbsp;</span> Conclusa</span>
                 <span><span class="badge" style="background:#0d6efd;">&nbsp;&nbsp;&nbsp;</span> Ferie</span>
+                <span><span class="badge" style="background:#fd7e14;">&nbsp;&nbsp;&nbsp;</span> Straordinario</span>
             </div>
         </div>
         <div class="card-body p-2">
@@ -127,7 +126,7 @@
 
     int richiesteaperte = 0;
     bool notificaselezionata = false;
-
+    
 
     protected override async Task OnInitializedAsync()
     {
@@ -166,6 +165,20 @@
             DataFine = f.DataFine,
             Tipo = "Ferie"
         }));
+
+
+        var straordinari = await StraordinarieService!.GetStraordinarie();
+        var straordinariArea = straordinari?
+    .Where(s => s.Dipendente?.CodiceAreaAppl == Id && s.Stato=="Accettata")
+    .ToList() ?? new List<Straordinaria>();
+        eventiCalendario.AddRange(straordinariArea.Select(s => new EventoCalendario
+        {
+            Titolo = $"Straordinario - {s.Dipendente?.Nome} {s.Dipendente?.Cognome}",
+            DataInizio = s.DataInizio,
+            DataFine = s.DataFine,
+            Tipo = "Straordinario"
+        }));
+
     }
 
 
@@ -178,48 +191,46 @@
     public async Task accetta(Notifica notifica)
     {
 
-
+        Console.WriteLine($"Notifica CodiceDipendente: {notifica.CodiceDipendente}");
+        Console.WriteLine($"Straordinarie totali: {straordinarie?.Count}");
+        foreach (var s in straordinarie ?? new())
+            Console.WriteLine($"  Straordinaria: Codice={s.Codice}, Stato={s.Stato}, CodiceDip={s.CodiceDipendente}");
         notifiche.Remove(notifica);
         StateHasChanged();
 
-       
-
         straordinarie = await StraordinarieService!.GetStraordinarie();
-        var straordinaria = straordinarie!.FirstOrDefault(s => s.Stato == "In Attesa");
+        var straordinaria = straordinarie!.FirstOrDefault(s =>
+            s.Stato == "In Attesa" && s.CodiceDipendente == notifica.CodiceDipendente);
 
-        var notific = new Notifica
+        if (straordinaria != null)
         {
-            CodiceCliente=null,
-            Messaggio="La tua richiesta é stata accettata",
-            DataCreazione=DateTime.Now,
-            Letta=false,
-            CodiceDipendente= straordinaria!.CodiceDipendente
+            straordinaria.Stato = "Accettata";
+            await StraordinarieService!.PutStraordinaria(straordinaria, straordinaria.Codice);
 
-        };
+            await NotificheService!.AddNotifica(new Notifica
+            {
+                CodiceCliente = null,
+                Messaggio = "La tua richiesta di straordinario è stata accettata",
+                DataCreazione = DateTime.Now,
+                Letta = false,
+                CodiceDipendente = straordinaria.CodiceDipendente
+            });
 
-        await NotificheService!.AddNotifica(notific);
-
-        straordinaria.Stato = "Accettata";
-
-
-
-
-
-
-
-
-
-
-
+            eventiCalendario.Add(new EventoCalendario
+            {
+                Titolo = $"Straordinario - {straordinaria.Dipendente?.Nome} {straordinaria.Dipendente?.Cognome}",
+                DataInizio = straordinaria.DataInizio,
+                DataFine = straordinaria.DataFine,
+                Tipo = "Straordinario"
+            });
+            StateHasChanged();
+        }
 
         var tutteLeFerie = await RichiesteFerieService!.GetFerie();
         var feriaInAttesa = tutteLeFerie
-            .Where(f => f.Stato == "In Attesa")
+            .Where(f => f.Stato == "In Attesa" && f.CodiceDipendente == notifica.CodiceDipendente)
             .OrderByDescending(f => f.DataInizio)
             .FirstOrDefault();
-
-
-
 
         if (feriaInAttesa != null)
         {
@@ -233,7 +244,6 @@
                 Letta = false
             });
 
-          
             eventiCalendario.Add(new EventoCalendario
             {
                 Titolo = $"Ferie - {feriaInAttesa.Dipendente?.Nome} {feriaInAttesa.Dipendente?.Cognome}",
@@ -293,6 +303,11 @@
             args.Attributes["style"] = "background: #ffc107; color: black;";
         else if (stato.Equals("Conclusa", StringComparison.OrdinalIgnoreCase))
             args.Attributes["style"] = "background: #dc3545; color: white;";
+        else if (args.Data.Tipo == "Straordinario")
+        {
+            args.Attributes["style"] = "background: #fd7e14; color: white;";
+            return;
+        }
     }
 
     void OnAppointmentSelectEvento(SchedulerAppointmentSelectEventArgs<EventoCalendario> args)
