@@ -71,6 +71,7 @@ public partial class StoreDbContext : DbContext
                   .HasConstraintName("CodiceDip");
         });
 
+
         OnModelCreatingPartial(modelBuilder);
     }
 

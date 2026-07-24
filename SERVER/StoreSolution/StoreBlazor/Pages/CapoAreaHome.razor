@@ -268,6 +268,7 @@
             .OrderByDescending(f => f.DataInizio)
             .FirstOrDefault();
 
+
         if (feriaInAttesa != null)
         {
             await RichiesteFerieService!.AggiornaStato(feriaInAttesa.Codice, "Rifiutata");
@@ -315,4 +316,7 @@
         if (args.Data.Tipo == "Richiesta" && args.Data.CodiceRichiesta.HasValue)
             Navigation!.NavigateTo($"/richiesta/{args.Data.CodiceRichiesta}");
     }
+
+
+
 }
