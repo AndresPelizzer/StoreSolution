@@ -1,4 +1,5 @@
 ﻿using StoreShared.Models.StoreDb;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace StoreShared.Interfaces
 {
@@ -13,6 +14,8 @@ namespace StoreShared.Interfaces
         Task<Richiesta?> UpdateRichiesta(Richiesta Richiesta, int id);
 
         Task DeleteRichiesta(int id);
+
+        Task UploadAllegato(int id, IBrowserFile file);
 
 
     }

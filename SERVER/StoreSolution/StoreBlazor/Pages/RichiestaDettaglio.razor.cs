@@ -38,7 +38,7 @@ namespace StoreBlazor.Pages
         [Inject]
 
         IDipendentiService? DipendentiService { get; set; }
-        public List<Dipendente>? dipendenti= new List<Dipendente>();
+        public List<Dipendente>? dipendenti = new List<Dipendente>();
 
         Richiesta? NuovaRichiesta { get; set; }
 
@@ -61,15 +61,24 @@ namespace StoreBlazor.Pages
         protected override async Task OnInitializedAsync()
         {
             loading = true;
+            int codiceUtente = AuthState.CodiceUtente ?? 0;
             if (Id != 0)
             {
                 RichiestaModificata = await RichiesteService!.GetRichiesta(Id);
                 clienti = await ClientiService!.GetClienti();
                 aree = await AreeService!.GetAree();
-                dipendenti = await DipendentiService!.GetDipendenti();
-                utente = await UtentiService!.GetUtente(AuthState.CodiceUtente ?? 0);
-                var dipendente = await DipendentiService!.GetDipendente(utente!.CodiceDipendente ?? 0);
-                area = await AreeService!.GetArea(dipendente!.CodiceAreaAppl ?? 0);
+                utente = await UtentiService!.GetUtente(codiceUtente);
+                int codiceDipendente = utente!.CodiceDipendente ?? 0;
+                if (codiceDipendente > 0)
+                {
+                    var dipendente = await DipendentiService!.GetDipendente(codiceDipendente);
+                    area = await AreeService!.GetArea(dipendente!.CodiceAreaAppl ?? 0);
+                }
+                else
+                {
+                    //...
+                }
+
 
             }
             else
@@ -87,10 +96,12 @@ namespace StoreBlazor.Pages
 
                 clienti = await ClientiService!.GetClienti();
                 aree = await AreeService!.GetAree();
-                dipendenti = await DipendentiService!.GetDipendenti();
                 var dipendente = await DipendentiService!.GetDipendente(utente!.CodiceDipendente ?? 0);
                 area = await AreeService!.GetArea(dipendente!.CodiceAreaAppl ?? 0);
             }
+
+            dipendenti = await DipendentiService!.GetDipendenti();
+
             loading = false;
         }
         public async Task<object?> salvaRichiesta(Richiesta richiesta)

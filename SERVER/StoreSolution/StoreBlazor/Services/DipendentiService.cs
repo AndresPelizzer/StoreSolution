@@ -38,7 +38,20 @@ namespace StoreBlazor.Services
 
         public async Task<Dipendente?> GetDipendente(int id)
         {
-            return await _http.GetFromJsonAsync<Dipendente>($"api/Dipendenti/{id}");
+
+            try
+            {
+                return await _http.GetFromJsonAsync<Dipendente>($"api/Dipendenti/{id}");
+            }
+            catch(Exception ex)
+            {
+                string msg = ex.Message;
+                return null!;
+            }
+
+
+
+            
         }
 
         public async Task<List<Dipendente>?> GetDipendenti()

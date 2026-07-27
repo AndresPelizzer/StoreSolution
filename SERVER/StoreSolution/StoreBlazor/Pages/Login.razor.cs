@@ -22,7 +22,7 @@ namespace StoreBlazor.Pages
         public NavigationManager? Navigation {  get; set; }
 
         
-        public List<Utente>? utenti = new List<Utente>();
+        //public List<Utente>? utenti = new List<Utente>();
 
         [Inject]
         public IUtentiService? UtentiService { get; set; }
@@ -39,7 +39,7 @@ namespace StoreBlazor.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            utenti = await UtentiService!.GetUtenti();            
+            //utenti = await UtentiService!.GetUtenti();            
         }
 
         public async Task login()
@@ -49,9 +49,6 @@ namespace StoreBlazor.Pages
             {
                 errore = "Credenziali errate";
                 successo = null;
-                
-                
-
             }
             else
             {
@@ -62,6 +59,7 @@ namespace StoreBlazor.Pages
                 AuthState.IsCapoArea = risposta.IsCapoArea ?? false;
                 successo = "Login avvenuto con successo!";
 
+                int id = risposta.CodiceUtente ?? 0;
 
                 if (AuthState.Ruolo == "Admin")
                 {
@@ -70,8 +68,8 @@ namespace StoreBlazor.Pages
                 else if (AuthState.Ruolo == "dipendente")
                 {
 
-
-                    utente = utenti!.FirstOrDefault(u => u.Codice == risposta.CodiceUtente);
+                    //utente = utenti!.FirstOrDefault(u => u.Codice == risposta.CodiceUtente);
+                    utente = await UtentiService!.GetUtente(id);
 
                     var dipendente = await DipendentiService!.GetDipendente(utente!.CodiceDipendente!.Value);
 
@@ -88,8 +86,9 @@ namespace StoreBlazor.Pages
                 }
                 else if (AuthState.Ruolo == "cliente")
                 {
-                    
-                    utente = utenti!.FirstOrDefault(u => u.Codice == risposta.CodiceUtente);
+                    utente = await UtentiService!.GetUtente(id);
+
+                    //utente = utenti!.FirstOrDefault(u => u.Codice == risposta.CodiceUtente);
                     var cliente = await ClientiService!.GetCliente(utente!.CodiceCliente!.Value);
                     if (cliente != null)
                     {

@@ -110,6 +110,7 @@ public class RichiesteController : ControllerBase
                 };
                 _context.Notifica.Add(noti);
 
+
             }
 
 
@@ -134,7 +135,72 @@ public class RichiesteController : ControllerBase
         }
 
 
+
+
+
     }
+
+
+
+    [HttpPut("{id}/allegato")]
+
+    public async Task<ActionResult> UploadAllegato(int id, IFormFile file)
+    {
+        var richiesta = await _context.Richiesta.FindAsync(id);
+
+        if (richiesta == null)
+        {
+            return NotFound();
+        }
+
+        var cartella = Path.Combine("wwwroot", "allegati");
+        Directory.CreateDirectory(cartella);
+
+
+
+        var nomeFile = $"richiesta_{id}_{file.FileName}";
+        var percorso = Path.Combine(cartella, nomeFile);
+
+        using(var stream = new FileStream(percorso, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+
+        richiesta.Allegato = nomeFile;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(nomeFile);
+    }
+
+
+
+    [HttpPut("stream")]
+    public async Task<IActionResult> Stream()
+    {
+        try
+        {
+            // Put your code here
+
+            using (var ms = new MemoryStream())
+            {
+                await Request.Body.CopyToAsync(ms);
+                byte[] fileBytes = ms.ToArray();
+
+                return Ok(new { Completed = true, fileSize = fileBytes.Length });
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+
+
+
+
 }
 
 

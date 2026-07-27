@@ -30,6 +30,8 @@ public partial class StoreDbContext : DbContext
 
     public DbSet<Straordinaria> Straordinaria { get; set; }
 
+    public DbSet<AttDip> AttDip { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Dipendente>(entity =>

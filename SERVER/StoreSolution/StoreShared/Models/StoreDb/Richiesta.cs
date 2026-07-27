@@ -24,6 +24,9 @@ public partial class Richiesta
 
     public DateTime DataRichiesta { get; set; }
 
+
+    public string? Allegato { get; set; }
+
     public int? CodiceDipendente { get; set; }
 
     public int? CodiceArea { get; set; }

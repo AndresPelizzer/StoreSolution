@@ -21,7 +21,8 @@
                  EndProperty="DataFine"
                  TextProperty="Titolo"
                  SelectedView="SchedulerView.Month"
-                 AppointmentRender="OnAppointmentRenderEvento">
+                 AppointmentRender="OnAppointmentRenderEvento"
+                 AppointmentSelect="OnAppointmentSelect">
     <ChildContent>
         <RadzenMonthView />
     </ChildContent>
@@ -74,7 +75,8 @@
             Titolo = r.Titolo ?? "",
             DataInizio = r.DataRichiesta,
             DataFine = r.DataRichiesta,
-            Tipo = "Richiesta"
+            Tipo = "Richiesta",
+            Codice= r.Codice
         }).ToList();
 
         eventiCalendario.AddRange(ferieAccettate.Select(f => new EventoCalendario
@@ -99,16 +101,20 @@
         }
     }
 
-    void OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Richiesta> args)
+    void OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<EventoCalendario> args)
     {
-        Navigation!.NavigateTo($"/richiesta/{args.Data!.Codice}");
+        if (args.Data!.Tipo == "Richiesta")
+        {
+            Navigation!.NavigateTo($"calendario/richiesta/{args.Data.Codice}");
+        }
     }
     public class EventoCalendario
     {
         public string Titolo { get; set; } = "";
         public DateTime DataInizio { get; set; }
         public DateTime DataFine { get; set; }
-        public string Tipo { get; set; } = ""; 
+        public string Tipo { get; set; } = "";
+        public int Codice { get; set; }
     }
 
     public List<EventoCalendario> eventiCalendario = new();

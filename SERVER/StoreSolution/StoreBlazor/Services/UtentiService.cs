@@ -36,12 +36,35 @@ namespace StoreBlazor.Services
 
         public async Task<Utente?> GetUtente(int id)
         {
-            return await _http.GetFromJsonAsync<Utente>($"api/Utenti/{id}");
+            try
+            {
+                return await _http.GetFromJsonAsync<Utente>($"api/Utenti/{id}");
+            }
+            catch (Exception ex) { 
+            
+            string msg = ex.Message;
+                return null!;
+            }
+            
         }
 
         public async Task<List<Utente>?> GetUtenti()
         {
-            return await _http.GetFromJsonAsync<List<Utente>>("api/Utenti");
+
+            try
+            {
+                return await _http.GetFromJsonAsync<List<Utente>>("api/Utenti");
+            }
+            catch (Exception ex)
+            {
+
+                string msg = ex.Message;
+                return null!;
+            }
+
+
+
+
         }
 
         public async Task<Utente?> UpdateUtente(Utente Utente, int id)

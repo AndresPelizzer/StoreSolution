@@ -1,7 +1,10 @@
 ﻿
+using Microsoft.AspNet.SignalR.Client.Http;
+using Microsoft.AspNetCore.Components.Forms;
 using StoreShared.Interfaces;
 using StoreShared.Models.StoreDb;
 using System.Net.Http.Json;
+
 
 namespace StoreBlazor.Services
 {
@@ -26,8 +29,6 @@ namespace StoreBlazor.Services
                 return null;
             }
 
-
-
         }
 
         public async Task DeleteRichiesta(int id)
@@ -45,7 +46,7 @@ namespace StoreBlazor.Services
         {
             return await _http.GetFromJsonAsync<List<Richiesta>>("api/Richieste");
         }
-
+         
         public async Task<Richiesta?> UpdateRichiesta(Richiesta Richiesta, int id)
         {
             var response = await _http.PutAsJsonAsync<Richiesta>($"api/Richieste/{id}", Richiesta);
@@ -58,5 +59,20 @@ namespace StoreBlazor.Services
                 return null;
             }
         }
+
+        public async Task UploadAllegato(int id, IBrowserFile file)
+        {
+            var content = new MultipartFormDataContent();
+            var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); 
+            content.Add(new StreamContent(stream), "file", file.Name);
+            await _http.PutAsync($"richieste/{id}/allegato", content);
+        }
     }
 }
+    
+
+
+         
+
+
+
