@@ -15,11 +15,12 @@ public class AttDipController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<AttDip>>?> GetAttDip()
+    public async Task<ActionResult<List<AttDip>>?> GetAttsDip()
     {
         try
+      
         {
-            var test = await _context.AttDip.ToListAsync();
+            //var test = await _context.AttDip.ToListAsync();
             var result = await _context.AttDip.Include(a=>a.Richiesta).ToListAsync();
             return result;
         }
@@ -45,7 +46,7 @@ public class AttDipController : ControllerBase
         {
             return NotFound();
         }
-
+          
 
     }
     [HttpDelete("{id}")]
@@ -74,7 +75,7 @@ public class AttDipController : ControllerBase
     public async Task<ActionResult<AttDip>> AddAttDip(AttDip AttDip)
     {
 
-
+        AttDip.Richiesta = null;
         await _context.AttDip.AddAsync(AttDip);
         await _context.SaveChangesAsync();
         return AttDip;

@@ -10,7 +10,7 @@ namespace StoreShared.Models.StoreDb
 
         public int Codice { get; set; }
         public DateTime Data { get; set; }
-        public string Tipologia { get; set; }
+        public string? Tipologia { get; set; }
 
         public string? Note { get; set; }
 

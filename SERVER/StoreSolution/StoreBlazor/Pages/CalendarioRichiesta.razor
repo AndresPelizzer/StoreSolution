@@ -109,27 +109,85 @@ else
                 </div>
 
 
-                @if (richiesta.Stato == "Conclusa")
+                             @if (richiesta.Stato == "Conclusa")
+                          {
+                           <div class="mb-3">
+                          <label class="form-label text-uppercase text-muted">Allegato</label>
+                          <InputFile OnChange="CaricaFile" class="form-control" />
+                          @if (richiesta.Allegato != null)
+                            {
+                        <small class="text-success">
+                       <i class="bi bi-paperclip"></i> Allegato attuale: @richiesta.Allegato
+                       </small>
+                       }
+        
+                        @if (fileSelezionato != null)
+                       {
+                            <small class="text-muted">File selezionato: @fileSelezionato.Name</small>
+                            }
+                          </div>
+                             }
+                else if(richiesta.Stato=="In lavorazione")
                 {
                     <div class="mb-3">
-                        <label class="form-label text-uppercase text-muted">Allegato</label>
-                        <InputFile OnChange="CaricaFile"class="form-control"></InputFile>
+                        <div class="card p-2">
+                            <div class="card-header">
+                                <h4 class="text-muted text-uppercase fw-semibold">Riepilogo Attività richiesta</h4>
+                            </div>
 
-                        <RadzenUpload ChooseText="Upload a single file as stream"
-                                      Url="https://localhost:7293/api/richieste/stream"
-                                      Method="PUT"
-                                      Stream="true"
-                                      Multiple="false"
-                                      Style="width: 100%"
-                                      Progress=@OnProgress
-                                      Complete=@OnComplete
-                                      InputAttributes="@(new Dictionary<string,object>{ { "aria-label", "select file" }})" />
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-bordered table-striped">
+                                        <thead>
 
+                                            <tr>
+                                                <th class="text-muted text-uppercase">Data</th>
+                                                <th class="text-muted text-uppercase">Tipologia</th>
+                                                <th class="text-muted text-uppercase">Note</th>
+                                                <th class="text-muted text-uppercase">Tempo</th>
+                                                <th><button class="btn btn-outline-primary" type="button" @onclick="aggiungere">+</button></th>
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var att in attivitaEsistenti)
+                                            {
+                                                <tr class="table-light">
+                                                    <td>@att.Data.ToString("dd/MM/yyyy HH:mm")</td>
+                                                    <td>@att.Tipologia</td>
+                                                    <td>@att.Note</td>
+                                                    <td>@((int)att.TempoTotale.TotalMinutes) min</td>
+                                                    <td></td>
+                                                </tr>
+                                            }
+                                            @foreach (var att in listaAttDip)
+                                            {
+                                                <tr>
+                                                    <td><input type="datetime-local" class="form-control" @bind="att.Data" /></td>
+                                                    <td>
+                                                        <select class="form-select" @bind="att.Tipologia">
+                                                            <option value="Telefonata">Telefonata</option>
+                                                            <option value="Incontro">Incontro</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" @bind="att.Note" />
+                                                    </td>
 
+                                                    <td><input type="number" class="form-control" @bind="att.MinutiLavorati" placeholder="Minuti" /></td>
+                                                </tr>
 
+                                            }
 
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
 
+                        </div>
                     </div>
+                   
+                     
                 }
                 <div class="mb-3">
                     <button class="btn btn-outline-success" @onclick="()=> SalvaModifiche(richiesta)">Salva Modifiche</button>
@@ -141,13 +199,48 @@ else
 
 
 
-    </div>            
+    </div>    
+
+    @* @if (aggiungiriga)
+    {
+
+        <tr>
+            <td><input type="datetime-local" class="form-control" @bind="AttDip.Data" /></td>
+            <td>
+                <select class="form-select" @bind="AttDip.Tipologia">
+                    <option value="Telefonata">Telefonata</option>
+                    <option value="Incontro">Incontro</option>
+                </select>
+            </td>
+            <td>
+                <input type="text" class="form-control" @bind="AttDip.Note" />
+            </td>
+
+            <td><input type="number" class="form-control" @bind="AttDip.TempoTotale" placeholder="Minuti" /></td>
+        </tr>
+
+    } *@
+
+
+
 }
 
 @code {
     [Parameter]
     public int Id { get; set; }
 
+    public List<AttDipForm> listaAttDip = new();
+
+    public class AttDipForm
+    {
+        public DateTime Data { get; set; } = DateTime.Now;
+        public string? Tipologia { get; set; }
+        public string? Note { get; set; }
+        public int MinutiLavorati { get; set; }
+
+
+    }
+    
     Richiesta? richiesta = null;
     [Inject]
     IRichiesteService? RichiesteService { get; set; }
@@ -155,6 +248,15 @@ else
     bool selezionato = false;
     [Inject]
     NavigationManager? Navigation { get; set; }
+
+    [Inject]
+    IAttDipService? AttDipService { get; set; }
+
+    bool aggiungiriga = false;
+    List<AttDip> attivitaEsistenti = new();
+
+
+    AttDip AttDip = new();
 
     IBrowserFile? fileSelezionato;
 
@@ -166,10 +268,37 @@ else
     protected override async Task OnInitializedAsync()
     {
         richiesta = await RichiesteService!.GetRichiesta(Id);
+        var tutte = await AttDipService!.GetAttsDip();
+        attivitaEsistenti = tutte.Where(a => a.CodiceRichiesta == Id).ToList();
+        Console.WriteLine($"Totale AttDip dal DB: {tutte?.Count ?? 0}");
+        foreach (var a in tutte ?? new())
+        {
+            Console.WriteLine($"  CodiceRichiesta: {a.CodiceRichiesta}, Id pagina: {Id}");
+        }
+
+        attivitaEsistenti = tutte?.Where(a => a.CodiceRichiesta == Id).ToList() ?? new();
+        Console.WriteLine($"Attività filtrate: {attivitaEsistenti.Count}");
     }
+
 
     public async Task SalvaModifiche(Richiesta richiesta)
     {
+        foreach(var form in listaAttDip)
+        {
+            var att = new AttDip
+                {
+                    Data = form.Data,
+                    Tipologia = form.Tipologia,
+                    Note = form.Note,
+                    TempoTotale = TimeSpan.FromMinutes(form.MinutiLavorati),
+
+                    CodiceRichiesta = Id,
+
+                };
+                await AttDipService!.AddAttDip(att);
+        }
+
+
         await RichiesteService!.UpdateRichiesta(richiesta, Id);
         if(fileSelezionato!=null && richiesta.Stato == "Conclusa")
         {
@@ -201,7 +330,11 @@ else
         }
     }
 
-
+    void aggiungere()
+    {
+        listaAttDip.Add(new AttDipForm());
+        
+    }
 
 
 

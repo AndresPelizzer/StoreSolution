@@ -65,7 +65,7 @@ namespace StoreBlazor.Services
             var content = new MultipartFormDataContent();
             var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); 
             content.Add(new StreamContent(stream), "file", file.Name);
-            await _http.PutAsync($"richieste/{id}/allegato", content);
+            await _http.PutAsync($"api/Richieste/{id}/allegato", content);
         }
     }
 }
