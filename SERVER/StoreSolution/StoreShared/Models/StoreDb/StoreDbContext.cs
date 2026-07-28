@@ -83,7 +83,17 @@ public partial class StoreDbContext : DbContext
                   .HasConstraintName("FK_AttDip_Richiesta");
         });
 
-        
+
+        modelBuilder.Entity<AttDip>(entity =>
+        {
+            entity.ToTable("AttDip");
+            entity.HasKey(e => e.Codice);
+            entity.HasOne(e => e.Dipendente)
+                  .WithMany()
+                  .HasForeignKey(e => e.CodiceDipendente)
+                  .HasConstraintName("CodiceDipn");
+        });
+
         OnModelCreatingPartial(modelBuilder);
     }
 

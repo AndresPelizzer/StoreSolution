@@ -1,245 +1,105 @@
 ﻿@page "/richiesta/{id:int}"
 @using StoreBlazor.Services
+@using Radzen
+@using Radzen.Blazor
 
 @inject AuthState AuthState
 
-<h3>RichiestaDettaglio</h3>
-
 @if (loading)
 {
-    <div class="d-flex justify-content-center mt-5">
-        <div class="spinner-border text-primary" role="status"></div>
-    </div>
+    <RadzenProgressBarCircular ShowValue="false" Mode="ProgressBarMode.Indeterminate"
+                               Style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%)" />
 }
 else
 {
-    if (Id == 0)
-    {
-        <div class="container mt-5">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Aggiungi Richiesta</h5>
+    <RadzenCard Style="margin: 2rem auto; max-width: 800px;">
 
-                    
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center" class="mb-4">
+            <RadzenText TextStyle="TextStyle.H6">
+                @(Id == 0 ? "Aggiungi Richiesta" : "Modifica Richiesta")
+            </RadzenText>
 
-                    @if (AuthState.Ruolo == "Admin")
-                    {
-                        <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo("/richieste")'>
-                            <i class="bi bi-arrow-left"></i> Torna
-                        </button>
-                    }
-                    else if(AuthState.Ruolo=="dipendente" && AuthState.IsCapoArea==false)
-                    {
-                        <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo($"/calendario/{utente!.CodiceDipendente}")'>
-                            <i class="bi bi-arrow-left"></i> Torna
-                        </button>
-                    }
-                    else if (AuthState.Ruolo == "dipendente" && AuthState.IsCapoArea == true)
-                    {
-                        <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo($"/capoarea/{area!.Codice}/home")'>
-                            <i class="bi bi-arrow-left"></i> Torna
-                        </button>
-                    }
-                    
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label">Codice</label>
-                        <input class="form-control" type="text" @bind="NuovaRichiesta!.Codice" disabled />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Titolo</label>
-                        <input class="form-control" type="text" @bind="NuovaRichiesta.Titolo" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Stato</label>
-                        <select class="form-select" @bind="NuovaRichiesta.Stato">
-                            <option value="">Seleziona Stato</option>
-                            <option value="Aperta">Aperta</option>
-                            <option value="In lavorazione">In lavorazione</option>
-                            <option value="Conclusa">Conclusa</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Descrizione</label>
-                        <input class="form-control" type="email" @bind="NuovaRichiesta.Descrizione" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Data Richiesta</label>
-                        <input class="form-control" type="datetime-local" @bind="NuovaRichiesta.DataRichiesta" />
-                    </div>
+            @if (AuthState.Ruolo == "Admin")
+            {
+                <RadzenButton Text="Torna" Icon="arrow_back" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Small"
+                              Click="@(() => Navigation!.NavigateTo("/richieste"))" />
+            }
+            else if (AuthState.Ruolo == "dipendente" && AuthState.IsCapoArea == false)
+            {
+                <RadzenButton Text="Torna" Icon="arrow_back" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Small"
+                              Click="@(() => Navigation!.NavigateTo($"/calendario/{utente!.CodiceDipendente}"))" />
+            }
+            else if (AuthState.Ruolo == "dipendente" && AuthState.IsCapoArea == true)
+            {
+                <RadzenButton Text="Torna" Icon="arrow_back" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Small"
+                              Click="@(() => Navigation!.NavigateTo($"/capoarea/{area!.Codice}/home"))" />
+            }
+        </RadzenStack>
 
-                    <div class="mb-3">
-                        <label class="form-label">Cliente</label>
-                       <select class="form-select" @bind="NuovaRichiesta.CodiceCliente">
-                           <option value="">Seleziona Cliente</option>
-                            @foreach(var cliente in clienti!)
-                            {
-                                <option value="@cliente.Codice">@cliente.Nome</option>
-                            }
-                        </select>
-                    </div>
+        @{
+            var r = Id == 0 ? NuovaRichiesta : RichiestaModificata;
+        }
 
+        <RadzenStack Gap="1rem">
 
+            <RadzenFormField Text="Codice">
+                <RadzenNumeric @bind-Value="r!.Codice" Disabled="true" Style="width:100%" />
+            </RadzenFormField>
 
-                    <div class="mb-3">
-                        <label class="form-label">Area</label>
-                       
-                        <select class="form-select" @bind="NuovaRichiesta.CodiceArea">
-                            <option value="">Seleziona Area</option>
-                            @foreach (var area in aree!)
-                            {
-                                <option value="@area.Codice">@area.Descrizione</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Dipendenti</label>
-                        <select class="form-select" @bind="NuovaRichiesta.CodiceDipendente">
-                            <option value="">Seleziona Dipendente</option>
-                            @foreach (var dipendente in dipendenti!)
-                            {
-                                <option value="@dipendente.Codice">@dipendente.Nome</option>
-                            }
-                        </select>
-                    </div>
+            <RadzenFormField Text="Titolo">
+                <RadzenTextBox @bind-Value="r!.Titolo" Style="width:100%" />
+            </RadzenFormField>
 
+            <RadzenFormField Text="Stato">
+                <RadzenDropDown @bind-Value="r!.Stato" Style="width:100%"
+                                Data="@(new[] { "Aperta", "In lavorazione", "Conclusa" })" />
+            </RadzenFormField>
 
-                </div>
-                <div class="card-footer">
+            <RadzenFormField Text="Descrizione">
+                <RadzenTextArea @bind-Value="r!.Descrizione" Style="width:100%" Rows="3" />
+            </RadzenFormField>
 
+            <RadzenFormField Text="Data Richiesta">
+                <RadzenDatePicker @bind-Value="r!.DataRichiesta" ShowTime="true"
+                                  DateFormat="dd/MM/yyyy HH:mm" Style="width:100%" />
+            </RadzenFormField>
 
-                    <button class="btn btn-success" @onclick="() => salvaRichiesta(NuovaRichiesta)">Salva</button>
-                </div>
-            </div>
-        </div>
+            <RadzenFormField Text="Cliente">
+                <RadzenDropDown @bind-Value="r!.CodiceCliente" Style="width:100%"
+                                Data="@clienti"
+                                TextProperty="Nome"
+                                ValueProperty="Codice"
+                                Placeholder="Seleziona Cliente" />
+            </RadzenFormField>
 
-    }
+            <RadzenFormField Text="Area">
+                <RadzenDropDown @bind-Value="r!.CodiceArea" Style="width:100%"
+                                Data="@aree"
+                                TextProperty="Descrizione"
+                                ValueProperty="Codice"
+                                Placeholder="Seleziona Area" />
+            </RadzenFormField>
 
+            <RadzenFormField Text="Dipendente">
+                <RadzenDropDown @bind-Value="r!.CodiceDipendente" Style="width:100%"
+                                Data="@dipendenti"
+                                TextProperty="Nome"
+                                ValueProperty="Codice"
+                                Placeholder="Seleziona Dipendente" />
+            </RadzenFormField>
 
+            @if (Id == 0)
+            {
+                <RadzenButton Text="Salva" Icon="save" ButtonStyle="ButtonStyle.Success"
+                              Click="@(() => salvaRichiesta(NuovaRichiesta!))" />
+            }
+            else
+            {
+                <RadzenButton Text="Salva modifiche" Icon="save" ButtonStyle="ButtonStyle.Success"
+                              Click="@(() => modificaRichiesta(RichiestaModificata!, RichiestaModificata!.Codice))" />
+            }
 
-    else
-    {
+        </RadzenStack>
 
-        <div class="container mt-5">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Aggiungi Richiesta</h5>
-
-                    
-                    
-                    @if (AuthState.Ruolo == "Admin")
-                    {
-                        <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo("/richieste")'>
-                            <i class="bi bi-arrow-left"></i> Torna
-                        </button>
-                    }
-                    else if (AuthState.Ruolo == "dipendente" && AuthState.IsCapoArea == false)
-                    {
-                        <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo($"/calendario/{utente!.CodiceDipendente}")'>
-                            <i class="bi bi-arrow-left"></i> Torna
-                        </button>
-                    }
-                    else if (AuthState.Ruolo == "dipendente" && AuthState.IsCapoArea == true)
-                    {
-                        <button class="btn btn-outline-secondary btn-sm" @onclick='() => Navigation!.NavigateTo($"/capoarea/{area!.Codice}/home")'>
-                            <i class="bi bi-arrow-left"></i> Torna
-                        </button>
-                    }
-
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label">Codice</label>
-                        <input class="form-control" type="text" @bind="RichiestaModificata!.Codice" disabled />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Titolo</label>
-                        <input class="form-control" type="text" @bind="RichiestaModificata.Titolo" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Stato</label>
-                        <select class="form-select" @bind="RichiestaModificata.Stato">
-                            <option value="">Seleziona Stato</option>
-                            <option value="Aperta">Aperta</option>
-                            <option value="In lavorazione">In lavorazione</option>
-                            <option value="Conclusa">Conclusa</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Descrizione</label>
-                        <input class="form-control" type="email" @bind="RichiestaModificata.Descrizione" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Data Richiesta</label>
-                        <input class="form-control" type="datetime-local" @bind="RichiestaModificata.DataRichiesta" />
-                    </div>
-
-
-
-
-
-                    <div class="mb-3">
-                        <label class="form-label">Cliente</label>
-                        <select class="form-select" @bind="RichiestaModificata!.CodiceCliente">
-                            <option value="">--Seleziona Cliente--</option>
-                            @foreach (var cliente in clienti!)
-                            {
-                                <option value="@cliente.Codice">@cliente.Nome @cliente.Cognome</option>
-                            }
-                        </select>
-                    </div>
-
-
-
-
-
-
-
-                    <div class="mb-3">
-                        <label class="form-label">Area</label>
-
-                        <select class="form-select" @bind="RichiestaModificata.CodiceArea">
-                            <option value="">--Seleziona Area--</option>
-                            @foreach (var area in aree!)
-                            {
-                                <option value="@area.Codice">@area.Descrizione</option>
-                            }
-                        </select>
-                    </div>
-
-
-
-
-
-                    <div class="mb-3">
-                        <label class="form-label">Dipendenti</label>
-                        <select class="form-select" @bind="RichiestaModificata.CodiceDipendente">
-                            <option value="">--Seleziona Dipendente--</option>
-                            @foreach (var dipendente in dipendenti!)
-                            {
-                                <option value="@dipendente.Codice">@dipendente.Nome</option>
-                            }
-                        </select>
-                    </div>
-
-
-
-
-
-
-
-                </div>
-                <div class="card-footer">
-
-
-                    <button class="btn btn-success" @onclick="() =>modificaRichiesta(RichiestaModificata, RichiestaModificata.Codice)">Salva modifiche</button>
-                </div>
-            </div>
-        </div>
-
-
-    }
-
+    </RadzenCard>
 }
-

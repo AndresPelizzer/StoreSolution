@@ -22,5 +22,19 @@ namespace StoreShared.Models.StoreDb
 
         [ForeignKey("CodiceRichiesta")]
         public virtual Richiesta? Richiesta { get; set; }
+
+
+        [Column("CodiceDipendente")]
+        public int CodiceDipendente { get; set; }
+
+        [ForeignKey("CodiceDipendente")]
+
+        public virtual Dipendente? Dipendente { get; set; }
+
+
+
+
     }
+
+
 }

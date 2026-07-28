@@ -107,7 +107,7 @@ else
                     </select>
 
                 </div>
-
+                
 
                              @if (richiesta.Stato == "Conclusa")
                           {
@@ -116,10 +116,10 @@ else
                           <InputFile OnChange="CaricaFile" class="form-control" />
                           @if (richiesta.Allegato != null)
                             {
-                        <small class="text-success">
-                       <i class="bi bi-paperclip"></i> Allegato attuale: @richiesta.Allegato
-                       </small>
-                       }
+                           <a href="https://localhost:7293/allegati/@richiesta.Allegato" target="_blank" class="text-success">
+                         <i class="bi bi-paperclip"></i> @richiesta.Allegato
+                         </a>
+                            }
         
                         @if (fileSelezionato != null)
                        {

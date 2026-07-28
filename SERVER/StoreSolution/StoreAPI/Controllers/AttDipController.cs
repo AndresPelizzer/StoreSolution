@@ -21,7 +21,7 @@ public class AttDipController : ControllerBase
       
         {
             //var test = await _context.AttDip.ToListAsync();
-            var result = await _context.AttDip.Include(a=>a.Richiesta).ToListAsync();
+            var result = await _context.AttDip.Include(a=>a.Richiesta).Include(a=>a.Dipendente).ToListAsync();
             return result;
         }
         catch (Exception)
@@ -36,7 +36,7 @@ public class AttDipController : ControllerBase
     {
 
 
-        AttDip? AttDip = await _context.AttDip.Include(a=>a.Richiesta).FirstOrDefaultAsync(a=> a.Codice == id);
+        AttDip? AttDip = await _context.AttDip.Include(a=>a.Richiesta).Include(a=>a.Dipendente).FirstOrDefaultAsync(a=> a.Codice == id);
         if (AttDip != null)
         {
 

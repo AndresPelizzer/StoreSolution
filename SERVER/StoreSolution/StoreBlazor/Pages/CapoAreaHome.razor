@@ -6,14 +6,51 @@
 @using StoreShared.Models
 @layout AdminLayout
 
+<div class="d-flex" style="min-height: 100vh;">
 
+    
+    <div class="d-flex flex-column bg-dark text-white" style="width: 220px; min-height: 100vh; flex-shrink: 0;">
 
-<div class="container my-4">
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Area @area!.Descrizione</h4>
-            <button type="button" class="btn btn-light position-relative" @onclick="seleziona">
-                Notifiche
+       
+        <div class="p-3 border-bottom border-secondary">
+            <h6 class="text-white mb-0 fw-bold">
+                <i class="bi bi-box-seam me-2"></i>StoreBlazor
+            </h6>
+            
+        </div>
+
+      
+        <div class="px-3 py-2 border-bottom border-secondary">
+            <div class="small text-secondary">Area attiva</div>
+            <div class="fw-semibold text-white">@area?.Descrizione</div>
+            
+        </div>
+
+       
+        <div class="flex-grow-1 pt-2">
+            <RadzenPanelMenu>
+
+              
+                <RadzenPanelMenuItem Text="Calendario"
+                                     Icon="calendar_month"
+                                     Click="@(() => sezioneAttiva = "calendario")" />
+
+               
+                <RadzenPanelMenuItem Text="Riepilogo"
+                                     Icon="today"
+                                     Click="@(() => sezioneAttiva = "riepilogo")" />
+
+               
+              
+              
+
+            </RadzenPanelMenu>
+        </div>
+
+       
+        <div class="px-3 py-2 border-top border-secondary">
+            <button class="btn btn-outline-light btn-sm w-100 position-relative" @onclick="seleziona">
+                <i class="bi bi-bell me-1"></i> Notifiche
                 @if (notifiche.Any())
                 {
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -23,73 +60,180 @@
             </button>
         </div>
 
-        <div class="card-body">
-            <p class="text-muted">@area!.Note</p>
-            <div class="d-flex gap-3">
-                <button class="btn btn-outline-primary" @onclick="() => VisualizzaRichieste(area.Codice)">Richieste</button>
-                <button class="btn btn-outline-primary" @onclick="() => VisualizzaDipendenti(area.Codice)">Dipendenti</button>
-                <div class="ms-auto me-3 align-self-center">
-                    <strong>Richieste Aperte:</strong>
-                    <span class="badge bg-success fs-6">@richiesteaperte</span>
+       
+        <div class="px-3 py-3 border-top border-secondary">
+            
+            <a href="/logout" class="btn btn-outline-danger btn-sm w-100">
+                <i class="bi bi-box-arrow-left me-1"></i> Logout
+            </a>
+        </div>
+
+    </div>
+    
+
+
+    <div class="flex-grow-1 overflow-auto p-3">
+
+       
+        <div class="card shadow-sm mb-4 mt-2" style="height:190px">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Area @area!.Descrizione</h4>
+                <button type="button" class="btn btn-light position-relative" @onclick="seleziona">
+                    Notifiche
+                    @if (notifiche.Any())
+                    {
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            @notifiche.Count()
+                        </span>
+                    }
+                </button>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">@area!.Note</p>
+                <div class="d-flex gap-3">
+                    <button class="btn btn-outline-primary" @onclick="() => VisualizzaRichieste(area.Codice)">Richieste</button>
+                    <button class="btn btn-outline-primary" @onclick="() => VisualizzaDipendenti(area.Codice)">Dipendenti</button>
+                    <div class="ms-auto me-3 align-self-center">
+                        <strong>Richieste Aperte:</strong>
+                        <span class="badge bg-success fs-6">@richiesteaperte</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    @if (notificaselezionata && notifiche.Any())
-    {
-        <div class="card shadow-sm mb-4 border-warning">
-            <div class="card-header bg-warning text-dark">
-                <h5 class="mb-0">Notifiche da Gestire</h5>
+        @if (notificaselezionata && notifiche.Any())
+        {
+            <div class="card shadow-sm mb-4 border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Notifiche da Gestire</h5>
+                </div>
+                <div class="card-body">
+                    @foreach (var n in notifiche)
+                    {
+                        <div class="border-bottom pb-2 mb-2 d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>@n.Dipendente?.Nome @n.Dipendente?.Cognome</strong>
+                                <div class="small text-muted">@n.DataCreazione.ToString("dd/MM/yyyy HH:mm")</div>
+                                <div>@n.Messaggio</div>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-success" @onclick="() => accetta(n)">Accetta</button>
+                                <button class="btn btn-sm btn-danger" @onclick="() => Rifiuta(n)">Rifiuta</button>
+                            </div>
+                        </div>
+                    }
+                </div>
             </div>
-            <div class="card-body">
-                @if (!notifiche.Any())
-                {
-                    <p class="text-muted mb-0">Nessuna nuova notifica presente.</p>
-                }
-                @foreach (var n in notifiche)
-                {
-                    <div class="border-bottom pb-2 mb-2 d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>@n.Dipendente?.Nome @n.Dipendente?.Cognome</strong>
-                            <div class="small text-muted">@n.DataCreazione.ToString("dd/MM/yyyy HH:mm")</div>
-                            <div>@n.Messaggio</div>
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-success" @onclick="() => accetta(n)">Accetta</button>
-                            <button class="btn btn-sm btn-danger" @onclick="() => Rifiuta(n)">Rifiuta</button>
-                        </div>
+        }
+
+        
+        @if (sezioneAttiva == "calendario")
+        {
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Calendario Richieste</h5>
+                    <div class="d-flex gap-3 align-items-center small">
+                        <span><span class="badge" style="background:#198754;">&nbsp;&nbsp;&nbsp;</span> Aperta</span>
+                        <span><span class="badge" style="background:#ffc107; color:black;">&nbsp;&nbsp;&nbsp;</span> In lavorazione</span>
+                        <span><span class="badge" style="background:#dc3545;">&nbsp;&nbsp;&nbsp;</span> Conclusa</span>
+                        <span><span class="badge" style="background:#0d6efd;">&nbsp;&nbsp;&nbsp;</span> Ferie</span>
+                        <span><span class="badge" style="background:#fd7e14;">&nbsp;&nbsp;&nbsp;</span> Straordinario</span>
                     </div>
-                }
+                </div>
+                <div class="card-body p-2">
+                    <RadzenScheduler @ref=scheduler style="height: 768px;" TItem="EventoCalendario"
+                                     Data="@eventiCalendario"
+                                     StartProperty="DataInizio"
+                                     EndProperty="DataFine"
+                                     TextProperty="Titolo"
+                                     SelectedView="SchedulerView.Month"
+                                     AppointmentRender="OnAppointmentRenderEvento"
+                                     AppointmentSelect="OnAppointmentSelectEvento">
+                        <ChildContent><RadzenMonthView /></ChildContent>
+                        <Template Context="ev">@ev.Titolo</Template>
+                    </RadzenScheduler>
+                </div>
             </div>
-        </div>
-    }
+        }
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Calendario Richieste</h5>
-            <div class="d-flex gap-3 align-items-center small">
-                <span><span class="badge" style="background:#198754;">&nbsp;&nbsp;&nbsp;</span> Aperta</span>
-                <span><span class="badge" style="background:#ffc107; color:black;">&nbsp;&nbsp;&nbsp;</span> In lavorazione</span>
-                <span><span class="badge" style="background:#dc3545;">&nbsp;&nbsp;&nbsp;</span> Conclusa</span>
-                <span><span class="badge" style="background:#0d6efd;">&nbsp;&nbsp;&nbsp;</span> Ferie</span>
-                <span><span class="badge" style="background:#fd7e14;">&nbsp;&nbsp;&nbsp;</span> Straordinario</span>
+      
+        @if (sezioneAttiva == "riepilogo")
+        {
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="text-muted text-uppercase fw-semibold p-3">Riepilogo Giornata</h4>
+                    <div class="d-flex align-items-center gap-2 pe-3">
+                        <button class="btn btn-outline-secondary btn-sm" @onclick="GiornoPrecedente">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <RadzenDatePicker @bind-Value="Richiesta.DataRichiesta"
+                                          DateFormat="dd/MM/yyyy"
+                                          ShowTime="false"
+                                          AllowClear="false"
+                                          Change="@OnDataChanged" />
+                        <button class="btn btn-outline-secondary btn-sm" @onclick="GiornoSuccessivo">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+
+                       
+                        <div class="col-md-6">
+                            <h6 class="fw-semibold text-muted text-uppercase mb-2">
+                                <i class="bi bi-ticket me-1"></i>Richieste
+                            </h6>
+                            @if (!RichiestDelGiorno.Any())
+                            {
+                                <p class="text-muted small">Nessuna richiesta per questo giorno.</p>
+                            }
+                            else
+                            {
+                                @foreach (var r in RichiestDelGiorno)
+                                {
+                                    <div class="d-flex justify-content-between align-items-center border rounded px-3 py-2 mb-2">
+                                        <div>
+                                            <div class="fw-semibold">@r.Titolo</div>
+                                            <div class="small text-muted">@r.Descrizione</div>
+                                        </div>
+                                        <span>@r.Stato</span>
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                       
+                        <div class="col-md-6">
+                            <h6 class="fw-semibold text-muted text-uppercase mb-2">
+                                <i class="bi bi-person-lines-fill me-1"></i>Attività Dipendenti
+                            </h6>
+                            @if (!AttDipDelGiorno.Any())
+                            {
+                                <p class="text-muted small">Nessuna attività per questo giorno.</p>
+                            }
+                            else
+                            {
+                                @foreach (var a in AttDipDelGiorno)
+                                {
+                                    <div class="border rounded px-3 py-2 mb-2">
+                                        <div class="small text-muted">@a.Richiesta!.Descrizione</div>
+                                        <div class="fw-semibold">@a.Dipendente!.Nome</div>
+                                        <div class="small text-muted">@a.Note</div>
+                                        <div class="small text-muted">@a.TempoTotale</div>
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="card-body p-2">
-            <RadzenScheduler @ref=scheduler style="height: 768px;" TItem="EventoCalendario"
-                             Data="@eventiCalendario"
-                             StartProperty="DataInizio"
-                             EndProperty="DataFine"
-                             TextProperty="Titolo"
-                             SelectedView="SchedulerView.Month"
-                             AppointmentRender="OnAppointmentRenderEvento"
-                             AppointmentSelect="OnAppointmentSelectEvento">
-                <ChildContent><RadzenMonthView /></ChildContent>
-                <Template Context="ev">@ev.Titolo</Template>
-            </RadzenScheduler>
-        </div>
+        }
+
     </div>
+
+
 </div>
 
 @code {
@@ -120,16 +264,30 @@
 
     Area? area = new();
     List<Richiesta>? richieste = new();
+
+
+    Richiesta Richiesta = new();
+
+    [Inject]
+    IAttDipService? AttDipService { get; set; }
+
+
+
     List<Notifica> notifiche = new();
     List<EventoCalendario> eventiCalendario = new();
     public List<Straordinaria>? straordinarie = new();
 
     int richiesteaperte = 0;
     bool notificaselezionata = false;
-    
+    // controlla quale sezione mostrare: "calendario" o "riepilogo"
+    // cambia il valore di default per decidere cosa si vede all'apertura della pagina
+    string sezioneAttiva = "calendario";
 
     protected override async Task OnInitializedAsync()
     {
+
+        Richiesta.DataRichiesta = DateTime.Today;
+
         area = await AreeService!.GetArea(Id);
 
 
@@ -285,7 +443,7 @@
         await NotificheService!.UpdateNotifica(n.Codice);
     }
 
-  
+
     void OnAppointmentRenderEvento(SchedulerAppointmentRenderEventArgs<EventoCalendario> args)
     {
         if (args.Data.Tipo == "Ferie")
@@ -294,7 +452,7 @@
             return;
         }
 
-        
+
         var richiesta = richieste!.FirstOrDefault(r => r.Codice == args.Data.CodiceRichiesta);
         var stato = (richiesta?.Stato ?? "").Trim().Replace("\r", "").Replace("\n", "");
 
@@ -313,10 +471,42 @@
 
     void OnAppointmentSelectEvento(SchedulerAppointmentSelectEventArgs<EventoCalendario> args)
     {
-        if (args.Data.Tipo == "Richiesta" && args.Data.CodiceRichiesta.HasValue)
+        if (args.Data!.Tipo == "Richiesta" && args.Data.CodiceRichiesta.HasValue)
             Navigation!.NavigateTo($"/richiesta/{args.Data.CodiceRichiesta}");
     }
+    private async Task GiornoPrecedente()
+    {
+        Richiesta.DataRichiesta = Richiesta.DataRichiesta.AddDays(-1);
+        await CaricaRiepilogo(Richiesta.DataRichiesta);
+    }
+
+    private async Task GiornoSuccessivo()
+    {
+        Richiesta.DataRichiesta = Richiesta.DataRichiesta.AddDays(1);
+        await CaricaRiepilogo(Richiesta.DataRichiesta);
+    }
+
+    private async Task OnDataChanged(DateTime? nuovaData)
+    {
+        if (nuovaData.HasValue)
+        { 
 
 
+            await CaricaRiepilogo(nuovaData.Value);
+        }
+    }
+
+    private IEnumerable<Richiesta> RichiestDelGiorno =>
+    richieste?.Where(r => r.DataRichiesta.Date == Richiesta.DataRichiesta.Date) ?? Enumerable.Empty<Richiesta>();
+
+    private IEnumerable<AttDip> AttDipDelGiorno =>
+        tutteattdip.Where(a => a.Data.Date == Richiesta.DataRichiesta.Date);
+    public List<AttDip> tutteattdip = new();
+    private async Task CaricaRiepilogo(DateTime data)
+    {
+        var tutte = await RichiesteService!.GetRichieste();
+        richieste = tutte!.Where(r => r.CodiceArea == Id).ToList();
+        tutteattdip = await AttDipService!.GetAttsDip();
+    }
 
 }
