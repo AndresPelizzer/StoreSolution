@@ -12,12 +12,17 @@
 }
 else
 {
-    <RadzenCard Style="margin: 2rem auto; max-width: 800px;">
+    var r = Id == 0 ? NuovaRichiesta : RichiestaModificata;
 
-        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center" class="mb-4">
-            <RadzenText TextStyle="TextStyle.H6">
-                @(Id == 0 ? "Aggiungi Richiesta" : "Modifica Richiesta")
-            </RadzenText>
+    <RadzenCard class="rz-my-6 rz-mx-auto rz-shadow-3" Style="max-width: 900px; border-radius: 8px;">
+
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center" class="rz-mb-4">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem">
+                <RadzenIcon Icon="@(Id == 0 ? "add_circle_outline" : "edit")" IconStyle="IconStyle.Primary" Style="font-size: 1.75rem;" />
+                <RadzenText TextStyle="TextStyle.H5" class="rz-m-0">
+                    @(Id == 0 ? "Nuova Richiesta" : "Modifica Richiesta")
+                </RadzenText>
+            </RadzenStack>
 
             @if (AuthState.Ruolo == "Admin")
             {
@@ -36,70 +41,88 @@ else
             }
         </RadzenStack>
 
-        @{
-            var r = Id == 0 ? NuovaRichiesta : RichiestaModificata;
-        }
+        <RadzenDivider class="rz-mb-4" />
 
-        <RadzenStack Gap="1rem">
+        <RadzenRow Gap="1rem">
+            
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenFormField Text="Codice" Style="width: 100%;">
+                    <RadzenNumeric @bind-Value="r!.Codice" Disabled="true" Style="width:100%" />
+                </RadzenFormField>
+            </RadzenColumn>
 
-            <RadzenFormField Text="Codice">
-                <RadzenNumeric @bind-Value="r!.Codice" Disabled="true" Style="width:100%" />
-            </RadzenFormField>
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenFormField Text="Stato" Style="width: 100%;">
+                    <RadzenDropDown @bind-Value="r!.Stato" Style="width:100%"
+                                    Data="@(new[] { "Aperta", "In lavorazione", "Conclusa" })" />
+                </RadzenFormField>
+            </RadzenColumn>
 
-            <RadzenFormField Text="Titolo">
-                <RadzenTextBox @bind-Value="r!.Titolo" Style="width:100%" />
-            </RadzenFormField>
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenFormField Text="Data Richiesta" Style="width: 100%;">
+                    <RadzenDatePicker @bind-Value="r!.DataRichiesta" ShowTime="true"
+                                      DateFormat="dd/MM/yyyy HH:mm" Style="width:100%" />
+                </RadzenFormField>
+            </RadzenColumn>
 
-            <RadzenFormField Text="Stato">
-                <RadzenDropDown @bind-Value="r!.Stato" Style="width:100%"
-                                Data="@(new[] { "Aperta", "In lavorazione", "Conclusa" })" />
-            </RadzenFormField>
+            <RadzenColumn Size="12">
+                <RadzenFormField Text="Titolo" Style="width: 100%;">
+                    <RadzenTextBox @bind-Value="r!.Titolo" Style="width:100%" />
+                </RadzenFormField>
+            </RadzenColumn>
 
-            <RadzenFormField Text="Descrizione">
-                <RadzenTextArea @bind-Value="r!.Descrizione" Style="width:100%" Rows="3" />
-            </RadzenFormField>
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenFormField Text="Cliente" Style="width: 100%;">
+                    <RadzenDropDown @bind-Value="r!.CodiceCliente" Style="width:100%"
+                                    Data="@clienti"
+                                    TextProperty="Nome"
+                                    ValueProperty="Codice"
+                                    Placeholder="Seleziona..." />
+                </RadzenFormField>
+            </RadzenColumn>
 
-            <RadzenFormField Text="Data Richiesta">
-                <RadzenDatePicker @bind-Value="r!.DataRichiesta" ShowTime="true"
-                                  DateFormat="dd/MM/yyyy HH:mm" Style="width:100%" />
-            </RadzenFormField>
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenFormField Text="Area" Style="width: 100%;">
+                    <RadzenDropDown @bind-Value="r!.CodiceArea" Style="width:100%"
+                                    Data="@aree"
+                                    TextProperty="Descrizione"
+                                    ValueProperty="Codice"
+                                    Placeholder="Seleziona..." />
+                </RadzenFormField>
+            </RadzenColumn>
 
-            <RadzenFormField Text="Cliente">
-                <RadzenDropDown @bind-Value="r!.CodiceCliente" Style="width:100%"
-                                Data="@clienti"
-                                TextProperty="Nome"
-                                ValueProperty="Codice"
-                                Placeholder="Seleziona Cliente" />
-            </RadzenFormField>
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenFormField Text="Dipendente" Style="width: 100%;">
+                    <RadzenDropDown @bind-Value="r!.CodiceDipendente" Style="width:100%"
+                                    Data="@dipendenti"
+                                    TextProperty="Nome"
+                                    ValueProperty="Codice"
+                                    Placeholder="Seleziona..." />
+                </RadzenFormField>
+            </RadzenColumn>
 
-            <RadzenFormField Text="Area">
-                <RadzenDropDown @bind-Value="r!.CodiceArea" Style="width:100%"
-                                Data="@aree"
-                                TextProperty="Descrizione"
-                                ValueProperty="Codice"
-                                Placeholder="Seleziona Area" />
-            </RadzenFormField>
+            <RadzenColumn Size="12">
+                <RadzenFormField Text="Descrizione" Style="width: 100%;">
+                    <RadzenTextArea @bind-Value="r!.Descrizione" Style="width:100%" Rows="4" />
+                </RadzenFormField>
+            </RadzenColumn>
 
-            <RadzenFormField Text="Dipendente">
-                <RadzenDropDown @bind-Value="r!.CodiceDipendente" Style="width:100%"
-                                Data="@dipendenti"
-                                TextProperty="Nome"
-                                ValueProperty="Codice"
-                                Placeholder="Seleziona Dipendente" />
-            </RadzenFormField>
+            <RadzenColumn Size="12" class="rz-mt-4">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
+                    @if (Id == 0)
+                    {
+                        <RadzenButton Text="Salva Richiesta" Icon="save" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium"
+                                      Click="@(() => salvaRichiesta(NuovaRichiesta!))" />
+                    }
+                    else
+                    {
+                        <RadzenButton Text="Salva Modifiche" Icon="save" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium"
+                                      Click="@(() => modificaRichiesta(RichiestaModificata!, RichiestaModificata!.Codice))" />
+                    }
+                </RadzenStack>
+            </RadzenColumn>
 
-            @if (Id == 0)
-            {
-                <RadzenButton Text="Salva" Icon="save" ButtonStyle="ButtonStyle.Success"
-                              Click="@(() => salvaRichiesta(NuovaRichiesta!))" />
-            }
-            else
-            {
-                <RadzenButton Text="Salva modifiche" Icon="save" ButtonStyle="ButtonStyle.Success"
-                              Click="@(() => modificaRichiesta(RichiestaModificata!, RichiestaModificata!.Codice))" />
-            }
-
-        </RadzenStack>
+        </RadzenRow>
 
     </RadzenCard>
 }
