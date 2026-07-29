@@ -32,7 +32,7 @@ namespace StoreBlazor.Pages
         [Inject]
         IAreeService? AreeService { get; set; }
 
-        public List<Area>? aree = new();
+        public List<Area>? aree { get; set; } = new();
 
 
         [Inject]
@@ -52,7 +52,7 @@ namespace StoreBlazor.Pages
         [Inject]
         IUtentiService? UtentiService { get; set; }
 
-        Area? area = new();
+        Area? area { get; set; } = new();
 
         
         public List<Utente>? utenti = new List<Utente>();
@@ -96,8 +96,18 @@ namespace StoreBlazor.Pages
 
                 clienti = await ClientiService!.GetClienti();
                 aree = await AreeService!.GetAree();
-                var dipendente = await DipendentiService!.GetDipendente(utente!.CodiceDipendente ?? 0);
-                area = await AreeService!.GetArea(dipendente!.CodiceAreaAppl ?? 0);
+
+
+                if (utente?.Codice > 0)
+                {
+                    var dipendente = await DipendentiService!.GetDipendente(utente!.CodiceDipendente ?? 0);
+                    if (dipendente != null)
+                    {
+                        area = await AreeService!.GetArea(dipendente!.CodiceAreaAppl ?? 0);
+                    }
+                }
+                
+                
             }
 
             dipendenti = await DipendentiService!.GetDipendenti();

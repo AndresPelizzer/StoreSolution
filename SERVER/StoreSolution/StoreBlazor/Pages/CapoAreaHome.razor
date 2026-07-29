@@ -6,9 +6,9 @@
 @using StoreShared.Models
 @layout MainLayout
 
-<div class="d-flex" style="min-height: 100vh;">
+@* <div class="d-flex" style="min-height: 100vh;"> *@
 
-    
+   @*  
     <div class="d-flex flex-column bg-dark text-white" style="width: 220px; min-height: 100vh; flex-shrink: 0;">
 
        
@@ -158,7 +158,7 @@
 
       
         @if (sezioneAttiva == "riepilogo")
-        {
+        { *@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="text-muted text-uppercase fw-semibold p-3">Riepilogo Giornata</h4>
@@ -229,12 +229,9 @@
                     </div>
                 </div>
             </div>
-        }
+     @*    } *@
 
-    </div>
-
-
-</div>
+   
 
 @code {
 

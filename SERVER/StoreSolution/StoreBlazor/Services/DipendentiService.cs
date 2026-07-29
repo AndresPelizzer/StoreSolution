@@ -41,7 +41,16 @@ namespace StoreBlazor.Services
 
             try
             {
-                return await _http.GetFromJsonAsync<Dipendente>($"api/Dipendenti/{id}");
+                if (id > 0)
+                {
+                    return await _http.GetFromJsonAsync<Dipendente>($"api/Dipendenti/{id}");
+                }
+                else
+                {
+                    return new();
+                }
+
+                
             }
             catch(Exception ex)
             {

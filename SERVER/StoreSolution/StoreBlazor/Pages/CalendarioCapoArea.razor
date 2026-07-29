@@ -1,0 +1,331 @@
+﻿@page "/calendario/capoarea/{id:int}"
+@using StoreShared.Interfaces
+@using Radzen
+@using Radzen.Blazor
+@using StoreBlazor.Services
+@using StoreShared.Interfaces
+@using StoreShared.Models
+@layout MainLayout
+
+
+<div class="card shadow-sm">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Calendario Richieste</h5>
+        <div class="d-flex gap-3 align-items-center small">
+            <span><span class="badge" style="background:#198754;">&nbsp;&nbsp;&nbsp;</span> Aperta</span>
+            <span><span class="badge" style="background:#ffc107; color:black;">&nbsp;&nbsp;&nbsp;</span> In lavorazione</span>
+            <span><span class="badge" style="background:#dc3545;">&nbsp;&nbsp;&nbsp;</span> Conclusa</span>
+            <span><span class="badge" style="background:#0d6efd;">&nbsp;&nbsp;&nbsp;</span> Ferie</span>
+            <span><span class="badge" style="background:#fd7e14;">&nbsp;&nbsp;&nbsp;</span> Straordinario</span>
+        </div>
+    </div>
+    <div class="card-body p-2">
+        <RadzenScheduler @ref=scheduler style="height: 768px;" TItem="EventoCalendario"
+                         Data="@eventiCalendario"
+                         StartProperty="DataInizio"
+                         EndProperty="DataFine"
+                         TextProperty="Titolo"
+                         SelectedView="SchedulerView.Month"
+                         AppointmentRender="OnAppointmentRenderEvento"
+                         AppointmentSelect="OnAppointmentSelectEvento">
+            <ChildContent><RadzenMonthView /></ChildContent>
+            <Template Context="ev">@ev.Titolo</Template>
+        </RadzenScheduler>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+
+    public class EventoCalendario
+    {
+        public string Titolo { get; set; } = "";
+        public DateTime DataInizio { get; set; }
+        public DateTime DataFine { get; set; }
+        public string Tipo { get; set; } = "";
+        public int? CodiceRichiesta { get; set; }
+    }
+
+
+    RadzenScheduler<EventoCalendario>? scheduler;
+
+
+    [Inject] public IAreeService? AreeService { get; set; }
+    [Inject] public IRichiesteService? RichiesteService { get; set; }
+    [Inject] public IDipendentiService? DipendentiService { get; set; }
+    [Inject] public NotificheService? NotificheService { get; set; }
+    [Inject] public IRichiesteFerieService? RichiesteFerieService { get; set; }
+    [Inject] public NavigationManager? Navigation { get; set; }
+    [Inject] public IStraordinarieService? StraordinarieService { get; set; }
+    
+
+
+    Area? area = new();
+    List<Richiesta>? richieste = new();
+
+
+    Richiesta Richiesta = new();
+
+    [Inject]
+    IAttDipService? AttDipService { get; set; }
+
+
+
+    List<Notifica> notifiche = new();
+    List<EventoCalendario> eventiCalendario = new();
+    public List<Straordinaria>? straordinarie = new();
+
+    int richiesteaperte = 0;
+    bool notificaselezionata = false;
+    // controlla quale sezione mostrare: "calendario" o "riepilogo"
+    // cambia il valore di default per decidere cosa si vede all'apertura della pagina
+    string sezioneAttiva = "calendario";
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Richiesta.DataRichiesta = DateTime.Today;
+
+        area = await AreeService!.GetArea(Id);
+
+
+        richieste = await RichiesteService!.GetRichieste();
+        richieste = richieste!.Where(r => r.CodiceArea == Id).ToList();
+        richiesteaperte = richieste.Count(r => r.Stato?.Trim() == "Aperta");
+
+
+        var dipendenti = await DipendentiService!.GetDipendenti();
+        var capoArea = dipendenti!.FirstOrDefault(d => d.CodiceAreaAppl == Id && d.CapoArea == true);
+        notifiche = await NotificheService!.GetNotificheCapoArea(capoArea!.Codice);
+
+
+        var tutteLeFerie = await RichiesteFerieService!.GetFerie();
+        var ferieArea = tutteLeFerie
+            .Where(f => f.Stato == "Accettata" && f.Dipendente?.CodiceAreaAppl == Id)
+            .ToList();
+
+
+        eventiCalendario = richieste.Select(r => new EventoCalendario
+        {
+            Titolo = r.Titolo ?? "",
+            DataInizio = r.DataRichiesta,
+            DataFine = r.DataRichiesta,
+            Tipo = "Richiesta",
+            CodiceRichiesta = r.Codice
+        }).ToList();
+
+        eventiCalendario.AddRange(ferieArea.Select(f => new EventoCalendario
+        {
+            Titolo = $"Ferie - {f.Dipendente?.Nome} {f.Dipendente?.Cognome}",
+            DataInizio = f.DataInizio,
+            DataFine = f.DataFine,
+            Tipo = "Ferie"
+        }));
+
+
+        var straordinari = await StraordinarieService!.GetStraordinarie();
+        var straordinariArea = straordinari?
+    .Where(s => s.Dipendente?.CodiceAreaAppl == Id && s.Stato == "Accettata")
+    .ToList() ?? new List<Straordinaria>();
+        eventiCalendario.AddRange(straordinariArea.Select(s => new EventoCalendario
+        {
+            Titolo = $"Straordinario - {s.Dipendente?.Nome} {s.Dipendente?.Cognome}",
+            DataInizio = s.DataInizio,
+            DataFine = s.DataFine,
+            Tipo = "Straordinario"
+        }));
+
+    }
+
+
+    public void VisualizzaRichieste(int id) => Navigation!.NavigateTo($"area/{id}/richieste");
+    public void VisualizzaDipendenti(int id) => Navigation!.NavigateTo($"area/{id}/dipendenti");
+
+
+    void seleziona() => notificaselezionata = !notificaselezionata;
+
+    public async Task accetta(Notifica notifica)
+    {
+
+        Console.WriteLine($"Notifica CodiceDipendente: {notifica.CodiceDipendente}");
+        Console.WriteLine($"Straordinarie totali: {straordinarie?.Count}");
+        foreach (var s in straordinarie ?? new())
+            Console.WriteLine($"  Straordinaria: Codice={s.Codice}, Stato={s.Stato}, CodiceDip={s.CodiceDipendente}");
+        notifiche.Remove(notifica);
+        StateHasChanged();
+
+        straordinarie = await StraordinarieService!.GetStraordinarie();
+        var straordinaria = straordinarie!.FirstOrDefault(s =>
+            s.Stato == "In Attesa" && s.CodiceDipendente == notifica.CodiceDipendente);
+
+        if (straordinaria != null)
+        {
+            straordinaria.Stato = "Accettata";
+            await StraordinarieService!.PutStraordinaria(straordinaria, straordinaria.Codice);
+
+            await NotificheService!.AddNotifica(new Notifica
+            {
+                CodiceCliente = null,
+                Messaggio = "La tua richiesta di straordinario è stata accettata",
+                DataCreazione = DateTime.Now,
+                Letta = false,
+                CodiceDipendente = straordinaria.CodiceDipendente
+            });
+
+            eventiCalendario.Add(new EventoCalendario
+            {
+                Titolo = $"Straordinario - {straordinaria.Dipendente?.Nome} {straordinaria.Dipendente?.Cognome}",
+                DataInizio = straordinaria.DataInizio,
+                DataFine = straordinaria.DataFine,
+                Tipo = "Straordinario"
+            });
+            StateHasChanged();
+        }
+
+        var tutteLeFerie = await RichiesteFerieService!.GetFerie();
+        var feriaInAttesa = tutteLeFerie
+            .Where(f => f.Stato == "In Attesa" && f.CodiceDipendente == notifica.CodiceDipendente)
+            .OrderByDescending(f => f.DataInizio)
+            .FirstOrDefault();
+
+        if (feriaInAttesa != null)
+        {
+            await RichiesteFerieService!.AggiornaStato(feriaInAttesa.Codice, "Accettata");
+
+            await NotificheService!.AddNotifica(new Notifica
+            {
+                CodiceDipendente = feriaInAttesa.CodiceDipendente,
+                Messaggio = $"La tua richiesta di ferie dal {feriaInAttesa.DataInizio:dd/MM/yyyy} è stata ACCETTATA ✅",
+                DataCreazione = DateTime.Now,
+                Letta = false
+            });
+
+            eventiCalendario.Add(new EventoCalendario
+            {
+                Titolo = $"Ferie - {feriaInAttesa.Dipendente?.Nome} {feriaInAttesa.Dipendente?.Cognome}",
+                DataInizio = feriaInAttesa.DataInizio,
+                DataFine = feriaInAttesa.DataFine,
+                Tipo = "Ferie"
+            });
+            StateHasChanged();
+        }
+
+        await NotificheService!.UpdateNotifica(notifica.Codice);
+    }
+
+    async Task Rifiuta(Notifica n)
+    {
+        notifiche.Remove(n);
+        StateHasChanged();
+
+        var tutteLeFerie = await RichiesteFerieService!.GetFerie();
+        var feriaInAttesa = tutteLeFerie
+            .Where(f => f.Stato == "In Attesa")
+            .OrderByDescending(f => f.DataInizio)
+            .FirstOrDefault();
+
+
+        if (feriaInAttesa != null)
+        {
+            await RichiesteFerieService!.AggiornaStato(feriaInAttesa.Codice, "Rifiutata");
+
+            await NotificheService!.AddNotifica(new Notifica
+            {
+                CodiceDipendente = feriaInAttesa.CodiceDipendente,
+                Messaggio = $"La tua richiesta di ferie dal {feriaInAttesa.DataInizio:dd/MM/yyyy} è stata RIFIUTATA ❌",
+                DataCreazione = DateTime.Now,
+                Letta = false
+            });
+        }
+
+        await NotificheService!.UpdateNotifica(n.Codice);
+    }
+
+
+    void OnAppointmentRenderEvento(SchedulerAppointmentRenderEventArgs<EventoCalendario> args)
+    {
+        if (args.Data.Tipo == "Ferie")
+        {
+            args.Attributes["style"] = "background: #0d6efd; color: white;";
+            return;
+        }
+
+
+        var richiesta = richieste!.FirstOrDefault(r => r.Codice == args.Data.CodiceRichiesta);
+        var stato = (richiesta?.Stato ?? "").Trim().Replace("\r", "").Replace("\n", "");
+
+        if (stato.Equals("Aperta", StringComparison.OrdinalIgnoreCase))
+            args.Attributes["style"] = "background: #198754; color: white;";
+        else if (stato.Equals("In lavorazione", StringComparison.OrdinalIgnoreCase))
+            args.Attributes["style"] = "background: #ffc107; color: black;";
+        else if (stato.Equals("Conclusa", StringComparison.OrdinalIgnoreCase))
+            args.Attributes["style"] = "background: #dc3545; color: white;";
+        else if (args.Data.Tipo == "Straordinario")
+        {
+            args.Attributes["style"] = "background: #fd7e14; color: white;";
+            return;
+        }
+    }
+
+    void OnAppointmentSelectEvento(SchedulerAppointmentSelectEventArgs<EventoCalendario> args)
+    {
+        if (args.Data!.Tipo == "Richiesta" && args.Data.CodiceRichiesta.HasValue)
+            Navigation!.NavigateTo($"/richiesta/{args.Data.CodiceRichiesta}");
+    }
+    private async Task GiornoPrecedente()
+    {
+        Richiesta.DataRichiesta = Richiesta.DataRichiesta.AddDays(-1);
+        await CaricaRiepilogo(Richiesta.DataRichiesta);
+    }
+
+    private async Task GiornoSuccessivo()
+    {
+        Richiesta.DataRichiesta = Richiesta.DataRichiesta.AddDays(1);
+        await CaricaRiepilogo(Richiesta.DataRichiesta);
+    }
+
+    private async Task OnDataChanged(DateTime? nuovaData)
+    {
+        if (nuovaData.HasValue)
+        {
+
+
+            await CaricaRiepilogo(nuovaData.Value);
+        }
+    }
+
+    private IEnumerable<Richiesta> RichiestDelGiorno =>
+    richieste?.Where(r => r.DataRichiesta.Date == Richiesta.DataRichiesta.Date) ?? Enumerable.Empty<Richiesta>();
+
+    private IEnumerable<AttDip> AttDipDelGiorno =>
+        tutteattdip.Where(a => a.Data.Date == Richiesta.DataRichiesta.Date);
+    public List<AttDip> tutteattdip = new();
+    private async Task CaricaRiepilogo(DateTime data)
+    {
+        var tutte = await RichiesteService!.GetRichieste();
+        richieste = tutte!.Where(r => r.CodiceArea == Id).ToList();
+        tutteattdip = await AttDipService!.GetAttsDip();
+    }
+
+}
+
+
+}

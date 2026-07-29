@@ -38,11 +38,93 @@
         </div>
     </header>
 
-    @* <main class="admin-content">   *@      
-        @* <h1>ADMIN Layout...</h1>
-        <b>-- @AuthState.Ruolo --</b> *@
-        @Body
-  @*   </main> *@
+
+    @* @Body *@
+
+
+
+
+
+
+
+     <div class="d-flex" style="height:100vh">
+ 
+        <div class="d-flex flex-column bg-dark text-white p-3" style="min-width:200px">
+            <h6 class="text-uppercase text-secondary mb-3 px-2">Menu</h6>
+
+
+
+            @if (AuthState.Ruolo == "Admin")
+            {
+
+
+                <a class="btn text-start mb-2 btn-outline-light" href="clienti">
+                <i class="bi bi-people-fill me-2"></i>Clienti
+            </a>
+
+            <a class="btn text-start mb-2 btn-outline-light" href="dipendenti">
+                <i class="bi bi-people-fill me-2"></i>Dipendenti
+            </a>
+
+
+            <a class="btn text-start mb-2 btn-outline-light" href="aree">
+                <i class="bi bi-people-fill me-2"></i>Aree
+            </a> 
+
+
+
+            <a class="btn text-start mb-2 btn-outline-light" href="richieste">
+                <i class="bi bi-people-fill me-2"></i>Richieste
+            </a>
+            }else if (AuthState.Ruolo == "dipendente" && AuthState.IsCapoArea==false) 
+            {
+                <a class="btn text-start mb-2 btn-outline-light" href="@("calendario/" + Dipendente!.Codice)">
+                    <i class="bi bi-people-fill me-2"></i>Calendario
+                </a>
+
+
+
+                <a class="btn text-start mb-2 btn-outline-light" href="@("dipendente/" + Dipendente!.Codice + "/home")">
+                    <i class="bi bi-people-fill me-2"></i>Riepilogo
+                </a>
+            }else if(AuthState.Ruolo=="dipendente" && AuthState.IsCapoArea == true)
+            {
+                <a class="btn text-start mb-2 btn-outline-light" href="@("capoarea/" + Dipendente!.Area!.Codice + "/home")">
+                    <i class="bi bi-people-fill me-2"></i>Riepilogo
+                </a>
+                
+                <a class="btn text-start mb-2 btn-outline-light" href="@("calendario/capoarea/" + Dipendente!.Area!.Codice )">
+                    <i class="bi bi-people-fill me-2"></i>Calendario
+                </a>
+
+
+                
+            }else if (AuthState.Ruolo == "cliente")
+            {
+                <a class="btn text-start mb-2 btn-outline-light" href="@("/cliente/" + Cliente!.Codice + "/home")">
+                    <i class="bi bi-people-fill me-2"></i>Home
+                </a>
+            }
+
+
+
+        </div> 
+
+    
+        <div class="flex-grow-1 p-4">
+
+            @Body
+
+        </div>
+    </div>
+
+
+ 
+
+
+
+
+
 </div>
 
 @code {
@@ -50,10 +132,23 @@
     [Inject]
     public IUtentiService? UtentiService { get; set; }
 
+    [Inject]
+    public IDipendentiService? DipendentiService { get; set; }
 
+    public List<Dipendente>? dipendenti = new();
 
     Utente? utente = new();
 
+    public List<Utente>? utenti = new();
+
+    Dipendente? Dipendente = new();
+
+    Cliente? Cliente = new();
+
+    [Inject]
+    public IClientiService? ClientiService { get; set; }
+
+    public List<Cliente>? clienti { get; set; }
 
     void Logout()
     {
@@ -67,6 +162,14 @@
 
     protected override async Task OnInitializedAsync()
     {
+        clienti = await ClientiService!.GetClienti();
+        dipendenti = await DipendentiService!.GetDipendenti();
+
+        var ut = await UtentiService!.GetUtente(AuthState.CodiceUtente ?? 0);
+        Dipendente = dipendenti!.FirstOrDefault(d => d.Codice == ut!.CodiceDipendente);
+      Cliente = clienti!.FirstOrDefault(c => c.Codice == ut!.CodiceCliente);
+
+
         if (AuthState.CodiceUtente != null)
         {
             utente = await UtentiService!.GetUtente(AuthState.CodiceUtente.Value);
@@ -83,6 +186,7 @@
             }
             AuthState.BenvenutoMostrato = true;
 
+            
             
         }
     }
