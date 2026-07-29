@@ -1,188 +1,210 @@
 ﻿@page "/dipendente/{id:int}/home"
-@using Radzen.Blazor.Rendering
 @using StoreBlazor.Services
 @using StoreShared.Interfaces
-@using StoreShared.Models
-@layout AdminLayout
+@layout MainLayout
 
-<div class="container mt-5 d-flex">
- <div class="mt-5" style="width:680px">
-    <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <a href="calendario/@Id" class="text-decoration-none dashboard-card-link">
-                <h3 class="mb-0 fs-5">
-                    <i class="bi bi-calendar3 me-2"></i>CALENDARIO
-                </h3>
-            </a>
+<div class="container mt-5 d-flex mb-0">
+    <div class="d-flex flex-column bg-dark text-white p-3" style="min-width:200px; height:100vh">
+        <h6 class="text-uppercase text-secondary mb-3 px-2">Menu</h6>
 
-            <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary" @onclick="RichiediFerie">Richiedi Ferie</button>
-                <button class="btn btn-primary position-relative" @onclick="seleziona">
-                    Notifiche
-                    @if (notifiche.Any())
-                    {
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            @notifiche.Count()
-                        </span>
-                    }
-                </button>
-
-
-                <button type="button" class="btn btn-outline-primary" @onclick="RichiediStraordinari">Richiedi Straordinari</button>
-            </div>
-        </div>
-
-        @if (selezionata)
-        {
-            <div class="card m-3 border-info">
-                <div class="card-header bg-info text-white fw-bold">Notifiche Ricevute</div>
-                <div class="card-body">
-                    @if (!notifiche.Any())
-                    {
-                        <p class="text-muted mb-0">Non hai nuove notifiche.</p>
-                    }
-                    @foreach (var n in notifiche)
-                    {
-                        <div class="d-flex justify-content-between align-items-center border-bottom py-2">
-                            <div>
-                                <small class="text-muted d-block">@n.DataCreazione.ToString("dd/MM/yyyy HH:mm")</small>
-                                <strong>@n.Messaggio</strong>
-                            </div>
-                            <button class="btn btn-sm btn-outline-success ms-3" @onclick="() => SegnaComeLetta(n)">
-                                <i class="bi bi-check-lg"></i> OK
-                            </button>
-                        </div>
-                    }
-                </div>
-            </div>
-        }
-
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th @onclick='() => Ordina("Titolo")' style="cursor:pointer">
-                                Titolo
-                                <i class="bi @(colonnaAttiva == "Titolo" ? (ascending ? "bi-sort-up" : "bi-sort-down") : "bi-sort")"></i>
-                            </th>
-                            <th @onclick='() => Ordina("Stato")' style="cursor:pointer">
-                                Stato
-                                <i class="bi @(colonnaAttiva == "Stato" ? (ascending ? "bi-sort-up" : "bi-sort-down") : "bi-sort")"></i>
-                            </th>
-                            <th @onclick='() => Ordina("Data")' style="cursor:pointer">
-                                Data
-                                <i class="bi @(colonnaAttiva == "Data" ? (ascending ? "bi-sort-up" : "bi-sort-down") : "bi-sort")"></i>
-                            </th>
-                            <th>Azione</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var richiesta in richieste!)
-                        {
-                            <tr>
-                                <td>@richiesta.Titolo</td>
-                                <td>@richiesta.Stato</td>
-                                <td>@richiesta.DataRichiesta.ToString("dd/MM/yyyy")</td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-link text-dark p-0"
-                                            @onclick="() => ToggleAccordion(richiesta.Codice)">
-                                        <i class="bi @(richiestaApertaId == richiesta.Codice ? "bi-chevron-up" : "bi-chevron-down") fs-5"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            @if (richiestaApertaId == richiesta.Codice)
-                            {
-                                <tr class="table-light">
-                                    <td colspan="4">
-                                        <DettaglioDipendente Richiesta="richiesta"></DettaglioDipendente>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <button class="btn text-start mb-2 @(calendarioattivo ? "btn-primary" : "btn-outline-light")"
+                @onclick="calendario">
+            <i class="bi bi-calendar3 me-2"></i>Calendario
+        </button>
+       
+        <button class="btn text-start mb-2 @(riepilogoattivo ? "btn-primary" : "btn-outline-light")"
+                @onclick="riepilogo">
+            <i class="bi bi-bar-chart-line me-2"></i>Riepilogo
+        </button>
     </div>
-  </div>
-    <div class="mt-5 ms-3" style="width: 680px;">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white">
-                <h5 class="text-center text-muted text-uppercase mb-0">
-                    <i class="bi bi-bar-chart-line me-2"></i>Riepilogo Attività
-                </h5>
-            </div>
-            <div class="card-body d-flex flex-column gap-3">
+    @if (calendarioattivo && riepilogoattivo == false)
+    {
+        <div class="mt-5 px-4" style="width:680px">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <a href="calendario/@Id" class="text-decoration-none dashboard-card-link">
+                        <h3 class="mb-0 fs-5">
+                            <i class="bi bi-calendar3 me-2"></i>CALENDARIO
+                        </h3>
+                    </a>
 
-                <div class="card border-0 bg-light">
-                    <div class="card-body d-flex justify-content-between align-items-center py-2">
-                        <div>
-                            <i class="bi bi-stack me-2 text-secondary"></i>
-                            <span class="text-muted text-uppercase fw-semibold" style="font-size:0.8rem;">Totali</span>
-                        </div>
-                        <span class="badge bg-secondary fs-6">@richieste!.Count</span>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary" @onclick="RichiediFerie">Richiedi Ferie</button>
+                        <button class="btn btn-primary position-relative" @onclick="seleziona">
+                            Notifiche
+                            @if (notifiche.Any())
+                            {
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    @notifiche.Count()
+                                </span>
+                            }
+                        </button>
+
+
+                        <button type="button" class="btn btn-outline-primary" @onclick="RichiediStraordinari">Richiedi Straordinari</button>
                     </div>
                 </div>
 
-                <div class="card border-0 bg-light">
-                    <div class="card-body d-flex justify-content-between align-items-center py-2 " style="cursor:pointer " @onclick="mostra" >
-                        <div>
-                            <i class="bi bi-folder2-open me-2 text-primary"></i>
-                            <span class="text-muted text-uppercase fw-semibold" style="font-size:0.8rem;">Aperte</span>
+                @if (selezionata)
+                {
+                    <div class="card m-3 border-info">
+                        <div class="card-header bg-info text-white fw-bold">Notifiche Ricevute</div>
+                        <div class="card-body">
+                            @if (!notifiche.Any())
+                            {
+                                <p class="text-muted mb-0">Non hai nuove notifiche.</p>
+                            }
+                            @foreach (var n in notifiche)
+                            {
+                                <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                                    <div>
+                                        <small class="text-muted d-block">@n.DataCreazione.ToString("dd/MM/yyyy HH:mm")</small>
+                                        <strong>@n.Messaggio</strong>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-success ms-3" @onclick="() => SegnaComeLetta(n)">
+                                        <i class="bi bi-check-lg"></i> OK
+                                    </button>
+                                </div>
+                            }
                         </div>
-                        <span class="badge bg-primary fs-6">@richieste!.Count(r => r.Stato == "Aperta")</span>
                     </div>
+                }
 
-                    @if (mostrare && richiesteaperte.Any())
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered table-hover">
-
-                                @foreach(var r in richiesteaperte)
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th @onclick='() => Ordina("Titolo")' style="cursor:pointer">
+                                        Titolo
+                                        <i class="bi @(colonnaAttiva == "Titolo" ? (ascending ? "bi-sort-up" : "bi-sort-down") : "bi-sort")"></i>
+                                    </th>
+                                    <th @onclick='() => Ordina("Stato")' style="cursor:pointer">
+                                        Stato
+                                        <i class="bi @(colonnaAttiva == "Stato" ? (ascending ? "bi-sort-up" : "bi-sort-down") : "bi-sort")"></i>
+                                    </th>
+                                    <th @onclick='() => Ordina("Data")' style="cursor:pointer">
+                                        Data
+                                        <i class="bi @(colonnaAttiva == "Data" ? (ascending ? "bi-sort-up" : "bi-sort-down") : "bi-sort")"></i>
+                                    </th>
+                                    <th>Azione</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var richiesta in richieste!)
                                 {
                                     <tr>
-                                <td>@r.Titolo</td>
-                                <td>@r.Stato</td>
-                                <td>@r.DataRichiesta.ToString("dd/MM/yyyy")</td>
-
+                                        <td>@richiesta.Titolo</td>
+                                        <td>@richiesta.Stato</td>
+                                        <td>@richiesta.DataRichiesta.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-link text-dark p-0"
+                                            @onclick="() => ToggleAccordion(richiesta.Codice)">
+                                                <i class="bi @(richiestaApertaId == richiesta.Codice ? "bi-chevron-up" : "bi-chevron-down") fs-5"></i>
+                                            </button>
+                                        </td>
                                     </tr>
+                                    @if (richiestaApertaId == richiesta.Codice)
+                                    {
+                                        <tr class="table-light">
+                                            <td colspan="4">
+                                                <DettaglioDipendente Richiesta="richiesta"></DettaglioDipendente>
+                                            </td>
+                                        </tr>
+                                    }
                                 }
-                               
-                            </table>
-                        </div>
-                    }
-
-
-                </div>
-
-                <div class="card border-0 bg-light">
-                    <div class="card-body d-flex justify-content-between align-items-center py-2">
-                        <div>
-                            <i class="bi bi-arrow-repeat me-2 text-warning"></i>
-                            <span class="text-muted text-uppercase fw-semibold" style="font-size:0.8rem;">In Lavorazione</span>
-                        </div>
-                        <span class="badge bg-warning text-dark fs-6">@richieste!.Count(r => r.Stato == "In lavorazione")</span>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-
-                <div class="card border-0 bg-light">
-                    <div class="card-body d-flex justify-content-between align-items-center py-2">
-                        <div>
-                            <i class="bi bi-check-circle me-2 text-success"></i>
-                            <span class="text-muted text-uppercase fw-semibold" style="font-size:0.8rem;">Concluse</span>
-                        </div>
-                        <span class="badge bg-success fs-6">@richieste!.Count(r => r.Stato == "Conclusa")</span>
-                    </div>
+            </div>
+        </div>            
+    }
+    else if (riepilogoattivo == true && calendarioattivo == false)
+    {
+        <div class="mt-5 ms-3" style="width: 680px;">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="text-center text-muted text-uppercase mb-0">
+                        <i class="bi bi-bar-chart-line me-2"></i>Riepilogo Attività
+                    </h5>
                 </div>
+                <div class="card-body d-flex flex-column gap-3">
 
+                    <div class="card border-0 bg-light">
+                        <div class="card-body d-flex justify-content-between align-items-center py-2">
+                            <div>
+                                <i class="bi bi-stack me-2 text-secondary"></i>
+                                <span class="text-muted text-uppercase fw-semibold" style="font-size:0.8rem;">Totali</span>
+                            </div>
+                            <span class="badge bg-secondary fs-6">@richieste!.Count</span>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 bg-light">
+                        <div class="card-body d-flex justify-content-between align-items-center py-2 " style="cursor:pointer " @onclick="mostra" >
+                            <div>
+                                <i class="bi bi-folder2-open me-2 text-primary"></i>
+                                <span class="text-muted text-uppercase fw-semibold" style="font-size:0.8rem;">Aperte</span>
+                            </div>
+                            <span class="badge bg-primary fs-6">@richieste!.Count(r => r.Stato == "Aperta")</span>
+                        </div>
+
+                        @if (mostrare && richiesteaperte.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+
+                                    @foreach (var r in richiesteaperte)
+                                    {
+                                        <tr>
+                                            <td>@r.Titolo</td>
+                                            <td>@r.Stato</td>
+                                            <td>@r.DataRichiesta.ToString("dd/MM/yyyy")</td>
+
+                                        </tr>
+                                    }
+
+                                </table>
+                            </div>
+                        }
+
+
+                    </div>
+
+                    <div class="card border-0 bg-light">
+                        <div class="card-body d-flex justify-content-between align-items-center py-2">
+                            <div>
+                                <i class="bi bi-arrow-repeat me-2 text-warning"></i>
+                                <span class="text-muted text-uppercase fw-semibold" style="font-size:0.8rem;">In Lavorazione</span>
+                            </div>
+                            <span class="badge bg-warning text-dark fs-6">@richieste!.Count(r => r.Stato == "In lavorazione")</span>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 bg-light">
+                        <div class="card-body d-flex justify-content-between align-items-center py-2">
+                            <div>
+                                <i class="bi bi-check-circle me-2 text-success"></i>
+                                <span class="text-muted text-uppercase fw-semibold" style="font-size:0.8rem;">Concluse</span>
+                            </div>
+                            <span class="badge bg-success fs-6">@richieste!.Count(r => r.Stato == "Conclusa")</span>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-footer text-center text-muted">
+                    <small>Ultimo aggiornamento: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</small>
+                </div>
             </div>
-            <div class="card-footer text-center text-muted">
-                <small>Ultimo aggiornamento: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</small>
-            </div>
-        </div>
-    </div>
- </div>
+        </div>            
+    }
+
+
+    
+
+
+</div>
 
 
 @code {
@@ -211,6 +233,9 @@
 
     bool mostrare = false;
 
+    bool calendarioattivo = false;
+    bool riepilogoattivo = false;
+
     private string colonnaAttiva = "";
     private bool ascending = true;
 
@@ -226,10 +251,10 @@
         }
 
 
-         richiesteaperte = richieste!.Where(r => r.Stato == "Aperta").ToList();
+        richiesteaperte = richieste!.Where(r => r.Stato == "Aperta").ToList();
 
     }
-    
+
 
 
     public async Task SegnaComeLetta(Notifica notifica)
@@ -288,6 +313,17 @@
     void mostra()
     {
         mostrare = !mostrare;
+    }
+
+    void calendario()
+    {
+        calendarioattivo=true;
+        riepilogoattivo = false;
+    }
+    void riepilogo()
+    {
+        calendarioattivo = false;
+        riepilogoattivo = true;
     }
 }
 

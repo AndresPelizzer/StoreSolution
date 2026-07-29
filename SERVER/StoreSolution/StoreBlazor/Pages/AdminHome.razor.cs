@@ -23,7 +23,10 @@ namespace StoreBlazor.Pages
         int totaleDipendenti = 0;
         int totaleAree = 0;
         int richiesteAperte = 0;
-
+        bool mostraclienti = false;
+        bool mostradipendenti = false;
+        bool mostrarichieste = false;
+        bool mostraaree = false;
         protected override async Task OnInitializedAsync()
         {
             var clienti = await ClientiService!.GetClienti();
@@ -38,6 +41,25 @@ namespace StoreBlazor.Pages
 
             loading = false;
         }
+
+        void mostracl()
+        {
+            mostraclienti = true;
+
+        }
+        void mostradip()
+        {
+            mostradipendenti = true;
+        }
+        void mostrarichi()
+        {
+            mostrarichieste = true;
+        }
+
+
+       
+
+        private string sezione = "";
     }
 }
 

@@ -1,43 +1,68 @@
 ﻿@page "/admin/home"
-@layout AdminLayout
+@layout MainLayout
 @using StoreShared.Interfaces
 
-<div class="dashboard">
-    <div class="dashboard-header">
-        <h1>Panoramica</h1>
-        <p>Riepilogo generale dell'attività</p>
+<div class="d-flex" style="height:100vh">
+
+    <div class="d-flex flex-column bg-dark text-white p-3" style="min-width:200px">
+        <h6 class="text-uppercase text-secondary mb-3 px-2">Menu</h6>
+
+        <button class="btn text-start mb-2 @(sezione == "clienti" ? "btn-primary" : "btn-outline-light")"
+                @onclick='() => sezione = "clienti"'>
+            <i class="bi bi-people-fill me-2"></i>Clienti
+        </button>
+        <button class="btn text-start mb-2 @(sezione == "dipendenti" ? "btn-primary" : "btn-outline-light")"
+                @onclick='() => sezione = "dipendenti"'>
+            <i class="bi bi-person-badge-fill me-2"></i>Dipendenti
+        </button>
+        <button class="btn text-start mb-2 @(sezione == "richieste" ? "btn-primary" : "btn-outline-light")"
+                @onclick='() => sezione = "richieste"'>
+            <i class="bi bi-clipboard-check-fill me-2"></i>Richieste
+        </button>
+        <button class="btn text-start mb-2 @(sezione == "aree" ? "btn-primary" : "btn-outline-light")"
+                @onclick='() => sezione = "aree"'>
+            <i class="bi bi-geo-alt-fill me-2"></i>Aree
+        </button>
     </div>
 
-    @if (loading)
-    {
-        <div class="d-flex justify-content-center mt-5">
-            <div class="spinner-border text-primary" role="status"></div>
-        </div>
-    }
-    else
-    {
-     
-        <div class="stats-grid">
+    
+    <div class="flex-grow-1 p-4">
+
+        @if (loading)
+        {
+            <div class="d-flex justify-content-center mt-5">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+        }
+        else if (sezione == "clienti")
+        {
+            <h4>Clienti</h4>
             <a href="clienti" class="stat-card">
                 <div class="stat-icon stat-icon-blue">
                     <i class="bi bi-people-fill"></i>
                 </div>
                 <div class="stat-info">
                     <span class="stat-value">@totaleClienti</span>
-                    <span class="stat-label">Clienti</span>
+                    <span class="stat-label">Clienti totali</span>
                 </div>
             </a>
-
+        }
+        else if (sezione == "dipendenti")
+        {
+            <h4>Dipendenti</h4>
             <a href="dipendenti" class="stat-card">
                 <div class="stat-icon stat-icon-purple">
                     <i class="bi bi-person-badge-fill"></i>
                 </div>
                 <div class="stat-info">
                     <span class="stat-value">@totaleDipendenti</span>
-                    <span class="stat-label">Dipendenti</span>
+                    <span class="stat-label">Dipendenti totali</span>
                 </div>
             </a>
-
+        }
+        else if (sezione == "richieste")
+        {
+            <h4>Richieste</h4>
             <a href="richieste" class="stat-card">
                 <div class="stat-icon stat-icon-amber">
                     <i class="bi bi-clipboard-check-fill"></i>
@@ -47,33 +72,24 @@
                     <span class="stat-label">Richieste aperte</span>
                 </div>
             </a>
-
+        }
+        else if (sezione == "aree")
+        {
+            <h4>Aree</h4>
             <a href="aree" class="stat-card">
                 <div class="stat-icon stat-icon-green">
                     <i class="bi bi-geo-alt-fill"></i>
                 </div>
                 <div class="stat-info">
                     <span class="stat-value">@totaleAree</span>
-                    <span class="stat-label">Aree</span>
+                    <span class="stat-label">Aree totali</span>
                 </div>
             </a>
+        }
+        else
+        {
+            <p class="text-muted">Seleziona una sezione dal menu.</p>
+        }
 
-
-            <a href="registrazione" class="stat-card">
-                <div class="stat-icon stat-icon-green">
-                    <i class="bi bi-person-badge"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">Registrazione</span>
-                    <span class="stat-label">Clicca per registrare un nuovo Utente</span>
-                </div>
-
-            </a>
-        </div>
-
-      
-    }
+    </div>
 </div>
-
-
-
